@@ -1,5 +1,5 @@
 <?php
-namespace Project;
+namespace Abc;
 
 use Exception;
 use Oda\OdaLibBd;
@@ -15,14 +15,14 @@ use \stdClass;
  * @author  Fabrice Rosito <rosito.fabrice@gmail.com>
  * @version 0.150221
  */
-class EntityInterface extends OdaRestInterface {
+class PatientInterface extends OdaRestInterface {
     /**
      */
-    function get() {
+    function getAll() {
         try {
             $params = new OdaPrepareReqSql();
-            $params->sql = "SELECT a.`id`
-                FROM `tab_entity` a
+            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`
+                FROM `tab_patients` a
                 WHERE 1=1
             ;";
             $params->typeSQL = OdaLibBd::SQL_GET_ALL;

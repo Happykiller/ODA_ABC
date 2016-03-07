@@ -33,12 +33,21 @@
         /**
          * @returns {$.Oda.App}
          */
-        startApp: function (p_params) {
+        startApp: function () {
             try {
                 $.Oda.Router.addRoute("home", {
                     "path" : "partials/home.html",
-                    "title" : "oda-main.home-title",
-                    "urls" : ["","home"]
+                    "title" : "home.title",
+                    "urls" : ["","home"],
+                    "middleWares":["support","auth"]
+                });
+
+                $.Oda.Router.addRoute("patients", {
+                    "path" : "partials/patients.html",
+                    "title" : "patients.title",
+                    "urls" : ["patients"],
+                    "middleWares" : ["support","auth"],
+                    "dependencies" : ["dataTables"]
                 });
 
                 $.Oda.Router.startRooter();
@@ -53,15 +62,60 @@
         "Controller" : {
             "Home": {
                 /**
-                 * @param {object} p_params
-                 * @param p_params.id
                  * @returns {$.Oda.App.Controller.Home}
                  */
-                start: function (p_params) {
+                start: function () {
                     try {
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Home.start : " + er.message);
+                        return null;
+                    }
+                }
+            },
+            "Patients": {
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                start: function () {
+                    try {
+                        $.Oda.App.Controller.Patients.displayPatients();
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.start : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                displayPatients : function () {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/", {callback : function(response){
+                            $.Oda.Display.Table.createDataTable({
+                                target: 'divPatients',
+                                data: response.data,
+                                attribute: [
+                                    {
+                                        header: "Nom",
+                                        value: function(data, type, full, meta, row){
+                                            return row.name_first + " " + row.name_last;
+                                        }
+                                    },
+                                    {
+                                        header: "Action",
+                                        align: 'center',
+                                        value: function(data, type, full, meta, row){
+                                            var strHtml = '<a onclick="$.Oda.Router.navigateTo({route:\'patient\',args:{id:'+row.id+'}});" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-eye-open"></span></a>';
+                                            return strHtml;
+                                        }
+                                    }
+                                ]
+                            })
+                        }});
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.displayPatients : " + er.message);
                         return null;
                     }
                 }

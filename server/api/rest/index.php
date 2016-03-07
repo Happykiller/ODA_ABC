@@ -1,6 +1,6 @@
 <?php
 
-namespace Project;
+namespace Abc;
 
 require '../../header.php';
 require "../../vendor/autoload.php";
@@ -27,12 +27,16 @@ $slim->get('/', function () {
     echo $parser->parse($markdown);
 });
 
-$slim->get('/entity/:id', function ($id) use ($slim) {
+//--------------------------------------------------------------------------
+// PATIENT
+
+$slim->get('/patient/', function () use ($slim) {
     $params = new OdaPrepareInterface();
     $params->slim = $slim;
-    $INTERFACE = new EntityInterface($params);
-    $INTERFACE->get($id);
+    $INTERFACE = new PatientInterface($params);
+    $INTERFACE->getAll();
 });
 
+//--------------------------------------------------------------------------
 
 $slim->run();

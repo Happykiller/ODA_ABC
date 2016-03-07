@@ -1,5 +1,5 @@
 <?php
-namespace Project;
+namespace Abc;
 
 use \stdClass, \Oda\OdaLibInterface;
 

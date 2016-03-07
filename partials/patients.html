@@ -1,0 +1,18 @@
+<div class="container">
+    <h2 oda-label="patients.title"></h2>
+
+    <div class="row">
+        <div class="col-md-12" id="divPatients">
+            <oda-loading></oda-loading>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-success" oda-label="oda-main.new" onclick="$.Oda.App.Controller.Patients.newPatient();">oda-main.new</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $.Oda.App.Controller.Patients.start();
+</script>

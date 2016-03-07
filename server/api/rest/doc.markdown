@@ -1,8 +1,7 @@
 # Routes
 
-## a route
+## Patient
 
-* `/entity/:id`
-    * type : POST
-    * mandatory params : "param"
-    * public : false
+* `/patient/`
+    * type : GET
+    * public : true
