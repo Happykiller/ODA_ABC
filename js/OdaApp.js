@@ -35,6 +35,18 @@
          */
         startApp: function () {
             try {
+                $.Oda.Router.addDependencies("fullcalendar", {
+                    ordered : true,
+                    "list" : [
+                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/fullcalendar.min.css", "type" : "css"},
+                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/moment/min/moment.min.js", "type" : "script"},
+                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/fullcalendar.min.js", "type" : "script"},
+                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/lang/fr.js", "type" : "script"},
+                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/lang/es.js", "type" : "script"},
+                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/lang/it.js", "type" : "script"}
+                    ]
+                });
+
                 $.Oda.Router.addRoute("home", {
                     "path" : "partials/home.html",
                     "title" : "home.title",
@@ -48,6 +60,14 @@
                     "urls" : ["patients"],
                     "middleWares" : ["support","auth"],
                     "dependencies" : ["dataTables"]
+                });
+
+                $.Oda.Router.addRoute("planning", {
+                    "path" : "partials/planning.html",
+                    "title" : "planning.title",
+                    "urls" : ["planning"],
+                    "middleWares" : ["support","auth"],
+                    "dependencies" : ["fullcalendar"]
                 });
 
                 $.Oda.Router.startRooter();
@@ -119,6 +139,56 @@
                         return null;
                     }
                 }
+            },
+            "Planning": {
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                start: function () {
+                    try {
+                        $.Oda.App.Controller.Planning.displayPlanning();
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.start : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                displayPlanning : function () {
+                    try {
+                        $('#calendar').fullCalendar({
+                            lang: 'fr',
+                            weekNumbers : true,
+                            dayClick: function(date, jsEvent, view) {
+                                console.log("dayClick")
+                            },
+                            eventOrder: 'eventStart',
+                            events: function(start, end, timezone, callback) {
+                                var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/search/user/"+ $.Oda.Session.id, {callback : function(response){
+                                    callback(response.data);
+                                }});
+                            },
+                            eventMouseover: function(calEvent, jsEvent) {
+                                console.log("eventMouseover");
+                            },
+                            eventMouseout: function(calEvent, jsEvent) {
+                                console.log("eventMouseout");
+                            },
+                            eventClick: function(calEvent, jsEvent, view) {
+                                console.log("eventClick");
+                            },
+                            "viewRender": function(view, element){
+                                console.log("viewRender");
+                            }
+                        })
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.displayPlanning : " + er.message);
+                        return null;
+                    }
+                },
             }
         }
     };

@@ -10,5 +10,10 @@
     , "fr" : {
       "title" : "Patients"
     }
+  },{
+    "groupName" : "planning"
+    , "fr" : {
+      "title" : "Planning"
   }
+}
 ]

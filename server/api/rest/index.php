@@ -38,5 +38,15 @@ $slim->get('/patient/', function () use ($slim) {
 });
 
 //--------------------------------------------------------------------------
+// EVENT
+
+$slim->get('/event/search/user/:userId', function ($userId) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->slim = $slim;
+    $INTERFACE = new EventInterface($params);
+    $INTERFACE->getForAUser($userId);
+});
+
+//--------------------------------------------------------------------------
 
 $slim->run();

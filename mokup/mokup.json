@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "interface": "api/rest/event/search/user/1",
+    "value" : [
+      {
+        "args": "default",
+        "return": {
+          "strErreur": "",
+          "data":[
+            {
+              "id": "1",
+              "title": "test",
+              "allDay":"0",
+              "eventStart":"2016-03-08 14:30:00",
+              "eventEnd":"2016-03-08 15:30:00"
+            }
+          ],
+          "statut":5,
+          "id_transaction":"6225",
+          "metro":{"ODABegin":"2016-03-08 10:13:44.377","ODAEnd":"2016-03-08 10:13:44.383","ODADuree":0.0060958862304688}}
+      }
+    ]
+  }
+]
