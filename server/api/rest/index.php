@@ -43,8 +43,18 @@ $slim->get('/patient/', function () use ($slim) {
 $slim->get('/event/search/user/:userId', function ($userId) use ($slim) {
     $params = new OdaPrepareInterface();
     $params->slim = $slim;
+    $params->arrayInput = array("start", "end");
     $INTERFACE = new EventInterface($params);
     $INTERFACE->getForAUser($userId);
+});
+
+$slim->post('/event/', function () use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("patient_id","start","end","user_id","author_id");
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new EventInterface($params);
+    $INTERFACE->create();
 });
 
 //--------------------------------------------------------------------------

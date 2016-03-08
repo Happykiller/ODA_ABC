@@ -141,6 +141,7 @@
                 }
             },
             "Planning": {
+                "dayClicked": {},
                 /**
                  * @returns {$.Oda.App.Controller.Planning}
                  */
@@ -162,13 +163,21 @@
                             lang: 'fr',
                             weekNumbers : true,
                             dayClick: function(date, jsEvent, view) {
-                                console.log("dayClick")
+                                $.Oda.App.Controller.Planning.dayClicked = {"date":date, "jsEvent":jsEvent, "view":view, "cell" : $(this)};
+                                $.Oda.App.Controller.Planning.createEvent();
                             },
                             eventOrder: 'eventStart',
                             events: function(start, end, timezone, callback) {
                                 var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/search/user/"+ $.Oda.Session.id, {callback : function(response){
+                                    for(var index in response.data){
+                                        var elt = response.data[index];
+                                        elt.title = elt.patient_name_last.substr(0,1) + "." + elt.patient_name_first;
+                                    }
                                     callback(response.data);
-                                }});
+                                }},{
+                                    "start": start.format('YYYY-MM-DD'),
+                                    "end": end.format('YYYY-MM-DD')
+                                });
                             },
                             eventMouseover: function(calEvent, jsEvent) {
                                 console.log("eventMouseover");
@@ -189,6 +198,84 @@
                         return null;
                     }
                 },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                createEvent: function () {
+                    try {
+                        var strHtmlHours = "";
+                        for (var iter = 0; iter < 24; iter++) {
+                            strHtmlHours += '<option value="'+ $.Oda.Tooling.pad2(iter)+':00">'+ $.Oda.Tooling.pad2(iter)+':00</option>';
+                            strHtmlHours += '<option value="'+ $.Oda.Tooling.pad2(iter)+':30">'+ $.Oda.Tooling.pad2(iter)+':30</option>';
+                        }
+
+                        var strHtml = $.Oda.Display.TemplateHtml.create({
+                            template : "formCreateEvent"
+                            , scope : {
+                                "valuesHours" : strHtmlHours
+                            }
+                        });
+
+                        $.Oda.Display.Popup.open({
+                            "name" : "createEvent",
+                            "size" : "lg",
+                            "label" : $.Oda.I8n.get('planning','createEvent') + ', ' + $.Oda.App.Controller.Planning.dayClicked.date.format(),
+                            "details" : strHtml,
+                            "footer" : '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Planning.submitEvent();" class="btn btn-primary disabled" disabled>Submit</button >',
+                            "callback" : function(){
+                                var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/", {callback : function(response){
+                                    for(var index in response.data){
+                                        var elt = response.data[index];
+                                        $('#patientId').append('<option value="'+ elt.id +'">' + elt.name_first + ' ' + elt.name_last + '</option>')
+                                    }
+                                }});
+
+                                $.Oda.Scope.Gardian.add({
+                                    id : "createEvent",
+                                    listElt : ["start", "end", "patientId"],
+                                    function : function(e){
+                                        if( ($("#patientId").data("isOk")) && ($("#end").data("isOk")) && ($("#start").data("isOk")) && ($("#start").val() !== $("#end").val()) ){
+                                            $("#submit").removeClass("disabled");
+                                            $("#submit").removeAttr("disabled");
+                                        }else{
+                                            $("#submit").addClass("disabled");
+                                            $("#submit").attr("disabled", true);
+                                        }
+
+                                        if( ($("#start").data("isOk")) && ($("#end").data("isOk")) && ($("#start").val() === $("#end").val()) ){
+                                            $.Oda.Display.Notification.warning($.Oda.I8n.get('planning','conflictHours'));
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.createEvent : " + er.message);
+                        return null;
+                    }
+                },
+                submitEvent: function () {
+                    try {
+                        var start = $.Oda.App.Controller.Planning.dayClicked.date.format() + " " +  $("#start").val() +  ":00";
+                        var end = $.Oda.App.Controller.Planning.dayClicked.date.format() + " " +  $("#end").val() +  ":00";
+
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/", {type:'POST',callback : function(response){
+                            $.Oda.Display.Popup.close({name:"createEvent"});
+                            $('#calendar').fullCalendar( 'refetchEvents' );
+                        }},{
+                            "patient_id": $('#patientId').val(),
+                            "start": start,
+                            "end": end,
+                            "user_id": $.Oda.Session.id,
+                            "author_id": $.Oda.Session.id
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.start : " + er.message);
+                        return null;
+                    }
+                }
             }
         }
     };

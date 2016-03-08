@@ -7,6 +7,41 @@
     </div>
 </div>
 
+<script id="formCreateEvent" type="text/template">
+    <div class="row">
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="patientId" oda-label="planning.patient">planning.patient</label>
+                <select class="form-control" oda-input-select="patientId" required>
+                    <option value="" oda-label="oda-main.select-default"></option>
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="start" oda-label="planning.start">planning.start</label>
+                <select class="form-control" oda-input-select="start" required>
+                    <option value="" oda-label="oda-main.select-default"></option>
+                    {{valuesHours}}
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="end" oda-label="planning.end">planning.end</label>
+                <select class="form-control" oda-input-select="end" required>
+                    <option value="" oda-label="oda-main.select-default"></option>
+                    {{valuesHours}}
+                </select>
+            </div>
+        </div>
+    </div>
+</script>
+
 <script>
     $.Oda.App.Controller.Planning.start();
 </script>

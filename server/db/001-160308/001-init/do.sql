@@ -10,6 +10,8 @@ UPDATE `@prefix@api_tab_menu_rangs_droit` a
        AND c.`indice` in (1,10,20)
 SET `id_menu` = concat(`id_menu`,b.`id`,';');
 
+
+-- --------------------------------------------------------
 --
 -- Structure de la table `tab_adress`
 --
@@ -22,6 +24,8 @@ CREATE TABLE `@prefix@tab_adress` (
   `city` varchar(250) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
 
 INSERT INTO `@prefix@api_tab_menu` (`Description`, `Description_courte`, `id_categorie`, `Lien`) VALUES ('planning.title', 'planning.title', '3', 'planning');
 
@@ -57,6 +61,38 @@ CREATE TABLE `@prefix@tab_patients` (
 --
 ALTER TABLE `@prefix@tab_patients`
 ADD CONSTRAINT `fk_patient_adress` FOREIGN KEY (`adress_id`) REFERENCES `@prefix@tab_adress` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tab_events`
+--
+
+CREATE TABLE `@prefix@tab_events` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `patient_id` int(11) NOT NULL,
+  `start` datetime NOT NULL,
+  `end` datetime NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `author_id` int(11) NOT NULL,
+  `create_date` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `patient_id` (`patient_id`),
+  KEY `user_id` (`user_id`),
+  KEY `author_id` (`author_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Contraintes pour les tables exportées
+--
+
+--
+-- Contraintes pour la table `tab_events`
+--
+ALTER TABLE `@prefix@tab_events`
+ADD CONSTRAINT `fk_patient_author` FOREIGN KEY (`author_id`) REFERENCES `@prefix@api_tab_utilisateurs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_event_patient` FOREIGN KEY (`patient_id`) REFERENCES `@prefix@tab_patients` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_patient_user` FOREIGN KEY (`user_id`) REFERENCES `@prefix@api_tab_utilisateurs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 
 -- --------------------------------------------------------
