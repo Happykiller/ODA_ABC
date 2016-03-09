@@ -37,4 +37,37 @@ class PatientInterface extends OdaRestInterface {
             die();
         }
     }
+
+    /**
+     */
+    function create() {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "INSERT INTO  `tab_patients` (
+                    `name_first` ,
+                    `name_last`,
+                    `user_id`,
+                    `create_date`
+                )
+                VALUES (
+                    :name_first, :name_last, :user_id, NOW()
+                )
+            ;";
+            $params->bindsValue = [
+                "name_first" => $this->inputs["name_first"],
+                "name_last" => $this->inputs["name_last"],
+                "user_id" => $this->inputs["user_id"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_INSERT_ONE;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new stdClass();
+            $params->retourSql = $retour;
+            $this->addDataReqSQL($params);
+        } catch (Exception $ex) {
+            $this->object_retour->strErreur = $ex.'';
+            $this->object_retour->statut = self::STATE_ERROR;
+            die();
+        }
+    }
 }

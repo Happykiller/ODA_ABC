@@ -47,9 +47,12 @@ CREATE TABLE `@prefix@tab_patients` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name_first` varchar(250) NOT NULL,
   `name_last` varchar(250) NOT NULL,
-  `adress_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `adress_id` int(11) DEFAULT NULL,
+  `create_date` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `adress_id` (`adress_id`)
+  KEY `adress_id` (`adress_id`),
+  KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -60,7 +63,8 @@ CREATE TABLE `@prefix@tab_patients` (
 -- Contraintes pour la table `tab_patients`
 --
 ALTER TABLE `@prefix@tab_patients`
-ADD CONSTRAINT `fk_patient_adress` FOREIGN KEY (`adress_id`) REFERENCES `@prefix@tab_adress` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ADD CONSTRAINT `fk_patient_adress` FOREIGN KEY (`adress_id`) REFERENCES `@prefix@tab_adress` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_patients_user` FOREIGN KEY (`user_id`) REFERENCES `@prefix@api_tab_utilisateurs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- --------------------------------------------------------
 

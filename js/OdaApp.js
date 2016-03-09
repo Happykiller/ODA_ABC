@@ -126,7 +126,7 @@
                                         header: "Action",
                                         align: 'center',
                                         value: function(data, type, full, meta, row){
-                                            var strHtml = '<a onclick="$.Oda.Router.navigateTo({route:\'patient\',args:{id:'+row.id+'}});" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-eye-open"></span></a>';
+                                            var strHtml = '<a onclick="$.Oda.App.Controller.Patients.formEditPatient({id:'+row.id+'});" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span></a>';
                                             return strHtml;
                                         }
                                     }
@@ -154,9 +154,9 @@
                         $.Oda.Display.Popup.open({
                             "name" : "createPatient",
                             "size" : "lg",
-                            "label" : $.Oda.I8n.get('planning','createPatient'),
+                            "label" : $.Oda.I8n.get('patients','createPatient'),
                             "details" : strHtml,
-                            "footer" : '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Planning.submitPatient();" class="btn btn-primary disabled" disabled>Submit</button >',
+                            "footer" : '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Patients.submitPatient();" class="btn btn-primary disabled" disabled>Submit</button >',
                             "callback" : function(){
                                 $.Oda.Scope.Gardian.add({
                                     id : "createEvent",
@@ -263,8 +263,7 @@
                     try {
                         var strHtmlHours = "";
                         for (var iter = 0; iter < 24; iter++) {
-                            strHtmlHours += '<option value="'+ $.Oda.Tooling.pad2(iter)+':00">'+ $.Oda.Tooling.pad2(iter)+':00</option>';
-                            strHtmlHours += '<option value="'+ $.Oda.Tooling.pad2(iter)+':30">'+ $.Oda.Tooling.pad2(iter)+':30</option>';
+                            strHtmlHours += '<option value="'+ $.Oda.Tooling.pad2(iter)+'">'+ $.Oda.Tooling.pad2(iter)+'</option>';
                         }
 
                         var strHtml = $.Oda.Display.TemplateHtml.create({
@@ -290,9 +289,14 @@
 
                                 $.Oda.Scope.Gardian.add({
                                     id : "createEvent",
-                                    listElt : ["start", "end", "patientId"],
+                                    listElt : ["startHour", "startMinute", "endHour", "endMinute", "patientId"],
                                     function : function(e){
-                                        if( ($("#patientId").data("isOk")) && ($("#end").data("isOk")) && ($("#start").data("isOk")) && ($("#start").val() !== $("#end").val()) ){
+                                        var padEndHour = $.Oda.Tooling.pad2($("#endHour").val());
+
+                                        if( ($("#patientId").data("isOk"))
+                                            && ($("#startHour").data("isOk")) && ($("#startMinute").data("isOk"))
+                                            && ($("#endHour").data("isOk")) && ($("#endMinute").data("isOk"))
+                                            && (($("#startHour").val()+$("#startMinute").val()) !== (padEndHour+$("#endMinute").val())) ){
                                             $("#submit").removeClass("disabled");
                                             $("#submit").removeAttr("disabled");
                                         }else{
@@ -300,7 +304,10 @@
                                             $("#submit").attr("disabled", true);
                                         }
 
-                                        if( ($("#start").data("isOk")) && ($("#end").data("isOk")) && ($("#start").val() === $("#end").val()) ){
+                                        if( ($("#startHour").data("isOk")) && ($("#startMinute").data("isOk"))
+                                            && ($("#endHour").data("isOk")) && ($("#endMinute").data("isOk"))
+                                            && (($("#startHour").val()+$("#startMinute").val()) === (padEndHour+$("#endMinute").val()))
+                                        ){
                                             $.Oda.Display.Notification.warning($.Oda.I8n.get('planning','conflictHours'));
                                         }
                                     }
@@ -315,8 +322,9 @@
                 },
                 submitEvent: function () {
                     try {
-                        var start = $.Oda.App.Controller.Planning.dayClicked.date.format() + " " +  $("#start").val() +  ":00";
-                        var end = $.Oda.App.Controller.Planning.dayClicked.date.format() + " " +  $("#end").val() +  ":00";
+                        var start = $.Oda.App.Controller.Planning.dayClicked.date.format() + " " +  $("#startHour").val() + ":" + $("#startMinute").val();
+                        var padEndHour = $.Oda.Tooling.pad2($("#endHour").val());
+                        var end = $.Oda.App.Controller.Planning.dayClicked.date.format() + " " +  padEndHour + ":" + $("#endMinute").val();
 
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/", {type:'POST',callback : function(response){
                             $.Oda.Display.Popup.close({name:"createEvent"});

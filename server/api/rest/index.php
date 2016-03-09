@@ -37,6 +37,15 @@ $slim->get('/patient/', function () use ($slim) {
     $INTERFACE->getAll();
 });
 
+$slim->post('/patient/', function () use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("name_first","name_last","user_id");
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new PatientInterface($params);
+    $INTERFACE->create();
+});
+
 //--------------------------------------------------------------------------
 // EVENT
 
