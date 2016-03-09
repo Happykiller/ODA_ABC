@@ -21,7 +21,7 @@ class ReportInterface extends OdaRestInterface {
     function getCountTime($userId) {
         try {
             $params = new OdaPrepareReqSql();
-            $params->sql = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(a.`end`, a.`start`)))) as 'countTime'
+            $params->sql = "SELECT IFNULL(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(a.`end`, a.`start`)))),'00:00:00') as 'countTime'
                 FROM `tab_events` a
                 WHERE 1=1
                 AND a.`user_id` = :user_id

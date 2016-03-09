@@ -227,6 +227,15 @@
                             eventOrder: 'eventStart',
                             events: function(start, end, timezone, callback) {
 
+                                var currentStart;
+                                if(start.format('DD') !== '01'){
+                                    currentStart = moment(new Date(start.toDate().getFullYear(), start.toDate().getMonth() + 1, 1));
+                                }else{
+                                    currentStart = start;
+                                }
+
+                                var currentEnd = moment(new Date(start.toDate().getFullYear(), start.toDate().getMonth() + 2, 0));
+
                                 var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/count_time/"+ $.Oda.Session.id, {callback : function(response){
                                     var countTime = response.data.split(':');
                                     countTime = countTime[0] + 'h' + countTime[1];
@@ -236,8 +245,8 @@
                                         $('.fc-toolbar .fc-left').append(' <div id="countTime">'+countTime+'</div>');
                                     }
                                 }},{
-                                    "start": start.format('YYYY-MM-DD'),
-                                    "end": end.format('YYYY-MM-DD')
+                                    "start": currentStart.format('YYYY-MM-DD'),
+                                    "end": currentEnd.format('YYYY-MM-DD')
                                 });
 
                                 var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/search/user/"+ $.Oda.Session.id, {callback : function(response){
