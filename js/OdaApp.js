@@ -226,6 +226,20 @@
                             },
                             eventOrder: 'eventStart',
                             events: function(start, end, timezone, callback) {
+
+                                var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/count_time/"+ $.Oda.Session.id, {callback : function(response){
+                                    var countTime = response.data.split(':');
+                                    countTime = countTime[0] + 'h' + countTime[1];
+                                    if($('#countTime').exists()){
+                                        $('#countTime').html(countTime);
+                                    }else{
+                                        $('.fc-toolbar .fc-left').append(' <div id="countTime">'+countTime+'</div>');
+                                    }
+                                }},{
+                                    "start": start.format('YYYY-MM-DD'),
+                                    "end": end.format('YYYY-MM-DD')
+                                });
+
                                 var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/search/user/"+ $.Oda.Session.id, {callback : function(response){
                                     for(var index in response.data){
                                         var elt = response.data[index];
