@@ -159,7 +159,7 @@
                             "footer" : '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Patients.submitPatient();" class="btn btn-primary disabled" disabled>Submit</button >',
                             "callback" : function(){
                                 $.Oda.Scope.Gardian.add({
-                                    id : "createEvent",
+                                    id : "createPatient",
                                     listElt : ["firstName", "lastName"],
                                     function : function(e){
                                         if( ($("#firstName").data("isOk")) && ($("#lastName").data("isOk")) ){
@@ -185,6 +185,7 @@
                 submitPatient: function () {
                     try {
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/", {type:'POST',callback : function(response){
+                            $.Oda.Display.Popup.close({name:"createPatient"});
                             $.Oda.App.Controller.Patients.displayPatients();
                         }},{
                             "name_first": $('#firstName').val(),
