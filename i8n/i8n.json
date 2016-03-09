@@ -8,7 +8,14 @@
   },{
     "groupName" : "patients"
     , "fr" : {
-      "title" : "Patients"
+      "title" : "Patients",
+      "firstName": "Nom",
+      "firstName-tips": "Pas de chiffre",
+      "firstName-placeholder": "Le nom ici",
+      "lastName": "Prénom",
+      "lastName-tips": "Pas de chiffre",
+      "lastName-placeholder": "Le prénom ici",
+      "createPatient": "Créer un nouveau patient"
     }
   },{
     "groupName" : "planning"

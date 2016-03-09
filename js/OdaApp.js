@@ -138,6 +138,64 @@
                         $.Oda.Log.error("$.Oda.App.Controller.Patients.displayPatients : " + er.message);
                         return null;
                     }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                newPatient: function () {
+                    try {
+                        var strHtml = $.Oda.Display.TemplateHtml.create({
+                            template : "formCreatePatient"
+                            , scope : {
+
+                            }
+                        });
+
+                        $.Oda.Display.Popup.open({
+                            "name" : "createPatient",
+                            "size" : "lg",
+                            "label" : $.Oda.I8n.get('planning','createPatient'),
+                            "details" : strHtml,
+                            "footer" : '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Planning.submitPatient();" class="btn btn-primary disabled" disabled>Submit</button >',
+                            "callback" : function(){
+                                $.Oda.Scope.Gardian.add({
+                                    id : "createEvent",
+                                    listElt : ["firstName", "lastName"],
+                                    function : function(e){
+                                        if( ($("#firstName").data("isOk")) && ($("#lastName").data("isOk")) ){
+                                            $("#submit").removeClass("disabled");
+                                            $("#submit").removeAttr("disabled");
+                                        }else{
+                                            $("#submit").addClass("disabled");
+                                            $("#submit").attr("disabled", true);
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.newPatient : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                submitPatient: function () {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/", {type:'POST',callback : function(response){
+                            $.Oda.App.Controller.Patients.displayPatients();
+                        }},{
+                            "name_first": $('#firstName').val(),
+                            "name_last": $('#lastName').val(),
+                            "user_id": $.Oda.Session.id
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.submitPatient : " + er.message);
+                        return null;
+                    }
                 }
             },
             "Planning": {
