@@ -216,7 +216,8 @@
                                 template : "formEditPatient"
                                 , scope : {
                                     "firstName": response.data.name_first,
-                                    "lastName": response.data.name_last
+                                    "lastName": response.data.name_last,
+                                    "checked": (response.data.active==='1')?"checked":""
                                 }
                             });
 
@@ -229,7 +230,7 @@
                                 "callback" : function(){
                                     $.Oda.Scope.Gardian.add({
                                         id : "gEditPatient",
-                                        listElt : ["firstName", "lastName"],
+                                        listElt : ["firstName", "lastName", "active"],
                                         function : function(e){
                                             if( ($("#firstName").data("isOk")) && ($("#lastName").data("isOk")) ){
                                                 $("#submit").removeClass("disabled");
@@ -261,7 +262,8 @@
                             $.Oda.App.Controller.Patients.displayPatients();
                         }},{
                             "name_first": $('#firstName').val(),
-                            "name_last": $('#lastName').val()
+                            "name_last": $('#lastName').val(),
+                            "active": ($('#active').prop("checked"))?1:0
                         });
                         return this;
                     } catch (er) {
@@ -378,7 +380,9 @@
                                 var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/", {callback : function(response){
                                     for(var index in response.data){
                                         var elt = response.data[index];
-                                        $('#patientId').append('<option value="'+ elt.id +'">' + elt.name_first + ' ' + elt.name_last + '</option>')
+                                        if(elt.active === '1'){
+                                            $('#patientId').append('<option value="'+ elt.id +'">' + elt.name_first + ' ' + elt.name_last + '</option>')
+                                        }
                                     }
                                 }});
 

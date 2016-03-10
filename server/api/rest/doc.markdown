@@ -10,7 +10,7 @@
     * public : false
 * `/patient/:id`
     * type : PUT
-    * mandatory params : "name_first","name_last"
+    * mandatory params : "name_first","name_last","active"
     * public : false
 * `/patient/`
     * type : POST

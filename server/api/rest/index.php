@@ -46,7 +46,7 @@ $slim->get('/patient/:id', function ($id) use ($slim) {
 
 $slim->put('/patient/:id', function ($id) use ($slim) {
     $params = new OdaPrepareInterface();
-    $params->arrayInput = array("name_first","name_last");
+    $params->arrayInput = array("name_first","name_last","active");
     $params->slim = $slim;
     $INTERFACE = new PatientInterface($params);
     $INTERFACE->updatePatient($id);

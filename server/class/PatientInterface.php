@@ -73,14 +73,16 @@ class PatientInterface extends OdaRestInterface {
             $params->sql = "UPDATE `tab_patients`
                 SET
                 `name_first`= :name_first,
-                `name_last`= :name_last
+                `name_last`= :name_last,
+                `active`= :active
                 WHERE 1=1
                 AND `id` = :id
                 ;";
             $params->bindsValue = [
                 "id" => $id,
                 "name_first" => $this->inputs["name_first"],
-                "name_last" => $this->inputs["name_last"]
+                "name_last" => $this->inputs["name_last"],
+                "active" => $this->inputs["active"]
             ];
             $params->typeSQL = OdaLibBd::SQL_SCRIPT;
             $retour = $this->BD_ENGINE->reqODASQL($params);

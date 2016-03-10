@@ -16,7 +16,8 @@
       "lastName-tips": "Pas de chiffre",
       "lastName-placeholder": "Le prénom ici",
       "createPatient": "Créer un nouveau patient",
-      "editPatient": "Editer un patient"
+      "editPatient": "Editer un patient",
+      "active": "Actif"
     }
   },{
     "groupName" : "planning"
@@ -26,7 +27,10 @@
       "start": "Début",
       "end": "Fin",
       "patient": "Patient",
-      "conflictHours": "Les heures ne peuvent être identiques"
+      "conflictHours": "Les heures ne peuvent être identiques",
+      "doubleZero-placeholder": "00",
+      "hours-tips": "1-24",
+      "minutes-tips": "0-45"
     }
   }
 ]

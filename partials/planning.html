@@ -26,21 +26,12 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="form-group">
-                        <select class="form-control" oda-input-select="startHour" required>
-                            <option value="" oda-label="oda-main.select-default"></option>
-                            {{valuesHours}}
-                        </select>
+                        <input type="number" step="1" min="0" max="23" class="form-control" oda-input-text="startHour" oda-input-text-tips="planning.hours-tips" oda-input-text-placeholder="planning.doubleZero-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <select class="form-control" oda-input-select="startMinute" required>
-                            <option value="" oda-label="oda-main.select-default"></option>
-                            <option value="00">00</option>
-                            <option value="15">15</option>
-                            <option value="30">30</option>
-                            <option value="45">45</option>
-                        </select>
+                        <input type="number" step="15" min="0" max="45" class="form-control" oda-input-text="startMinute" oda-input-text-tips="planning.minutes-tips" oda-input-text-placeholder="planning.doubleZero-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
                     </div>
                 </div>
             </div>
@@ -50,12 +41,12 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="form-group">
-                        <input type="number" step="1" min="0" max="23" class="form-control" oda-input-text="endHour" oda-input-text-tips="planning.endHour-tips" oda-input-text-placeholder="planning.endHour-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
+                        <input type="number" step="1" min="0" max="23" class="form-control" oda-input-text="endHour" oda-input-text-tips="planning.hours-tips" oda-input-text-placeholder="planning.doubleZero-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <input type="number" step="15" min="0" max="45" class="form-control" oda-input-text="endMinute" oda-input-text-tips="planning.endMinute-tips" oda-input-text-placeholder="planning.endMinute-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
+                        <input type="number" step="15" min="0" max="45" class="form-control" oda-input-text="endMinute" oda-input-text-tips="planning.minutes-tips" oda-input-text-placeholder="planning.doubleZero-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
                     </div>
                 </div>
             </div>

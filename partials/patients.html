@@ -44,6 +44,19 @@
                 <input value="{{lastName}}" required type="text" class="form-control" oda-input-text="lastName" oda-input-text-tips="patients.lastName-tips" oda-input-text-placeholder="patients.lastName-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
             </div>
         </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label oda-label="patients.active">patients.active</label>
+                <div class="checkbox">
+                    <input type="checkbox" oda-input-checkbox="active" {{checked}}>
+                    <label oda-label="patients.active">
+                        patients.active
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+        </div>
     </div>
 </script>
 
