@@ -23,3 +23,17 @@
     * type : GET
     * mandatory params : "start", "end"
     * public : false
+* `/event/:id`
+    * type : GET
+    * public : false
+* `/event/:id`
+    * type : PUT
+    * mandatory params : "patient_id","start","end"
+    * public : false
+* `/event/:id`
+    * type : DELETE
+    * public : false
+* `/event/`
+    * type : POST
+    * mandatory params : "patient_id","start","end","user_id","author_id"
+    * public : false

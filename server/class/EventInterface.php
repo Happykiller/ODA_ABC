@@ -82,4 +82,91 @@ class EventInterface extends OdaRestInterface {
             die();
         }
     }
+
+    /**
+     */
+    function getById($id) {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "SELECT a.`id`, a.`patient_id`, a.`start`, a.`end`, a.`user_id`
+                FROM `tab_events` a
+                WHERE 1=1
+                AND a.`id` = :id
+            ;";
+            $params->bindsValue = [
+                "id" => $id
+            ];
+            $params->typeSQL = OdaLibBd::SQL_GET_ONE;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new stdClass();
+            $params->retourSql = $retour;
+            $this->addDataObject($retour->data);
+        } catch (Exception $ex) {
+            $this->object_retour->strErreur = $ex.'';
+            $this->object_retour->statut = self::STATE_ERROR;
+            die();
+        }
+    }
+
+    /**
+     * @param $id
+     */
+    function update($id) {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "UPDATE `tab_events`
+                SET
+                `patient_id`= :patient_id,
+                `start`= :start,
+                `end`= :end
+                WHERE 1=1
+                AND `id` = :id
+                ;";
+            $params->bindsValue = [
+                "id" => $id,
+                "patient_id" => $this->inputs["patient_id"],
+                "start" => $this->inputs["start"],
+                "end" => $this->inputs["end"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_SCRIPT;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new stdClass();
+            $params->value = $retour->data;
+            $this->addDataStr($params);
+        } catch (Exception $ex) {
+            $this->object_retour->strErreur = $ex.'';
+            $this->object_retour->statut = self::STATE_ERROR;
+            die();
+        }
+    }
+
+    /**
+     * @param $id
+     */
+    function delete($id) {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "UPDATE `tab_events`
+                SET
+                `active`= 0
+                WHERE 1=1
+                AND `id` = :id
+                ;";
+            $params->bindsValue = [
+                "id" => $id
+            ];
+            $params->typeSQL = OdaLibBd::SQL_SCRIPT;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new stdClass();
+            $params->value = $retour->data;
+            $this->addDataStr($params);
+        } catch (Exception $ex) {
+            $this->object_retour->strErreur = $ex.'';
+            $this->object_retour->statut = self::STATE_ERROR;
+            die();
+        }
+    }
 }

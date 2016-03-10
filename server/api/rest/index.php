@@ -47,6 +47,7 @@ $slim->get('/patient/:id', function ($id) use ($slim) {
 $slim->put('/patient/:id', function ($id) use ($slim) {
     $params = new OdaPrepareInterface();
     $params->arrayInput = array("name_first","name_last","active");
+    $params->modePublic = false;
     $params->slim = $slim;
     $INTERFACE = new PatientInterface($params);
     $INTERFACE->updatePatient($id);
@@ -79,6 +80,30 @@ $slim->post('/event/', function () use ($slim) {
     $params->slim = $slim;
     $INTERFACE = new EventInterface($params);
     $INTERFACE->create();
+});
+
+$slim->get('/event/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->slim = $slim;
+    $INTERFACE = new EventInterface($params);
+    $INTERFACE->getById($id);
+});
+
+$slim->put('/event/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("patient_id","start","end");
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new EventInterface($params);
+    $INTERFACE->update($id);
+});
+
+$slim->delete('/event/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new EventInterface($params);
+    $INTERFACE->delete($id);
 });
 
 //--------------------------------------------------------------------------

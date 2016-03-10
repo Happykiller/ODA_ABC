@@ -24,6 +24,7 @@
     , "fr" : {
       "title" : "Planning",
       "createEvent": "Créer un évènement",
+      "editEvent": "Editer un évènement",
       "start": "Début",
       "end": "Fin",
       "patient": "Patient",
