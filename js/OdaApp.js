@@ -479,7 +479,7 @@
                                         for(var index in response.data){
                                             var elt = response.data[index];
                                             if(elt.active === '1'){
-                                                $('#patientId').append('<option value="'+ elt.id +'" '+((eventData.id===elt.id)?'selected':'')+'>' + elt.name_first + ' ' + elt.name_last + '</option>')
+                                                $('#patientId').append('<option value="'+ elt.id +'" '+((eventData.patient_id===elt.id)?'selected':'')+'>' + elt.name_first + ' ' + elt.name_last + '</option>')
                                             }
                                         }
                                         $.Oda.Scope.checkInputSelect({elt : $('#patientId')});
