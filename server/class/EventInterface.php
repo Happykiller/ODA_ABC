@@ -29,6 +29,7 @@ class EventInterface extends OdaRestInterface {
             AND a.`user_id` = :user_id
             AND a.`start` >= :start
             AND a.`end` <= :end
+            AND a.`active` = 1
             ;";
             $params->bindsValue = [
                 "user_id" => $userId,

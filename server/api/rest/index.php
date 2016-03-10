@@ -37,6 +37,21 @@ $slim->get('/patient/', function () use ($slim) {
     $INTERFACE->getAll();
 });
 
+$slim->get('/patient/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->slim = $slim;
+    $INTERFACE = new PatientInterface($params);
+    $INTERFACE->getById($id);
+});
+
+$slim->put('/patient/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("name_first","name_last");
+    $params->slim = $slim;
+    $INTERFACE = new PatientInterface($params);
+    $INTERFACE->updatePatient($id);
+});
+
 $slim->post('/patient/', function () use ($slim) {
     $params = new OdaPrepareInterface();
     $params->arrayInput = array("name_first","name_last","user_id");

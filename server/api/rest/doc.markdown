@@ -4,7 +4,14 @@
 
 * `/patient/`
     * type : GET
-    * public : true
+    * public : false
+* `/patient/:id`
+    * type : GET
+    * public : false
+* `/patient/:id`
+    * type : PUT
+    * mandatory params : "name_first","name_last"
+    * public : false
 * `/patient/`
     * type : POST
     * mandatory params : "name_first","name_last","user_id"
@@ -15,4 +22,4 @@
 * `/event/search/user/:userId`
     * type : GET
     * mandatory params : "start", "end"
-    * public : true
+    * public : false

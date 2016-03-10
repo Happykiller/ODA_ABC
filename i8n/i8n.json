@@ -15,7 +15,8 @@
       "lastName": "Prénom",
       "lastName-tips": "Pas de chiffre",
       "lastName-placeholder": "Le prénom ici",
-      "createPatient": "Créer un nouveau patient"
+      "createPatient": "Créer un nouveau patient",
+      "editPatient": "Editer un patient"
     }
   },{
     "groupName" : "planning"
