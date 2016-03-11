@@ -41,6 +41,7 @@
 * `/event/:id`
     * type : PUT
     * mandatory params : "patient_id","start","end"
+    * optional params : "addressId"
     * public : false
 * `/event/:id`
     * type : DELETE

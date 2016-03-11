@@ -22,7 +22,8 @@ class EventInterface extends OdaRestInterface {
         try {
             $params = new OdaPrepareReqSql();
             $params->sql = "SELECT a.`id`, a.`start`, a.`end`,
-            a.`patient_id`, b.`name_first` as 'patient_name_first', b.`name_last` as 'patient_name_last'
+            a.`patient_id`, b.`name_first` as 'patient_name_first', b.`name_last` as 'patient_name_last',
+            a.`address_id`
             FROM `tab_events` a, `tab_patients` b
             WHERE 1=1
             AND a.`patient_id` = b.`id`
@@ -57,10 +58,12 @@ class EventInterface extends OdaRestInterface {
                     `end`,
                     `user_id`,
                     `author_id`,
-                    `create_date`
+                    `create_date`,
+                    `address_id`
                 )
                 VALUES (
-                    :patient_id, :start, :end, :user_id, :author_id, NOW()
+                    :patient_id, :start, :end, :user_id, :author_id, NOW(),
+                    (SELECT `address_id_default` FROM `tab_patients` WHERE 1=1 AND `id` = :patient_id)
                 )
             ;";
             $params->bindsValue = [
@@ -88,7 +91,7 @@ class EventInterface extends OdaRestInterface {
     function getById($id) {
         try {
             $params = new OdaPrepareReqSql();
-            $params->sql = "SELECT a.`id`, a.`patient_id`, a.`start`, a.`end`, a.`user_id`
+            $params->sql = "SELECT a.`id`, a.`patient_id`, a.`start`, a.`end`, a.`user_id`, a.`address_id`
                 FROM `tab_events` a
                 WHERE 1=1
                 AND a.`id` = :id
@@ -114,12 +117,17 @@ class EventInterface extends OdaRestInterface {
      */
     function update($id) {
         try {
+            if($this->inputs["addressId"] == ''){
+                $this->inputs["addressId"] = null;
+            }
+
             $params = new OdaPrepareReqSql();
             $params->sql = "UPDATE `tab_events`
                 SET
                 `patient_id`= :patient_id,
                 `start`= :start,
-                `end`= :end
+                `end`= :end,
+                `address_id` = :address_id
                 WHERE 1=1
                 AND `id` = :id
                 ;";
@@ -127,7 +135,8 @@ class EventInterface extends OdaRestInterface {
                 "id" => $id,
                 "patient_id" => $this->inputs["patient_id"],
                 "start" => $this->inputs["start"],
-                "end" => $this->inputs["end"]
+                "end" => $this->inputs["end"],
+                "address_id" => $this->inputs["addressId"]
             ];
             $params->typeSQL = OdaLibBd::SQL_SCRIPT;
             $retour = $this->BD_ENGINE->reqODASQL($params);

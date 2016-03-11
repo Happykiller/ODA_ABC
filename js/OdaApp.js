@@ -416,6 +416,7 @@
             },
             "Planning": {
                 "dayClicked": {},
+                "currentEvent": {},
                 /**
                  * @returns {$.Oda.App.Controller.Planning}
                  */
@@ -562,6 +563,9 @@
                         return null;
                     }
                 },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
                 submitEvent: function () {
                     try {
                         var start = $.Oda.App.Controller.Planning.dayClicked.date.format() + " " +  $("#startHour").val() + ":" + $("#startMinute").val();
@@ -590,6 +594,7 @@
                 editEvent: function (params) {
                     try {
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/"+params.id, {callback : function(response){
+                            $.Oda.App.Controller.Planning.currentEvent = response.data;
                             var eventData = response.data;
                             var startHours = eventData.start.substr(11,2);
                             var startMinutes = eventData.start.substr(14,2);
@@ -613,7 +618,7 @@
                             $.Oda.Display.Popup.open({
                                 "name" : "editEvent",
                                 "size" : "lg",
-                                "label" : $.Oda.I8n.get('planning','editEvent'),
+                                "label" : $.Oda.I8n.get('planning','editEvent') + ' N°' + eventData.id,
                                 "details" : strHtml,
                                 "footer" : strFooter,
                                 "callback" : function(){
@@ -621,15 +626,24 @@
                                         for(var index in response.data){
                                             var elt = response.data[index];
                                             if(elt.active === '1'){
-                                                $('#patientId').append('<option value="'+ elt.id +'" '+((eventData.patient_id===elt.id)?'selected':'')+'>' + elt.name_first + ' ' + elt.name_last + '</option>')
+                                                $('#patientId').append('<option value="'+ elt.id +'" '+((eventData.patient_id === elt.id)?'selected':'')+'>' + elt.name_first + ' ' + elt.name_last + '</option>')
                                             }
                                         }
                                         $.Oda.Scope.checkInputSelect({elt : $('#patientId')});
+                                        $.Oda.App.Controller.Planning.displayListAddress();
                                     }});
 
                                     $.Oda.Scope.Gardian.add({
-                                        id : "createEvent",
-                                        listElt : ["startHour", "startMinute", "endHour", "endMinute", "patientId"],
+                                        id : "listAddress",
+                                        listElt : ["patientId"],
+                                        function : function(e){
+                                            $.Oda.App.Controller.Planning.displayListAddress();
+                                        }
+                                    });
+
+                                    $.Oda.Scope.Gardian.add({
+                                        id : "gEditEvent",
+                                        listElt : ["startHour", "startMinute", "endHour", "endMinute", "patientId", "addressId"],
                                         function : function(e){
                                             var padEndHour = $.Oda.Tooling.pad2($("#endHour").val());
 
@@ -661,6 +675,44 @@
                         return null;
                     }
                 },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                displayListAddress: function () {
+                    try {
+                        var elt = $('#patientId');
+                        $("#divAddress").empty();
+                        if(elt.val() !== ""){
+                            var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/address/search/patient/"+elt.val(), {callback : function(response){
+                                if(response.data.length > 0){
+                                    var strHtml = $.Oda.Display.TemplateHtml.create({
+                                        template : "tplDivAddress"
+                                        , scope : {
+                                        }
+                                    });
+                                    $.Oda.Display.render({id:"divAddress",html:strHtml});
+                                }
+                                for(var index in response.data) {
+                                    var elt = response.data[index];
+                                    if($.Oda.App.Controller.Planning.currentEvent.address_id !== null){
+                                        var html = '<option value="'+elt.id+'" '+(($.Oda.App.Controller.Planning.currentEvent.address_id === elt.id)?'selected':'')+'>'+elt.code+'</option>';
+                                    }else{
+                                        var html = '<option value="'+elt.id+'" '+((elt.address_id_default === elt.id)?'selected':'')+'>'+elt.code+'</option>';
+                                    }
+                                    $('#addressId').append(html);
+                                }
+                                $.Oda.Scope.checkInputSelect({elt : $('#addressId')});
+                            }});
+                        }
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.displayListAddress : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
                 submitEditEvent: function (params) {
                     try {
                         var start = $.Oda.App.Controller.Planning.dayClicked.date.format('YYYY-MM-DD') + " " +  $("#startHour").val() + ":" + $("#startMinute").val();
@@ -673,7 +725,8 @@
                         }},{
                             "patient_id": $('#patientId').val(),
                             "start": start,
-                            "end": end
+                            "end": end,
+                            "addressId": $('#addressId').val()
                         });
                         return this;
                     } catch (er) {
@@ -681,6 +734,9 @@
                         return null;
                     }
                 },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
                 deleteEvent: function (params) {
                     try {
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/"+params.id, {type:'DELETE',callback : function(response){

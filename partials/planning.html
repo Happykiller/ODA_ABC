@@ -64,7 +64,7 @@
                 </select>
             </div>
         </div>
-        <div class="col-lg-3 col-sm-6">
+        <div class="col-lg-3 col-sm-6" id="divAddress">
         </div>
     </div>
     <div class="row">
@@ -98,6 +98,15 @@
                 </div>
             </div>
         </div>
+    </div>
+</script>
+
+<script id="tplDivAddress" type="text/template">
+    <div class="form-group">
+        <label for="addressId" oda-label="planning.address">planning.address</label>
+        <select class="form-control" oda-input-select="addressId" required>
+            <option value="" oda-label="oda-main.select-default"></option>
+        </select>
     </div>
 </script>
 

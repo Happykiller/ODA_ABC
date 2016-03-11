@@ -119,6 +119,7 @@ $slim->get('/event/:id', function ($id) use ($slim) {
 $slim->put('/event/:id', function ($id) use ($slim) {
     $params = new OdaPrepareInterface();
     $params->arrayInput = array("patient_id","start","end");
+    $params->arrayInputOpt = array("addressId"=>null);
     $params->modePublic = false;
     $params->slim = $slim;
     $INTERFACE = new EventInterface($params);

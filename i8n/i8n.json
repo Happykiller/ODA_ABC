@@ -39,7 +39,8 @@
       "conflictHours": "Les heures ne peuvent être identiques",
       "doubleZero-placeholder": "00",
       "hours-tips": "1-24",
-      "minutes-tips": "0-45"
+      "minutes-tips": "0-45",
+      "address": "Adresse"
     }
   }
 ]
