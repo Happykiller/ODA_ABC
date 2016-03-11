@@ -212,9 +212,12 @@
                 editPatient : function (p_params) {
                     try {
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/"+p_params.id, {callback : function(response){
+                            var defaultAdress = response.data.address_id_default;
+                            var patientId = response.data.id;
                             var strHtml = $.Oda.Display.TemplateHtml.create({
                                 template : "formEditPatient"
                                 , scope : {
+                                    "id": response.data.id,
                                     "firstName": response.data.name_first,
                                     "lastName": response.data.name_last,
                                     "checked": (response.data.active==='1')?"checked":""
@@ -241,6 +244,7 @@
                                             }
                                         }
                                     });
+                                    $.Oda.App.Controller.Patients.displayAddress({patientId: patientId});
                                 }
                             });
                         }});
@@ -270,7 +274,145 @@
                         $.Oda.Log.error("$.Oda.App.Controller.Patients.submitPatient : " + er.message);
                         return null;
                     }
-                }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.patientId
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                displayAddress : function (p_params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/address/search/patient/"+p_params.patientId, {callback : function(response){
+                            $("#tabAddress > tbody").empty();
+                            for(var index in response.data) {
+                                var elt = response.data[index];
+                                var strHtml = $.Oda.Display.TemplateHtml.create({
+                                    template : "tlpRowTabAddress"
+                                    , scope : {
+                                        "id": elt.id,
+                                        "title": elt.code,
+                                        "street": elt.adress,
+                                        "city": elt.city,
+                                        "postCode": elt.code_postal,
+                                        "star": (elt.address_id_default === elt.id)?'<span class="glyphicon glyphicon-star" aria-hidden="true"></span>':'',
+                                        "bookmark": (elt.address_id_default !== elt.id)?'<button type="button" class="btn btn-primary btn-sm" onclick="$.Oda.App.Controller.Patients.setDefaultAddress({addressId:'+elt.id+', patientId:'+p_params.patientId+'});"><span class="glyphicon glyphicon-star" aria-hidden="true"></span></button>':'',
+                                        "remove": '<button type="button" class="btn btn-danger btn-sm" onclick="$.Oda.App.Controller.Patients.removeAddress({addressId:'+elt.id+', patientId:'+p_params.patientId+'});"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>'
+                                    }
+                                });
+                                $('#tabAddress > tbody:last-child').append(strHtml);
+                            }
+                        }});
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.displayAddress : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.addressId
+                 * @param p_params.patientId
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                setDefaultAddress : function (p_params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/"+p_params.patientId+"/default_address/", {type: 'put', callback : function(response){
+                            $.Oda.App.Controller.Patients.displayAddress({
+                                "patientId" : p_params.patientId
+                            });
+                        }},{
+                            "addressId": p_params.addressId
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.setDefaultAddress : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.addressId
+                 * @param p_params.patientId
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                removeAddress : function (p_params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/"+p_params.patientId+"/remove_address/", {type: 'delete', callback : function(response){
+                            $.Oda.App.Controller.Patients.displayAddress({
+                                "patientId" : p_params.patientId
+                            });
+                        }},{
+                            "addressId": p_params.addressId
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.setDefaultAddress : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.id
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                newAddress : function (p_params) {
+                    try {
+                        var strHtml = $.Oda.Display.TemplateHtml.create({
+                            template : "formNewAddress"
+                            , scope : {}
+                        });
+
+                        $.Oda.Display.Popup.open({
+                            "name" : "pNewAddress",
+                            "label" : $.Oda.I8n.get('patients','newAddress'),
+                            "details" : strHtml,
+                            "footer" : '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submitNewAddress" onclick="$.Oda.App.Controller.Patients.submitNewAddress({id:'+p_params.id+'});" class="btn btn-primary disabled" disabled>Submit</button >',
+                            "callback" : function(){
+                                $.Oda.Scope.Gardian.add({
+                                    id : "gNewAddress",
+                                    listElt : ["addressTitle", "street", "city", "postCode"],
+                                    function : function(e){
+                                        if( ($("#addressTitle").data("isOk")) && ($("#street").data("isOk")) && ($("#city").data("isOk")) && ($("#postCode").data("isOk")) ){
+                                            $("#submitNewAddress").removeClass("disabled");
+                                            $("#submitNewAddress").removeAttr("disabled");
+                                        }else{
+                                            $("#submitNewAddress").addClass("disabled");
+                                            $("#submitNewAddress").attr("disabled", true);
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.newAddress : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.id
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                submitNewAddress : function (p_params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/"+p_params.id+"/new_address/", {type: 'POST', callback : function(response){
+                            $.Oda.Display.Popup.close({name:"pNewAddress"});
+                            $.Oda.App.Controller.Patients.displayAddress({
+                                "patientId" : p_params.id
+                            });
+                        }},{
+                            "title": $('#addressTitle').val(),
+                            "street": $('#street').val(),
+                            "city": $('#city').val(),
+                            "postCode": $('#postCode').val()
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.submitNewAddress : " + er.message);
+                        return null;
+                    }
+                },
             },
             "Planning": {
                 "dayClicked": {},

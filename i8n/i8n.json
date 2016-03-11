@@ -17,7 +17,15 @@
       "lastName-placeholder": "Le prénom ici",
       "createPatient": "Créer un nouveau patient",
       "editPatient": "Editer un patient",
-      "active": "Actif"
+      "active": "Actif",
+      "addresses": "Les adresses",
+      "addressTitle": "Titre",
+      "street": "Rue",
+      "city": "Ville",
+      "postCode": "Code postal",
+      "default": "Défaut",
+      "actions": "Actions",
+      "newAddress": "Nouvelle addresse"
     }
   },{
     "groupName" : "planning"

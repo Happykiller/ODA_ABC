@@ -58,6 +58,76 @@
         <div class="col-lg-3 col-sm-6">
         </div>
     </div>
+    <div class="row">
+        <label oda-label="patients.addresses">patients.addresses</label>
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped" id="tabAddress">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th oda-label="patients.addressTitle">title</th>
+                        <th oda-label="patients.street">street</th>
+                        <th oda-label="patients.city">city</th>
+                        <th oda-label="patients.postCode">postCode</th>
+                        <th oda-label="patients.default">default</th>
+                        <th oda-label="patients.actions">actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" oda-label="patients.newAddress" onclick="$.Oda.App.Controller.Patients.newAddress({id: {{id}} });" class="btn btn-primary">newAddress</button >
+        </div>
+    </div>
+</script>
+
+<script id="formNewAddress" type="text/template">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="addressTitle" oda-label="patients.addressTitle">patients.addressTitle</label>
+                <input required type="text" class="form-control" oda-input-text="addressTitle" oda-input-text-tips="patients.addressTitle-tips" oda-input-text-placeholder="patients.addressTitle-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="street" oda-label="patients.street">patients.street</label>
+                <input required type="text" class="form-control" oda-input-text="street" oda-input-text-tips="patients.street-tips" oda-input-text-placeholder="patients.street-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="city" oda-label="patients.city">patients.city</label>
+                <input required type="text" class="form-control" oda-input-text="city" oda-input-text-tips="patients.city-tips" oda-input-text-placeholder="patients.city-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="postCode" oda-label="patients.postCode">patients.postCode</label>
+                <input required type="text" class="form-control" oda-input-text="postCode" oda-input-text-tips="patients.postCode-tips" oda-input-text-placeholder="patients.postCode-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id="tlpRowTabAddress" type="text/template">
+    <tr>
+        <th scope="row">{{id}}</th>
+        <td>{{title}}</td>
+        <td>{{street}}</td>
+        <td>{{city}}</td>
+        <td>{{postCode}}</td>
+        <td style="text-align: center">{{star}}</td>
+        <td style="text-align: center">{{bookmark}} {{remove}}</td>
+    </tr>
 </script>
 
 <script>

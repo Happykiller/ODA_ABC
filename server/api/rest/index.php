@@ -62,6 +62,33 @@ $slim->post('/patient/', function () use ($slim) {
     $INTERFACE->create();
 });
 
+$slim->put('/patient/:id/default_address/', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->arrayInput = array("addressId");
+    $params->slim = $slim;
+    $INTERFACE = new PatientInterface($params);
+    $INTERFACE->changeDefaultAddress($id);
+});
+
+$slim->delete('/patient/:id/remove_address/', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->arrayInput = array("addressId");
+    $params->slim = $slim;
+    $INTERFACE = new PatientInterface($params);
+    $INTERFACE->removeAddress($id);
+});
+
+$slim->post('/patient/:id/new_address/', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->arrayInput = array("title", "street", "city", "postCode");
+    $params->slim = $slim;
+    $INTERFACE = new PatientInterface($params);
+    $INTERFACE->newAddress($id);
+});
+
 //--------------------------------------------------------------------------
 // EVENT
 
@@ -115,6 +142,17 @@ $slim->get('/report/count_time/:userId', function ($userId) use ($slim) {
     $params->arrayInput = array("start", "end");
     $INTERFACE = new ReportInterface($params);
     $INTERFACE->getCountTime($userId);
+});
+
+//--------------------------------------------------------------------------
+// ADDRESS
+
+$slim->get('/address/search/patient/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new AddressInterface($params);
+    $INTERFACE->getByPatientId($id);
 });
 
 //--------------------------------------------------------------------------

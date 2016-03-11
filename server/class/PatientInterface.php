@@ -21,7 +21,7 @@ class PatientInterface extends OdaRestInterface {
     function getAll() {
         try {
             $params = new OdaPrepareReqSql();
-            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`active`
+            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`address_id_default`, a.`active`
                 FROM `tab_patients` a
                 WHERE 1=1
             ;";
@@ -43,7 +43,7 @@ class PatientInterface extends OdaRestInterface {
     function getById($id) {
         try {
             $params = new OdaPrepareReqSql();
-            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`active`
+            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`address_id_default`, a.`active`
                 FROM `tab_patients` a
                 WHERE 1=1
                 AND a.`id` = :id
@@ -98,6 +98,78 @@ class PatientInterface extends OdaRestInterface {
     }
 
     /**
+     * @param $id
+     */
+    function changeDefaultAddress($id) {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "UPDATE `tab_patients`
+                SET
+                `address_id_default`= :addressId
+                WHERE 1=1
+                AND `id` = :id
+                ;";
+            $params->bindsValue = [
+                "id" => $id,
+                "addressId" => $this->inputs["addressId"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_SCRIPT;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new stdClass();
+            $params->value = $retour->data;
+            $this->addDataStr($params);
+        } catch (Exception $ex) {
+            $this->object_retour->strErreur = $ex.'';
+            $this->object_retour->statut = self::STATE_ERROR;
+            die();
+        }
+    }
+
+    /**
+     * @param $id
+     */
+    function removeAddress($id) {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "UPDATE `tab_patients`
+                SET
+                `address_id_default`= NULL
+                WHERE 1=1
+                AND `id` = :id
+                AND `address_id_default` = :addressId
+                ;";
+            $params->bindsValue = [
+                "id" => $id,
+                "addressId" => $this->inputs["addressId"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_SCRIPT;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new OdaPrepareReqSql();
+            $params->sql = "DELETE FROM `tab_patient_address`
+                WHERE 1=1
+                AND `patient_id` = :id
+                AND `address_id` = :addressId
+                ;";
+            $params->bindsValue = [
+                "id" => $id,
+                "addressId" => $this->inputs["addressId"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_SCRIPT;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new stdClass();
+            $params->value = $retour->data;
+            $this->addDataStr($params);
+        } catch (Exception $ex) {
+            $this->object_retour->strErreur = $ex.'';
+            $this->object_retour->statut = self::STATE_ERROR;
+            die();
+        }
+    }
+
+    /**
      */
     function create() {
         try {
@@ -116,6 +188,57 @@ class PatientInterface extends OdaRestInterface {
                 "name_first" => $this->inputs["name_first"],
                 "name_last" => $this->inputs["name_last"],
                 "user_id" => $this->inputs["user_id"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_INSERT_ONE;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new stdClass();
+            $params->retourSql = $retour;
+            $this->addDataReqSQL($params);
+        } catch (Exception $ex) {
+            $this->object_retour->strErreur = $ex.'';
+            $this->object_retour->statut = self::STATE_ERROR;
+            die();
+        }
+    }
+
+    /**
+     */
+    function newAddress($id) {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "INSERT INTO  `tab_adress` (
+                    `code` ,
+                    `adress`,
+                    `code_postal`,
+                    `city`
+                )
+                VALUES (
+                    :title, :street, :city, :postCode
+                )
+            ;";
+            $params->bindsValue = [
+                "title" => $this->inputs["title"],
+                "street" => $this->inputs["street"],
+                "city" => $this->inputs["city"],
+                "postCode" => $this->inputs["postCode"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_INSERT_ONE;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+            $idAddress = $retour->data;
+
+            $params = new OdaPrepareReqSql();
+            $params->sql = "INSERT INTO  `tab_patient_address` (
+                    `patient_id` ,
+                    `address_id`
+                )
+                VALUES (
+                    :patient_id, :address_id
+                )
+            ;";
+            $params->bindsValue = [
+                "patient_id" => $id,
+                "address_id" => $idAddress
             ];
             $params->typeSQL = OdaLibBd::SQL_INSERT_ONE;
             $retour = $this->BD_ENGINE->reqODASQL($params);
