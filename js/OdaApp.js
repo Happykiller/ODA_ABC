@@ -214,7 +214,6 @@
                 editPatient : function (p_params) {
                     try {
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/"+p_params.id, {callback : function(response){
-                            var defaultAdress = response.data.address_id_default;
                             var patientId = response.data.id;
                             var strHtml = $.Oda.Display.TemplateHtml.create({
                                 template : "formEditPatient"

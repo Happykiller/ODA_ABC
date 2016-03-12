@@ -23,9 +23,10 @@ class PatientInterface extends OdaRestInterface {
             $params = new OdaPrepareReqSql();
             $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`active`,
                 a.`address_id_default`, b.`code`, b.`adress`, b.`city`, b.`code_postal`
-                FROM `tab_patients` a, `tab_adress` b
+                FROM `tab_patients` a
+                LEFT OUTER JOIN `tab_adress` b
+                ON a.`address_id_default` = b.`id`
                 WHERE 1=1
-                AND a.`address_id_default` = b.`id`
                 AND a.`active` = 1
             ;";
             $params->typeSQL = OdaLibBd::SQL_GET_ALL;
@@ -48,9 +49,10 @@ class PatientInterface extends OdaRestInterface {
             $params = new OdaPrepareReqSql();
             $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`active`,
                 a.`address_id_default`, b.`code`, b.`adress`, b.`city`, b.`code_postal`
-                FROM `tab_patients` a, `tab_adress` b
+                FROM `tab_patients` a
+                LEFT OUTER JOIN `tab_adress` b
+                ON a.`address_id_default` = b.`id`
                 WHERE 1=1
-                AND a.`address_id_default` = b.`id`
                 AND a.`id` = :id
             ;";
             $params->bindsValue = [
