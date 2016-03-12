@@ -40,7 +40,16 @@
       "doubleZero-placeholder": "00",
       "hours-tips": "1-24",
       "minutes-tips": "0-45",
-      "address": "Adresse"
+      "address": "Adresse",
+      "syn-google" : "Synchroniser avec Google Calendar",
+      "googleLogWith" : "Identifié pour Google avec ",
+      "okUpdateAppointmentGoogle" : "Evènement mise à jour avec success dans le calendrier Google",
+      "errorUpdateAppointmentGoogle": "Echec de la mise à jour de l'évènement dans le calendrier Google",
+      "okCreateAppointmentGoogle" : "Evènement créé avec success dans le calendrier Google",
+      "errorCreateAppointmentGoogle" : "Echec de la création de l'évènement dans le calendrier Google",
+      "okDeleteAppointmentGoogle" : "Evènement a bien été supprimé dans le calendrier Google",
+      "errorDeleteAppointmentGoogle" : "Echec de la suppression de l'évènement dans le calendrier Google",
+      "pbAuthGoogle": "Pas de session Google en cours, donc pas de synchronisation avec le calendar possible."
     }
   }
 ]

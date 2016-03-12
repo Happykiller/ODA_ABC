@@ -21,9 +21,12 @@ class PatientInterface extends OdaRestInterface {
     function getAll() {
         try {
             $params = new OdaPrepareReqSql();
-            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`address_id_default`, a.`active`
-                FROM `tab_patients` a
+            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`active`,
+                a.`address_id_default`, b.`code`, b.`adress`, b.`city`, b.`code_postal`
+                FROM `tab_patients` a, `tab_adress` b
                 WHERE 1=1
+                AND a.`address_id_default` = b.`id`
+                AND a.`active` = 1
             ;";
             $params->typeSQL = OdaLibBd::SQL_GET_ALL;
             $retour = $this->BD_ENGINE->reqODASQL($params);
@@ -43,9 +46,11 @@ class PatientInterface extends OdaRestInterface {
     function getById($id) {
         try {
             $params = new OdaPrepareReqSql();
-            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`address_id_default`, a.`active`
-                FROM `tab_patients` a
+            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`active`,
+                a.`address_id_default`, b.`code`, b.`adress`, b.`city`, b.`code_postal`
+                FROM `tab_patients` a, `tab_adress` b
                 WHERE 1=1
+                AND a.`address_id_default` = b.`id`
                 AND a.`id` = :id
             ;";
             $params->bindsValue = [

@@ -35,6 +35,8 @@
          */
         startApp: function () {
             try {
+                $.Oda.Google.scopes = 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
+
                 $.Oda.Router.addDependencies("fullcalendar", {
                     ordered : true,
                     "list" : [
@@ -417,15 +419,241 @@
             "Planning": {
                 "dayClicked": {},
                 "currentEvent": {},
+                "patients": [],
+                "address": [],
                 /**
                  * @returns {$.Oda.App.Controller.Planning}
                  */
                 start: function () {
                     try {
+                        $.Oda.App.Controller.Planning.sessionGoogleStart();
                         $.Oda.App.Controller.Planning.displayPlanning();
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.start : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                sessionGoogleStart: function () {
+                    try {
+                        $.Oda.Google.ready = false;
+                        $.Oda.Google.startSessionAuth(
+                            function(){
+                                $.Oda.App.Controller.Planning.returnGoogleSession();
+                            }
+                            , function(){
+                                $('#google').html('<button type="button" onclick="$.Oda.Google.callServiceGoogleAuth($.Oda.App.Controller.Planning.returnGoogleSession);" class="btn btn-danger center-block">'+$.Oda.I8n.get("planning","syn-google")+'</button>');
+                            }
+                        );
+                        $.Oda.Tooling.timeout($.Oda.App.Controller.Planning.sessionGoogleStart, 3500000);
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.sessionGoogleStart : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                returnGoogleSession: function () {
+                    try {
+                        $.Oda.Google.gapi.client.setApiKey("");
+                        $.Oda.Google.loadGapis([{
+                            "api": "calendar",
+                            "version": "v3"
+                        }], function(){
+                            $.Oda.Google.ready = true;
+                            $.Oda.Google.gapi.client.oauth2.userinfo.get().execute(function(resp) {
+                                $('#google').html($.Oda.I8n.get("planning","googleLogWith") + resp.email);
+                            });
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.returnGoogleSession : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {object} p_params
+                 * @param p_params.id
+                 * @returns {String}
+                 */
+                getDateGoole : function(p_date) {
+                    try{
+                        //2015-12-03 05:00:00
+                        //2015-12-03T05:00:00.000
+                        var array0 = p_date.split(" ");
+                        var arrayDate = array0[0].split("-");
+                        var strDateGoole = +arrayDate[0]+"-"+arrayDate[1]+"-"+arrayDate[2]+"T"+array0[1]+".000";
+                        return strDateGoole;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.getDateGoole :" + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {object} p_params
+                 * @param p_params.callback
+                 * @param p_params.start
+                 * @param p_params.end
+                 * @param p_params.title
+                 * @param p_params.location
+                 * @param p_params.comment
+                 * @exemple $.Oda.App.Controller.Planning.createAppointment({callback: function(params){console.log(params)},start:"2016-03-12 17:00:00",end:"2016-03-12 18:00:00",title:"title","location":"46 rue léon jouhaux 38100 grenoble france","comment":"comment"})
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                createAppointment : function(p_params){
+                    try{
+                        if(!$.Oda.Google.ready){
+                            $.Oda.Display.Notification.error($.Oda.I8n.get('planning','pbAuthGoogle'));
+                            var datas = {
+                                "googleEtag": "",
+                                "googleId": "",
+                                "googleHtmlLink": "",
+                                "googleICalUID": ""
+                            };
+                            p_params.callback(datas);
+                            return this;
+                        }
+
+                        var start = {
+                            "timeZone": "Europe/Paris",
+                            "dateTime": this.getDateGoole(p_params.start)
+                        };
+                        var end = {
+                            "timeZone" : "Europe/Paris",
+                            "dateTime": this.getDateGoole(p_params.end)
+                        };
+
+                        var resource = {
+                            "summary": p_params.title,
+                            "description": p_params.comment,
+                            "start": start,
+                            "end": end,
+                            "location": p_params.location,
+                            "source": {
+                                "url": "http://abc.happykiller.net",
+                                "title": "Oda Abc"
+                            }
+                        };
+
+                        var request = $.Oda.Google.gapi.client.calendar.events.insert({
+                            'calendarId': 'primary',
+                            'resource': resource
+                        });
+
+                        request.execute(function(resp) {
+                            if(resp.status === "confirmed"){
+                                $.Oda.Display.Notification.info($.Oda.I8n.get('planning','okCreateAppointmentGoogle'));
+                                var datas = {
+                                    "googleEtag" : $.Oda.Tooling.replaceAll({str:resp.etag,find:'"',by:''}),
+                                    "googleId" : resp.id,
+                                    "googleHtmlLink" : resp.htmlLink,
+                                    "googleICalUID" : resp.iCalUID
+                                };
+                                p_params.callback(datas);
+                            }else{
+                                $.Oda.Display.Notification.error($.Oda.I8n.get('planning','errorCreateAppointmentGoogle') + " => " + resp.message);
+                                $.Oda.Log.error(resp);
+                            }
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.createAppointment :" + er.message);
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.googleId
+                 * @param p_params.callback
+                 * @param p_params.start
+                 * @param p_params.end
+                 * @param p_params.title
+                 * @param p_params.location
+                 * @param p_params.comment
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                updateAppointment : function (p_params) {
+                    try {
+                        if(!$.Oda.Google.ready){
+                            $.Oda.Display.Notification.error($.Oda.I8n.get('planning','pbAuthGoogle'));
+                            var datas = {};
+                            p_params.callback(datas);
+                            return this;
+                        }
+
+                        var start = {
+                            "timeZone": "Europe/Paris",
+                            "dateTime": this.getDateGoole(p_params.start)
+                        };
+                        var end = {
+                            "timeZone" : "Europe/Paris",
+                            "dateTime": this.getDateGoole(p_params.end)
+                        };
+
+                        var resource = {
+                            "summary": p_params.title,
+                            "description": p_params.comment,
+                            "start": start,
+                            "end": end,
+                            "location": p_params.location,
+                            "source": {
+                                "url": "http://abc.happykiller.net",
+                                "title": "Oda Abc"
+                            }
+                        };
+
+                        var request = $.Oda.Google.gapi.client.calendar.events.update({
+                            'calendarId': 'primary',
+                            'eventId' : p_params.googleId,
+                            'resource': resource
+                        });
+
+                        request.execute(function(resp) {
+                            if(resp.status === "confirmed"){
+                                $.Oda.Display.Notification.info($.Oda.I8n.get('planning','okUpdateAppointmentGoogle'));
+                                p_params.callback({});
+                            }else{
+                                $.Oda.Display.Notification.error($.Oda.I8n.get('planning','errorUpdateAppointmentGoogle') + " => " + resp.message);
+                                $.Oda.Log.error(resp);
+                            }
+                        });
+
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.updateAppointment : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {object} p_params
+                 * @param p_params.googleId
+                 * @param p_params.callback
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                deleteAppointment: function (p_params) {
+                    try {
+                        if(!$.Oda.Google.ready){
+                            $.Oda.Display.Notification.error($.Oda.I8n.get('planning','pbAuthGoogle'));
+                            var datas = {};
+                            p_params.callback(datas);
+                            return this;
+                        }
+
+                        var request = $.Oda.Google.gapi.client.calendar.events.delete({
+                            'calendarId': 'primary',
+                            'eventId': p_params.googleId
+                        });
+                        request.execute(function(resp) {
+                            $.Oda.Display.Notification.info($.Oda.I8n.get('planning','okDeleteAppointmentGoogle'));
+                            p_params.callback({});
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.deleteAppointment : " + er.message);
                         return null;
                     }
                 },
@@ -510,8 +738,7 @@
                     try {
                         var strHtml = $.Oda.Display.TemplateHtml.create({
                             template : "formCreateEvent"
-                            , scope : {
-                            }
+                            , scope : {}
                         });
 
                         $.Oda.Display.Popup.open({
@@ -522,6 +749,7 @@
                             "footer" : '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Planning.submitEvent();" class="btn btn-primary disabled" disabled>Submit</button >',
                             "callback" : function(){
                                 var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/", {callback : function(response){
+                                    $.Oda.App.Controller.Planning.patients = response.data;
                                     for(var index in response.data){
                                         var elt = response.data[index];
                                         if(elt.active === '1'){
@@ -568,19 +796,45 @@
                  */
                 submitEvent: function () {
                     try {
-                        var start = $.Oda.App.Controller.Planning.dayClicked.date.format() + " " +  $("#startHour").val() + ":" + $("#startMinute").val();
+                        var padStartHour = $.Oda.Tooling.pad2($("#startHour").val());
+                        var start = $.Oda.App.Controller.Planning.dayClicked.date.format() + " " +  padStartHour + ":" + $("#startMinute").val() + ":00";
                         var padEndHour = $.Oda.Tooling.pad2($("#endHour").val());
-                        var end = $.Oda.App.Controller.Planning.dayClicked.date.format() + " " +  padEndHour + ":" + $("#endMinute").val();
+                        var end = $.Oda.App.Controller.Planning.dayClicked.date.format() + " " +  padEndHour + ":" + $("#endMinute").val() + ":00";
 
-                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/", {type:'POST',callback : function(response){
-                            $.Oda.Display.Popup.close({name:"createEvent"});
-                            $('#calendar').fullCalendar( 'refetchEvents' );
-                        }},{
-                            "patient_id": $('#patientId').val(),
+                        var patientId = $('#patientId').val();
+                        var patient = {};
+                        for(var index in $.Oda.App.Controller.Planning.patients){
+                            if($.Oda.App.Controller.Planning.patients[index].id === patientId){
+                                patient = $.Oda.App.Controller.Planning.patients[index];
+                                break;
+                            }
+                        }
+
+                        var title = patient.name_first + " " + patient.name_last;
+                        var location = patient.adress + " " + patient.city + " " + patient.code_postal + " france";
+
+                        $.Oda.App.Controller.Planning.createAppointment({
+                            callback: function (params) {
+                                var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/", {type:'POST',callback : function(response){
+                                    $.Oda.Display.Popup.close({name:"createEvent"});
+                                    $('#calendar').fullCalendar( 'refetchEvents' );
+                                }},{
+                                    "patient_id": patientId,
+                                    "start": start,
+                                    "end": end,
+                                    "user_id": $.Oda.Session.id,
+                                    "author_id": $.Oda.Session.id,
+                                    "googleId": params.googleId,
+                                    "googleEtag": params.googleEtag,
+                                    "googleHtmlLink": params.googleHtmlLink,
+                                    "googleICalUID": params.googleICalUID
+                                });
+                            },
                             "start": start,
                             "end": end,
-                            "user_id": $.Oda.Session.id,
-                            "author_id": $.Oda.Session.id
+                            "title": title,
+                            "location": location,
+                            "comment": "comment"
                         });
                         return this;
                     } catch (er) {
@@ -623,6 +877,7 @@
                                 "footer" : strFooter,
                                 "callback" : function(){
                                     var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/", {callback : function(response){
+                                        $.Oda.App.Controller.Planning.patients = response.data;
                                         for(var index in response.data){
                                             var elt = response.data[index];
                                             if(elt.active === '1'){
@@ -684,6 +939,7 @@
                         $("#divAddress").empty();
                         if(elt.val() !== ""){
                             var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/address/search/patient/"+elt.val(), {callback : function(response){
+                                $.Oda.App.Controller.Planning.address = response.data;
                                 if(response.data.length > 0){
                                     var strHtml = $.Oda.Display.TemplateHtml.create({
                                         template : "tplDivAddress"
@@ -715,18 +971,50 @@
                  */
                 submitEditEvent: function (params) {
                     try {
-                        var start = $.Oda.App.Controller.Planning.dayClicked.date.format('YYYY-MM-DD') + " " +  $("#startHour").val() + ":" + $("#startMinute").val();
+                        var padStartHour = $.Oda.Tooling.pad2($("#startHour").val());
+                        var start = $.Oda.App.Controller.Planning.dayClicked.date.format('YYYY-MM-DD') + " " +  padStartHour + ":" + $("#startMinute").val() + ":00";
                         var padEndHour = $.Oda.Tooling.pad2($("#endHour").val());
-                        var end = $.Oda.App.Controller.Planning.dayClicked.date.format('YYYY-MM-DD') + " " +  padEndHour + ":" + $("#endMinute").val();
+                        var end = $.Oda.App.Controller.Planning.dayClicked.date.format('YYYY-MM-DD') + " " +  padEndHour + ":" + $("#endMinute").val() + ":00";
 
-                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/"+params.id, {type:'PUT',callback : function(response){
-                            $.Oda.Display.Popup.close({name:"editEvent"});
-                            $('#calendar').fullCalendar( 'refetchEvents' );
-                        }},{
-                            "patient_id": $('#patientId').val(),
+                        var patientId = $('#patientId').val();
+                        var patient = {};
+                        for(var index in $.Oda.App.Controller.Planning.patients){
+                            if($.Oda.App.Controller.Planning.patients[index].id === patientId){
+                                patient = $.Oda.App.Controller.Planning.patients[index];
+                                break;
+                            }
+                        }
+
+                        var addressId = $('#addressId').val();
+                        var address = {};
+                        for(var index in $.Oda.App.Controller.Planning.address){
+                            if($.Oda.App.Controller.Planning.address[index].id === addressId){
+                                address = $.Oda.App.Controller.Planning.address[index];
+                                break;
+                            }
+                        }
+
+                        var title = patient.name_first + " " + patient.name_last;
+                        var location = address.adress + " " + address.city + " " + address.code_postal + " france";
+
+                        $.Oda.App.Controller.Planning.updateAppointment({
+                            callback: function () {
+                                var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/"+params.id, {type:'PUT',callback : function(){
+                                    $.Oda.Display.Popup.close({name:"editEvent"});
+                                    $('#calendar').fullCalendar( 'refetchEvents' );
+                                }},{
+                                    "patient_id": patientId,
+                                    "start": start,
+                                    "end": end,
+                                    "addressId": addressId
+                                });
+                            },
+                            "googleId": $.Oda.App.Controller.Planning.currentEvent.googleId,
                             "start": start,
                             "end": end,
-                            "addressId": $('#addressId').val()
+                            "title": title,
+                            "location": location,
+                            "comment": "comment"
                         });
                         return this;
                     } catch (er) {
@@ -739,10 +1027,15 @@
                  */
                 deleteEvent: function (params) {
                     try {
-                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/"+params.id, {type:'DELETE',callback : function(response){
-                            $.Oda.Display.Popup.close({name:"editEvent"});
-                            $('#calendar').fullCalendar( 'refetchEvents' );
-                        }});
+                        $.Oda.App.Controller.Planning.deleteAppointment({
+                            callback: function () {
+                                var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/"+params.id, {type:'DELETE',callback : function(response){
+                                    $.Oda.Display.Popup.close({name:"editEvent"});
+                                    $('#calendar').fullCalendar( 'refetchEvents' );
+                                }});
+                            },
+                            "googleId": $.Oda.App.Controller.Planning.currentEvent.googleId
+                        });
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.start : " + er.message);
