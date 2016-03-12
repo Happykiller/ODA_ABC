@@ -27,7 +27,6 @@ class PatientInterface extends OdaRestInterface {
                 LEFT OUTER JOIN `tab_adress` b
                 ON a.`address_id_default` = b.`id`
                 WHERE 1=1
-                AND a.`active` = 1
             ;";
             $params->typeSQL = OdaLibBd::SQL_GET_ALL;
             $retour = $this->BD_ENGINE->reqODASQL($params);
