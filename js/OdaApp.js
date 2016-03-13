@@ -476,8 +476,7 @@
                     }
                 },
                 /**
-                 * @param {object} p_params
-                 * @param p_params.id
+                 * @param {String} p_date
                  * @returns {String}
                  */
                 getDateGoole : function(p_date) {

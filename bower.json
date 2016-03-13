@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "homepage": "http://abc.happykiller.net",
   "authors": ["Fabrice Rosito <fabrice.rosito@gmail.com>"],
-  "description": "Service de gestion de'AMAP",
+  "description": "Service de gestion ABC",
   "keywords": ["abc"],
   "license": "MIT",
   "private": true,
@@ -11,6 +11,9 @@
     "**/.*",
     "node_modules"
   ],
+  "devDependencies": {
+    "qunit": "latest"
+  },
   "dependencies": {
     "Oda": "*",
     "fullcalendar" : "*"
