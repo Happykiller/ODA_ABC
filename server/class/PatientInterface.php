@@ -31,9 +31,35 @@ class PatientInterface extends OdaRestInterface {
             $params->typeSQL = OdaLibBd::SQL_GET_ALL;
             $retour = $this->BD_ENGINE->reqODASQL($params);
 
-            $params = new stdClass();
-            $params->retourSql = $retour;
-            $this->addDataObject($retour->data->data);
+            $patients = $retour->data->data;
+
+            foreach ($patients as $patient){
+                if($patient->address_id_default == null){
+                    $params = new OdaPrepareReqSql();
+                    $params->sql = "SELECT a.`id`, a.`code`, a.`adress`, a.`city`, a.`code_postal`
+                        FROM `tab_adress` a, `tab_patient_address` b
+                        WHERE 1=1
+                        AND a.`id` = b.`address_id`
+                        AND b.`patient_id` = :patientId
+                        AND a.`active` = 1
+                        LIMIT 0,1
+                    ;";
+                    $params->bindsValue = [
+                        "patientId" => $patient->id
+                    ];
+                    $params->typeSQL = OdaLibBd::SQL_GET_ONE;
+                    $retour = $this->BD_ENGINE->reqODASQL($params);
+                    if($retour->data){
+                        $patient->address_id_default = $retour->data->id;
+                        $patient->code = $retour->data->code;
+                        $patient->adress = $retour->data->adress;
+                        $patient->city = $retour->data->city;
+                        $patient->code_postal = $retour->data->code_postal;
+                    }
+                }
+            }
+
+            $this->addDataObject($patients);
         } catch (Exception $ex) {
             $this->object_retour->strErreur = $ex.'';
             $this->object_retour->statut = self::STATE_ERROR;
@@ -60,8 +86,6 @@ class PatientInterface extends OdaRestInterface {
             $params->typeSQL = OdaLibBd::SQL_GET_ONE;
             $retour = $this->BD_ENGINE->reqODASQL($params);
 
-            $params = new stdClass();
-            $params->retourSql = $retour;
             $this->addDataObject($retour->data);
         } catch (Exception $ex) {
             $this->object_retour->strErreur = $ex.'';

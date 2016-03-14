@@ -53,6 +53,43 @@ class EventInterface extends OdaRestInterface {
     function create() {
         try {
             $params = new OdaPrepareReqSql();
+            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`active`,
+                a.`address_id_default`, b.`code`, b.`adress`, b.`city`, b.`code_postal`
+                FROM `tab_patients` a
+                LEFT OUTER JOIN `tab_adress` b
+                ON a.`address_id_default` = b.`id`
+                WHERE 1=1
+                AND a.`id` = :patient_id
+            ;";
+            $params->bindsValue = [
+                "patient_id" => $this->inputs["patient_id"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_GET_ONE;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $patient = $retour->data;
+
+            if($patient->address_id_default == null){
+                $params = new OdaPrepareReqSql();
+                $params->sql = "SELECT a.`id`, a.`code`, a.`adress`, a.`city`, a.`code_postal`
+                        FROM `tab_adress` a, `tab_patient_address` b
+                        WHERE 1=1
+                        AND a.`id` = b.`address_id`
+                        AND b.`patient_id` = :patientId
+                        AND a.`active` = 1
+                        LIMIT 0,1
+                    ;";
+                $params->bindsValue = [
+                    "patientId" => $patient->id
+                ];
+                $params->typeSQL = OdaLibBd::SQL_GET_ONE;
+                $retour = $this->BD_ENGINE->reqODASQL($params);
+                if($retour->data){
+                    $patient->address_id_default = $retour->data->id;
+                }
+            }
+
+            $params = new OdaPrepareReqSql();
             $params->sql = "INSERT INTO  `tab_events` (
                     `patient_id` ,
                     `start`,
@@ -67,8 +104,7 @@ class EventInterface extends OdaRestInterface {
                     `googleICalUID`
                 )
                 VALUES (
-                    :patient_id, :start, :end, :user_id, :author_id, NOW(),
-                    (SELECT `address_id_default` FROM `tab_patients` WHERE 1=1 AND `id` = :patient_id),
+                    :patient_id, :start, :end, :user_id, :author_id, NOW(),:address_id_default,
                     :googleId, :googleEtag, :googleHtmlLink, :googleICalUID
                 )
             ;";
@@ -81,7 +117,8 @@ class EventInterface extends OdaRestInterface {
                 "googleId" => $this->inputs["googleId"],
                 "googleEtag" => $this->inputs["googleEtag"],
                 "googleHtmlLink" => $this->inputs["googleHtmlLink"],
-                "googleICalUID" => $this->inputs["googleICalUID"]
+                "googleICalUID" => $this->inputs["googleICalUID"],
+                "address_id_default" => $patient->address_id_default
             ];
             $params->typeSQL = OdaLibBd::SQL_INSERT_ONE;
             $retour = $this->BD_ENGINE->reqODASQL($params);

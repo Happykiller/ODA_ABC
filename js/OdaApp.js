@@ -751,7 +751,7 @@
                                     for(var index in response.data){
                                         var elt = response.data[index];
                                         if(elt.active === '1'){
-                                            $('#patientId').append('<option value="'+ elt.id +'">' + elt.name_first + ' ' + elt.name_last + '</option>')
+                                            $('#patientId').append('<option value="'+ elt.id +'">' + elt.name_first + ' ' + elt.name_last + ( (elt.address_id_default===null)?' (Pas d\'adresse)':'' ) + '</option>')
                                         }
                                     }
                                 }});
@@ -809,7 +809,10 @@
                         }
 
                         var title = patient.name_first + " " + patient.name_last;
-                        var location = patient.adress + " " + patient.city + " " + patient.code_postal + " france";
+                        var location = null;
+                        if(patient.address_id_default !== null){
+                            location = patient.adress + " " + patient.city + " " + patient.code_postal + " france";
+                        }
 
                         $.Oda.App.Controller.Planning.createAppointment({
                             callback: function (params) {
@@ -879,7 +882,7 @@
                                         for(var index in response.data){
                                             var elt = response.data[index];
                                             if(elt.active === '1'){
-                                                $('#patientId').append('<option value="'+ elt.id +'" '+((eventData.patient_id === elt.id)?'selected':'')+'>' + elt.name_first + ' ' + elt.name_last + '</option>')
+                                                $('#patientId').append('<option value="'+ elt.id +'" '+((eventData.patient_id === elt.id)?'selected':'')+'>' + elt.name_first + ' ' + elt.name_last + ( (elt.address_id_default===null)?' (Pas d\'adresse)':'' ) + '</option>')
                                             }
                                         }
                                         $.Oda.Scope.checkInputSelect({elt : $('#patientId')});
@@ -993,7 +996,10 @@
                         }
 
                         var title = patient.name_first + " " + patient.name_last;
-                        var location = address.adress + " " + address.city + " " + address.code_postal + " france";
+                        var location = null;
+                        if($.isEmptyObject(address)){
+                            location = address.adress + " " + address.city + " " + address.code_postal + " france";
+                        }
 
                         $.Oda.App.Controller.Planning.updateAppointment({
                             callback: function () {
