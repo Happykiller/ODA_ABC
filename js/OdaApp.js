@@ -49,6 +49,13 @@
                     ]
                 });
 
+                $.Oda.Router.addDependencies("tinymce", {
+                    ordered : true,
+                    "list" : [
+                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/tinymce/tinymce.min.js", "type" : "script"}
+                    ]
+                });
+
                 $.Oda.Router.addRoute("home", {
                     "path" : "partials/home.html",
                     "title" : "home.title",
@@ -889,6 +896,22 @@
                                         $.Oda.App.Controller.Planning.displayListAddress();
                                     }});
 
+                                    tinymce.init({
+                                        selector: '#eventNote',
+                                        init_instance_callback: function(editor){
+                                            tinymce.get('eventNote').setContent(eventData.note);
+                                        },
+                                        setup: function (editor) {
+                                            editor.on('keyup', function (e) {
+                                                $.Oda.Scope.Gardian.findByElt({id:'note'});
+                                            });
+                                        }
+                                    });
+
+                                    $('#editEvent').on('hidden.bs.modal', function () {
+                                        tinymce.get('eventNote').remove();
+                                    })
+
                                     $.Oda.Scope.Gardian.add({
                                         id : "listAddress",
                                         listElt : ["patientId"],
@@ -899,7 +922,7 @@
 
                                     $.Oda.Scope.Gardian.add({
                                         id : "gEditEvent",
-                                        listElt : ["startHour", "startMinute", "endHour", "endMinute", "patientId", "addressId"],
+                                        listElt : ["startHour", "startMinute", "endHour", "endMinute", "patientId", "addressId", "note"],
                                         function : function(e){
                                             var padEndHour = $.Oda.Tooling.pad2($("#endHour").val());
 
@@ -1004,13 +1027,15 @@
                         $.Oda.App.Controller.Planning.updateAppointment({
                             callback: function () {
                                 var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/"+params.id, {type:'PUT',callback : function(){
+                                    tinymce.get('eventNote').remove();
                                     $.Oda.Display.Popup.close({name:"editEvent"});
                                     $('#calendar').fullCalendar( 'refetchEvents' );
                                 }},{
                                     "patient_id": patientId,
                                     "start": start,
                                     "end": end,
-                                    "addressId": addressId
+                                    "addressId": addressId,
+                                    "note": tinymce.get('eventNote').getContent()
                                 });
                             },
                             "googleId": $.Oda.App.Controller.Planning.currentEvent.googleId,

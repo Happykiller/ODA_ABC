@@ -139,7 +139,8 @@ class EventInterface extends OdaRestInterface {
         try {
             $params = new OdaPrepareReqSql();
             $params->sql = "SELECT a.`id`, a.`patient_id`, a.`start`, a.`end`, a.`user_id`, a.`address_id`,
-                a.`googleId`, a.`googleEtag`, a.`googleICalUID`, a.`googleHtmlLink`
+                a.`googleId`, a.`googleEtag`, a.`googleICalUID`, a.`googleHtmlLink`,
+                a.`note`
                 FROM `tab_events` a
                 WHERE 1=1
                 AND a.`id` = :id
@@ -175,7 +176,8 @@ class EventInterface extends OdaRestInterface {
                 `patient_id`= :patient_id,
                 `start`= :start,
                 `end`= :end,
-                `address_id` = :address_id
+                `address_id` = :address_id,
+                `note` = :note
                 WHERE 1=1
                 AND `id` = :id
                 ;";
@@ -184,7 +186,8 @@ class EventInterface extends OdaRestInterface {
                 "patient_id" => $this->inputs["patient_id"],
                 "start" => $this->inputs["start"],
                 "end" => $this->inputs["end"],
-                "address_id" => $this->inputs["addressId"]
+                "address_id" => $this->inputs["addressId"],
+                "note" => $this->inputs["note"]
             ];
             $params->typeSQL = OdaLibBd::SQL_SCRIPT;
             $retour = $this->BD_ENGINE->reqODASQL($params);

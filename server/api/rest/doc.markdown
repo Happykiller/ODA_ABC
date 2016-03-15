@@ -40,7 +40,7 @@
     * public : false
 * `/event/:id`
     * type : PUT
-    * mandatory params : "patient_id","start","end"
+    * mandatory params : "patient_id","start","end","note"
     * optional params : "addressId"
     * public : false
 * `/event/:id`
