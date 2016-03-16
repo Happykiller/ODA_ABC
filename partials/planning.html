@@ -23,38 +23,41 @@
             </div>
         </div>
         <div class="col-lg-3 col-sm-6">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
             <label oda-label="planning.start">planning.start</label>
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         <input type="number" step="1" min="0" max="23" class="form-control" oda-input-text="startHour" oda-input-text-tips="planning.hours-tips" oda-input-text-placeholder="planning.doubleZero-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         <input type="number" step="15" min="0" max="45" class="form-control" oda-input-text="startMinute" oda-input-text-tips="planning.minutes-tips" oda-input-text-placeholder="planning.doubleZero-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-lg-3 col-sm-6">
             <label oda-label="planning.end">planning.end</label>
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         <input type="number" step="1" min="0" max="23" class="form-control" oda-input-text="endHour" oda-input-text-tips="planning.hours-tips" oda-input-text-placeholder="planning.doubleZero-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         <input type="number" step="15" min="0" max="45" class="form-control" oda-input-text="endMinute" oda-input-text-tips="planning.minutes-tips" oda-input-text-placeholder="planning.doubleZero-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" id="divMemos">
         </div>
     </div>
 </script>
@@ -71,32 +74,30 @@
         </div>
         <div class="col-lg-3 col-sm-6" id="divAddress">
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
+        <div class="col-lg-3 col-sm-6">
             <label oda-label="planning.start">planning.start</label>
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         <input value="{{startHours}}" type="number" step="1" min="0" max="23" class="form-control" oda-input-text="startHour" oda-input-text-tips="planning.hours-tips" oda-input-text-placeholder="planning.doubleZero-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         <input value="{{startMinutes}}" type="number" step="15" min="0" max="45" class="form-control" oda-input-text="startMinute" oda-input-text-tips="planning.minutes-tips" oda-input-text-placeholder="planning.doubleZero-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-lg-3 col-sm-6">
             <label oda-label="planning.end">planning.end</label>
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         <input value="{{endHours}}" type="number" step="1" min="0" max="23" class="form-control" oda-input-text="endHour" oda-input-text-tips="planning.hours-tips" oda-input-text-placeholder="planning.doubleZero-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         <input value="{{endMinutes}}" type="number" step="15" min="0" max="45" class="form-control" oda-input-text="endMinute" oda-input-text-tips="planning.minutes-tips" oda-input-text-placeholder="planning.doubleZero-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
                     </div>
@@ -104,6 +105,29 @@
             </div>
         </div>
     </div>
+    <div id="divEditMemos" style="display: none;">
+        <hr>
+        <div class="row">
+            <div class="col-md-12">
+                <label oda-label="planning.reminderMemos">planning.reminderMemos</label>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped" id="tabEditMemos">
+                        <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th oda-label="planning.memoContent">title</th>
+                            <th style="width: 100px;" oda-label="planning.actions">actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <hr>
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
@@ -120,6 +144,23 @@
         <select class="form-control" oda-input-select="addressId" required>
             <option value="" oda-label="oda-main.select-default"></option>
         </select>
+    </div>
+</script>
+
+<script id="tplDivMemos" type="text/template">
+    <label oda-label="planning.reminderMemos">planning.reminderMemos</label>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped" id="tabMemos">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th oda-label="planning.memoContent">memoContent</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{bodyContent}}
+            </tbody>
+        </table>
     </div>
 </script>
 

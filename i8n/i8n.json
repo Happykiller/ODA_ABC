@@ -25,7 +25,12 @@
       "postCode": "Code postal",
       "default": "Défaut",
       "actions": "Actions",
-      "newAddress": "Nouvelle addresse"
+      "newAddress": "Nouvelle addresse",
+      "memos": "Les mémos",
+      "newMemo": "Nouveau mémo",
+      "charRemaining": "Caractères restants",
+      "submitMemo": "Soumettre mémo",
+      "cancelMemo": "Annuler"
     }
   },{
     "groupName" : "planning"
@@ -49,7 +54,10 @@
       "errorCreateAppointmentGoogle" : "Echec de la création de l'évènement dans le calendrier Google",
       "okDeleteAppointmentGoogle" : "Evènement a bien été supprimé dans le calendrier Google",
       "errorDeleteAppointmentGoogle" : "Echec de la suppression de l'évènement dans le calendrier Google",
-      "pbAuthGoogle": "Pas de session Google en cours, donc pas de synchronisation avec le calendar possible."
+      "pbAuthGoogle": "Pas de session Google en cours, donc pas de synchronisation avec le calendar possible.",
+      "reminderMemos": "Rappel des mémos",
+      "memoContent": "Contenu",
+      "actions": "Actions"
     }
   }
 ]

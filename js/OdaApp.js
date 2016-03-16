@@ -103,6 +103,7 @@
                 }
             },
             "Patients": {
+                "currentPatient": {},
                 /**
                  * @returns {$.Oda.App.Controller.Patients}
                  */
@@ -133,6 +134,7 @@
                                     },
                                     {
                                         header: "Actif",
+                                        size: '100px',
                                         value: function(data, type, full, meta, row){
                                             return (row.active==="1")?"Actif":"Inactif";
                                         }
@@ -140,6 +142,7 @@
                                     {
                                         header: "Action",
                                         align: 'center',
+                                        size: '100px',
                                         value: function(data, type, full, meta, row){
                                             var strHtml = '<a onclick="$.Oda.App.Controller.Patients.editPatient({id:'+row.id+'});" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span></a>';
                                             return strHtml;
@@ -221,6 +224,7 @@
                 editPatient : function (p_params) {
                     try {
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/"+p_params.id, {callback : function(response){
+                            $.Oda.App.Controller.Patients.currentPatient = response.data;
                             var patientId = response.data.id;
                             var strHtml = $.Oda.Display.TemplateHtml.create({
                                 template : "formEditPatient"
@@ -253,6 +257,7 @@
                                         }
                                     });
                                     $.Oda.App.Controller.Patients.displayAddress({patientId: patientId});
+                                    $.Oda.App.Controller.Patients.displayMemos();
                                 }
                             });
                         }});
@@ -303,8 +308,9 @@
                                         "city": elt.city,
                                         "postCode": elt.code_postal,
                                         "star": (elt.address_id_default === elt.id)?'<span class="glyphicon glyphicon-star" aria-hidden="true"></span>':'',
-                                        "bookmark": (elt.address_id_default !== elt.id)?'<button type="button" class="btn btn-primary btn-sm" onclick="$.Oda.App.Controller.Patients.setDefaultAddress({addressId:'+elt.id+', patientId:'+p_params.patientId+'});"><span class="glyphicon glyphicon-star" aria-hidden="true"></span></button>':'',
-                                        "remove": '<button type="button" class="btn btn-danger btn-sm" onclick="$.Oda.App.Controller.Patients.removeAddress({addressId:'+elt.id+', patientId:'+p_params.patientId+'});"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>'
+                                        "bookmark": (elt.address_id_default !== elt.id)?'<button type="button" class="btn btn-primary btn-xs" onclick="$.Oda.App.Controller.Patients.setDefaultAddress({addressId:'+elt.id+', patientId:'+p_params.patientId+'});"><span class="glyphicon glyphicon-star" aria-hidden="true"></span></button>':'',
+                                        "edit": ' <button type="button" class="btn btn-primary btn-xs" onclick="$.Oda.App.Controller.Patients.editAddress({id:'+elt.id+'});"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>',
+                                        "remove": ' <button type="button" class="btn btn-danger btn-xs" onclick="$.Oda.App.Controller.Patients.removeAddress({addressId:'+elt.id+', patientId:'+p_params.patientId+'});"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>'
                                     }
                                 });
                                 $('#tabAddress > tbody:last-child').append(strHtml);
@@ -418,6 +424,173 @@
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Patients.submitNewAddress : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                displayMemos : function () {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/memo/search/patient/"+$.Oda.App.Controller.Patients.currentPatient.id, {callback : function(response){
+                            $.Oda.Display.Table.createDataTable({
+                                target: 'divTabMemos',
+                                data: response.data,
+                                option: {
+                                    "aaSorting": [[0, 'desc']],
+                                },
+                                attribute: [
+                                    {
+                                        header: "Id",
+                                        size: "50px",
+                                        align: "center",
+                                        value: function(data, type, full, meta, row){
+                                            return row.id;
+                                        }
+                                    },
+                                    {
+                                        header: "Content",
+                                        value: function(data, type, full, meta, row){
+                                            var content = row.content;
+                                            if(content.length > 50){
+                                                content = content.substr(0,50) + " ...";
+                                            }
+                                            return content;
+                                        }
+                                    },
+                                    {
+                                        header: "Lu",
+                                        size: "50px",
+                                        value: function(data, type, full, meta, row){
+                                            return (row.read==="1")?"Lu":"Non lu";
+                                        }
+                                    },
+                                    {
+                                        header: "Action",
+                                        size: "75px",
+                                        align: 'center',
+                                        value: function(data, type, full, meta, row){
+                                            var strHtml = '';
+                                            if(row.read !== "1"){
+                                                strHtml += ' <button type="button" class="btn btn-success btn-xs" onclick="$.Oda.App.Controller.Patients.readMemo({id:'+row.id+', value: 1});"><span class="glyphicon glyphicon-check" aria-hidden="true"></span></button>';
+                                            }else{
+                                                strHtml += ' <button type="button" class="btn btn-warning btn-xs" onclick="$.Oda.App.Controller.Patients.readMemo({id:'+row.id+', value: 0});"><span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span></button>';
+                                            }
+                                            strHtml += ' <a onclick="$.Oda.App.Controller.Patients.editMemo({id:'+row.id+'});" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span></a>';
+                                            strHtml += ' <button type="button" class="btn btn-danger btn-xs" onclick="$.Oda.App.Controller.Patients.removeMemo({id:'+row.id+'});"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>';
+                                            return strHtml;
+                                        }
+                                    }
+                                ]
+                            })
+                        }});
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.displayMemos : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                displayNewMemo : function () {
+                    try {
+                        var strHtml = $.Oda.Display.TemplateHtml.create({
+                            template : "tlpNewMemo"
+                            , scope : {}
+                        });
+                        $('#divNewMemo').html(strHtml).fadeIn();
+                        $.Oda.Display.render({
+                            "id": "divBtDemo",
+                            "html": '<button type="button" oda-label="patients.submitMemo" onclick="$.Oda.App.Controller.Patients.submitMemo();" class="btn btn-primary">submitMemo</button> <button type="button" oda-label="patients.cancelMemo" onclick="$.Oda.App.Controller.Patients.cancelMemo();" class="btn btn-secondary">cancelMemo</button>'
+                        });
+                        $('#downCount').html(255);
+                        $('#newMemo').keyup(function() {
+                            var length = $(this).val().length;
+                            var RestLength = 255-length;
+                            $('#downCount').html(RestLength);
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.displayNewMemo : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                submitMemo : function () {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/memo/", {type: 'POST', callback : function(response){
+                            $('#divNewMemo').hide();
+                            $('#newMemo').empty();
+                            $('#downCount').html(255);
+                            $.Oda.Display.render({
+                                "id": "divBtDemo",
+                                "html": '<button type="button" oda-label="patients.newMemo" onclick="$.Oda.App.Controller.Patients.displayNewMemo();" class="btn btn-primary">newMemo</button>'
+                            });
+                            $.Oda.App.Controller.Patients.displayMemos();
+                        }},{
+                            "patient_id": $.Oda.App.Controller.Patients.currentPatient.id,
+                            "content": $('#newMemo').val(),
+                            "author_id": $.Oda.Session.id
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.submitMemo : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                cancelMemo : function () {
+                    try {
+                        $('#divNewMemo').hide();
+                        $('#newMemo').empty();
+                        $('#downCount').html(255);
+                        $.Oda.Display.render({
+                            "id": "divBtDemo",
+                            "html": '<button type="button" oda-label="patients.newMemo" onclick="$.Oda.App.Controller.Patients.displayNewMemo();" class="btn btn-primary">newMemo</button>'
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.submitMemo : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.id
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                removeMemo : function (p_params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/memo/"+p_params.id, {type: 'DELETE', callback : function(response){
+                            $.Oda.App.Controller.Patients.displayMemos();
+                        }});
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.removeMemo : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.id
+                 * @param p_params.value
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                readMemo : function (p_params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/memo/"+p_params.id+"/read", {type: 'PUT', callback : function(response){
+                            $.Oda.App.Controller.Patients.displayMemos();
+                        }},{
+                            "value": p_params.value
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.readMemo : " + er.message);
                         return null;
                     }
                 },
@@ -764,6 +937,37 @@
                                 }});
 
                                 $.Oda.Scope.Gardian.add({
+                                    id : "onChangePatient",
+                                    listElt : ["patientId"],
+                                    function : function(e){
+                                        $('#divMemos').html('');
+                                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/memo/search/patient/"+$('#patientId').val(), {callback : function(response){
+                                            var strBody = "";
+
+                                            for(var index in response.data){
+                                                var elt = response.data[index];
+                                                var content = elt.content;
+                                                if(content.length > 50){
+                                                    content = content.substr(0,50) + " ...";
+                                                }
+                                                strBody += '<tr><td>' + elt.id + '</td><td>' + content + '</td>';
+                                            }
+
+                                            var strHtml = $.Oda.Display.TemplateHtml.create({
+                                                template : "tplDivMemos"
+                                                , scope : {
+                                                    bodyContent: strBody
+                                                }
+                                            });
+                                            $('#divMemos').html(strHtml);
+                                        }}, {
+                                            active: 1,
+                                            read: 0
+                                        });
+                                    }
+                                });
+
+                                $.Oda.Scope.Gardian.add({
                                     id : "createEvent",
                                     listElt : ["startHour", "startMinute", "endHour", "endMinute", "patientId"],
                                     function : function(e){
@@ -896,6 +1100,8 @@
                                         $.Oda.App.Controller.Planning.displayListAddress();
                                     }});
 
+                                    $.Oda.App.Controller.Planning.displayMemos({patientId: eventData.patient_id});
+
                                     tinymce.init({
                                         selector: '#eventNote',
                                         init_instance_callback: function(editor){
@@ -917,6 +1123,7 @@
                                         listElt : ["patientId"],
                                         function : function(e){
                                             $.Oda.App.Controller.Planning.displayListAddress();
+                                            $.Oda.App.Controller.Planning.displayMemos({patientId: $('#patientId').val()})
                                         }
                                     });
 
@@ -951,6 +1158,45 @@
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.createEvent : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.patientId
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                displayMemos : function (p_params) {
+                    try {
+                        $('#divEditMemos').hide();
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/memo/search/patient/"+p_params.patientId, {callback : function(response){
+                            if(response.data.length > 0){
+                                $('#divEditMemos').show();
+                                $("#tabEditMemos > tbody").empty();
+                                for(var index in response.data) {
+                                    var elt = response.data[index];
+
+                                    var strHtml = "";
+                                    strHtml += '<tr>';
+                                    strHtml += '<td>'+elt.id+'</td>';
+                                    var content = elt.content;
+                                    if(content.length > 50){
+                                        content = content.substr(0,50) + " ...";
+                                    }
+                                    strHtml += '<td>'+content+'</td>';
+                                    strHtml += '<td><button type="button" class="btn btn-success btn-xs" onclick="$.Oda.App.Controller.Planning.readMemo({id:'+elt.id+', value: 1, patientId: '+p_params.patientId+'});"><span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
+                                    strHtml += '</tr>';
+
+                                    $('#tabEditMemos > tbody:last-child').append(strHtml);
+                                }
+                            }
+                        }},{
+                            active: 1,
+                            read: 0
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.displayMemos : " + er.message);
                         return null;
                     }
                 },
@@ -1068,6 +1314,26 @@
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.start : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.id
+                 * @param p_params.value
+                 * @param p_params.patientId
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                readMemo : function (p_params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/memo/"+p_params.id+"/read", {type: 'PUT', callback : function(response){
+                            $.Oda.App.Controller.Planning.displayMemos({patientId: p_params.patientId});
+                        }},{
+                            "value": p_params.value
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.readMemo : " + er.message);
                         return null;
                     }
                 },

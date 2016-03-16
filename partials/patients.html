@@ -58,6 +58,19 @@
         <div class="col-lg-3 col-sm-6">
         </div>
     </div>
+    <hr>
+    <div class="row">
+        <label oda-label="patients.memos">patients.memos</label>
+        <div class="col-md-12" id="divTabMemos">
+            <oda-loading></oda-loading>
+        </div>
+        <div class="col-md-12" id="divNewMemo" style="display: none;">
+        </div>
+        <div class="col-md-12" id="divBtDemo">
+            <button type="button" oda-label="patients.newMemo" onclick="$.Oda.App.Controller.Patients.displayNewMemo();" class="btn btn-primary">newMemo</button>
+        </div>
+    </div>
+    <hr>
     <div class="row">
         <label oda-label="patients.addresses">patients.addresses</label>
         <div class="col-md-12">
@@ -82,7 +95,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <button type="button" oda-label="patients.newAddress" onclick="$.Oda.App.Controller.Patients.newAddress({id: {{id}} });" class="btn btn-primary">newAddress</button >
+            <button type="button" oda-label="patients.newAddress" onclick="$.Oda.App.Controller.Patients.newAddress({id: {{id}} });" class="btn btn-primary">newAddress</button>
         </div>
     </div>
 </script>
@@ -126,8 +139,15 @@
         <td>{{city}}</td>
         <td>{{postCode}}</td>
         <td style="text-align: center">{{star}}</td>
-        <td style="text-align: center">{{bookmark}} {{remove}}</td>
+        <td style="text-align: center">{{bookmark}} {{edit}} {{remove}}</td>
     </tr>
+</script>
+
+<script id="tlpNewMemo" type="text/template">
+    <div class="form-group">
+        <textarea class="form-control" rows="2" id="newMemo" maxlength="255"></textarea>
+        <span class="downChar"><label id="downCount"></label> <label oda-label="patients.charRemaining"></label></span>
+    </div>
 </script>
 
 <script>

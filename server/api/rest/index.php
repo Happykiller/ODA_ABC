@@ -157,5 +157,60 @@ $slim->get('/address/search/patient/:id', function ($id) use ($slim) {
 });
 
 //--------------------------------------------------------------------------
+// MEMOS
+
+$slim->get('/memo/search/patient/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInputOpt = array("read"=>0, "active"=>1);
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new MemoInterface($params);
+    $INTERFACE->getByPatientId($id);
+});
+
+$slim->get('/memo/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new MemoInterface($params);
+    $INTERFACE->getById($id);
+});
+
+$slim->post('/memo/', function () use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("patient_id","content","author_id");
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new MemoInterface($params);
+    $INTERFACE->create();
+});
+
+$slim->put('/memo/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("content");
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new MemoInterface($params);
+    $INTERFACE->update($id);
+});
+
+$slim->put('/memo/:id/read', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("value");
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new MemoInterface($params);
+    $INTERFACE->read($id);
+});
+
+$slim->delete('/memo/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new MemoInterface($params);
+    $INTERFACE->delete($id);
+});
+
+//--------------------------------------------------------------------------
 
 $slim->run();

@@ -56,3 +56,28 @@
 * `/address/search/patient/:id`
     * type : GET
     * public : false
+
+## Memos
+
+* `/memo/search/patient/:id`
+    * type : GET
+    * optional params : "read", "active"
+    * public : false
+* `/memo/:id`
+    * type : GET
+    * public : false
+* `/memo/:id`
+    * type : POST
+    * mandatory params : "patient_id","content","author_id"
+    * public : false
+* `/memo/:id`
+    * type : DELETE
+    * public : false
+* `/memo/:id/read`
+    * type : PUT
+    * mandatory params : "value"
+    * public : false
+* `/memo/`
+    * type : PUT
+    * mandatory params : "content"
+    * public : false
