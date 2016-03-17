@@ -924,17 +924,17 @@
                                 });
                             },
                             eventMouseover: function(calEvent, jsEvent) {
-                                console.log("eventMouseover");
+                                //console.log("eventMouseover");
                             },
                             eventMouseout: function(calEvent, jsEvent) {
-                                console.log("eventMouseout");
+                                //console.log("eventMouseout");
                             },
                             eventClick: function(calEvent, jsEvent, view) {
                                 $.Oda.App.Controller.Planning.dayClicked = {"date":calEvent.start, "jsEvent":jsEvent, "view":view, "cell" : $(this)};
                                 $.Oda.App.Controller.Planning.editEvent(calEvent);
                             },
                             "viewRender": function(view, element){
-                                console.log("viewRender");
+                                //console.log("viewRender");
                             }
                         })
                         return this;
@@ -1149,8 +1149,10 @@
                                     });
 
                                     $('#editEvent').on('hidden.bs.modal', function () {
-                                        tinymce.get('eventNote').remove();
-                                    })
+                                        if(tinymce.get('eventNote') !== null){
+                                            tinymce.get('eventNote').remove();
+                                        }
+                                    });
 
                                     $.Oda.Scope.Gardian.add({
                                         id : "listAddress",
