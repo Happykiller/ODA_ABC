@@ -81,3 +81,14 @@
     * type : PUT
     * mandatory params : "content"
     * public : false
+   
+## Rapport
+
+* `/report/count_time/:userId`
+    * mandatory params : "start","end"
+    * type : GET
+    * public : false
+* `/report/heat/:userId`
+    * mandatory params : "start","end"
+    * type : GET
+    * public : false

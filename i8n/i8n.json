@@ -3,7 +3,7 @@
     "groupName" : "home"
     , "fr" : {
       "title" : "Accueil",
-      "hello" : "Bonjour avec le FrameWork Oda"
+      "hello" : "Gestion d'activité pour l'aide à la personne."
     }
   },{
     "groupName" : "patients"

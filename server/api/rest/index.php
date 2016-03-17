@@ -145,6 +145,14 @@ $slim->get('/report/count_time/:userId', function ($userId) use ($slim) {
     $INTERFACE->getCountTime($userId);
 });
 
+$slim->get('/report/heat/:userId', function ($userId) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->slim = $slim;
+    $params->arrayInput = array("start", "end");
+    $INTERFACE = new ReportInterface($params);
+    $INTERFACE->getHeat($userId);
+});
+
 //--------------------------------------------------------------------------
 // ADDRESS
 

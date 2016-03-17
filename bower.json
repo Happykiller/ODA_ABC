@@ -17,6 +17,7 @@
   "dependencies": {
     "Oda": "*",
     "fullcalendar" : "*",
-    "tinymce-dist": "*"
+    "tinymce": "*",
+    "cal-heatmap": "*"
   }
 }

@@ -41,18 +41,10 @@
                     ordered : true,
                     "list" : [
                         { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/fullcalendar.min.css", "type" : "css"},
-                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/moment/min/moment.min.js", "type" : "script"},
                         { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/fullcalendar.min.js", "type" : "script"},
                         { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/lang/fr.js", "type" : "script"},
                         { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/lang/es.js", "type" : "script"},
                         { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/lang/it.js", "type" : "script"}
-                    ]
-                });
-
-                $.Oda.Router.addDependencies("tinymce", {
-                    ordered : true,
-                    "list" : [
-                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/tinymce/tinymce.min.js", "type" : "script"}
                     ]
                 });
 
@@ -95,12 +87,54 @@
                  */
                 start: function () {
                     try {
+                        $.Oda.App.Controller.Home.displayHeatMap();
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Home.start : " + er.message);
                         return null;
                     }
-                }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Home}
+                 */
+                displayHeatMap : function () {
+                    try {
+                        var startMonth = moment().subtract(1, "month").startOf('month');
+                        var endMonth = moment().add(1, "month").endOf('month');
+
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/heat/"+ $.Oda.Session.id, {callback : function(response){
+                            var datas = {};
+                            for(var index in response.data){
+                                var date = new Date(response.data[index].date).getTime() / 1000;
+                                datas[date] = parseInt(response.data[index].count);
+                            }
+
+                            var startdate = moment();
+                            startdate = startdate.subtract(1, "month");
+                            var cal = new CalHeatMap();
+                            cal.init({
+                                itemSelector: "#divHeatMap",
+                                domain: "month",
+                                subDomain: "x_day",
+                                data: datas,
+                                start: startMonth.toDate(),
+                                cellSize: 15,
+                                range: 3,
+                                rowLimit: 7,
+                                highlight: ["now"],
+                                weekStartOnMonday: true,
+                                legend: [0, 2, 4, 6, 10]
+                            });
+                        }},{
+                            start: startMonth.format('YYYY-MM-DD'),
+                            end: endMonth.format('YYYY-MM-DD')
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Home.displayHeatMap : " + er.message);
+                        return null;
+                    }
+                },
             },
             "Patients": {
                 "currentPatient": {},
