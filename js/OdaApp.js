@@ -109,20 +109,33 @@
                                 datas[date] = parseInt(response.data[index].count);
                             }
 
-                            var startdate = moment();
-                            startdate = startdate.subtract(1, "month");
+                            var div = $('#divHeatMap');
+                            var cellSize = Math.ceil(div.width() / 23);
                             var cal = new CalHeatMap();
                             cal.init({
                                 itemSelector: "#divHeatMap",
                                 domain: "month",
                                 subDomain: "x_day",
-                                data: datas,
                                 start: startMonth.toDate(),
-                                cellSize: 15,
+                                cellSize: cellSize,
                                 range: 3,
-                                rowLimit: 7,
+                                data: datas,
+                                tooltip: true,
                                 highlight: ["now"],
                                 weekStartOnMonday: true,
+                                subDomainTextFormat: function(date ,value) {
+                                    var str;
+                                    if(cellSize >= 30){
+                                        str = moment(date).format('dd D');
+                                    }else if (cellSize >= 20 && cellSize < 30){
+                                        var day = moment(date).format('dd').substr(0,1);
+                                        var nu = moment(date).format('D');
+                                        str = day+nu;
+                                    }else if(cellSize >= 12 && cellSize < 20){
+                                        str = moment(date).format('D');
+                                    }
+                                    return str;
+                                },
                                 legend: [0, 2, 4, 6, 10]
                             });
                         }},{
