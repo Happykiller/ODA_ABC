@@ -57,7 +57,12 @@
       "pbAuthGoogle": "Pas de session Google en cours, donc pas de synchronisation avec le calendar possible.",
       "reminderMemos": "Rappel des mémos",
       "memoContent": "Contenu",
-      "actions": "Actions"
+      "actions": "Actions",
+      "actionType": "Type",
+      "actionSubType": "sous Type",
+      "actionComment": "Commentaires",
+      "actionNew": "Nouvelle action",
+      "action": "Action"
     }
   }
 ]

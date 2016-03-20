@@ -92,3 +92,22 @@
     * mandatory params : "start","end"
     * type : GET
     * public : false
+    
+## Actions
+
+* `/actions/search/event/`
+    * mandatory params : "event_id"
+    * type : GET
+* `/actions/`
+    * mandatory params : "event_id","action_type_id","action_sub_type_id","comment","author_id"
+    * type : POST
+    * public : false
+* `/actions/type/`
+    * type : GET
+    * public : false
+* `/actions/sub_type/`
+    * type : GET
+    * public : false
+* `/actions/:id`
+    * type : DELETE
+    * public : false

@@ -165,6 +165,48 @@ $slim->get('/address/search/patient/:id', function ($id) use ($slim) {
 });
 
 //--------------------------------------------------------------------------
+// ACTIONS
+
+$slim->get('/actions/search/event/', function () use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("event_id");
+    $params->slim = $slim;
+    $INTERFACE = new ActionsInterface($params);
+    $INTERFACE->getAllByEvent();
+});
+
+$slim->post('/actions/', function () use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("event_id","action_type_id","action_sub_type_id","comment","author_id");
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new ActionsInterface($params);
+    $INTERFACE->create();
+});
+
+$slim->get('/actions/type/', function () use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->slim = $slim;
+    $INTERFACE = new ActionsInterface($params);
+    $INTERFACE->getAllType();
+});
+
+$slim->get('/actions/sub_type/', function () use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->slim = $slim;
+    $INTERFACE = new ActionsInterface($params);
+    $INTERFACE->getAllSubType();
+});
+
+$slim->delete('/actions/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new ActionsInterface($params);
+    $INTERFACE->delete($id);
+});
+
+//--------------------------------------------------------------------------
 // MEMOS
 
 $slim->get('/memo/search/patient/:id', function ($id) use ($slim) {

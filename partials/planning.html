@@ -127,6 +127,35 @@
             </div>
         </div>
     </div>
+    <div id="divEditActions">
+        <hr>
+        <div class="row">
+            <div class="col-md-12">
+                <label oda-label="planning.actions">planning.actions</label>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped" id="tabActions">
+                        <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th style="width: 100px;" oda-label="planning.actionType">planning.actionType</th>
+                            <th style="width: 150px;" oda-label="planning.actionSubType">planning.actionSubType</th>
+                            <th oda-label="planning.actionComment">planning.actionComment</th>
+                            <th style="width: 100px;" oda-label="planning.actions">actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-12" id="divActionNew" style="display: none;">
+            </div>
+            <div class="col-md-12" id="divBtActionNew">
+                <button type="button" oda-label="planning.actionNew" onclick="$.Oda.App.Controller.Planning.formAction();" class="btn btn-primary">actionNew</button>
+            </div>
+        </div>
+    </div>
+    </div>
     <hr>
     <div class="row">
         <div class="col-md-12">
@@ -175,6 +204,46 @@
         background-color: rgba(250, 128, 128, 0.74) !important;
     }
 </style>
+
+<script id="tlpNewAction" type="text/template">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="typeActionId" oda-label="planning.actionType">planning.actionType</label>
+                <select class="form-control" oda-input-select="typeActionId" required>
+                    <option value="" oda-label="oda-main.select-default"></option>
+                    {{types}}
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6" id="divActionSubType">
+        </div>
+        <div class="col-md-12">
+            <div class="form-group">
+                <textarea class="form-control" rows="2" id="newActionComment" maxlength="255"></textarea>
+                <span class="downChar"><label id="downCount"></label> <label oda-label="patients.charRemaining"></label></span>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id="tlpActionSubType" type="text/template">
+    <label for="actionSubTypeId" oda-label="planning.actionSubType">planning.actionSubType</label>
+    <select class="form-control" oda-input-select="actionSubTypeId" required>
+        <option value="" oda-label="oda-main.select-default"></option>
+        {{subTypes}}
+    </select>
+</script>
+
+<script id="tlpRowTabActions" type="text/template">
+    <tr>
+        <th scope="row">{{id}}</th>
+        <td>{{type}}</td>
+        <td>{{subType}}</td>
+        <td>{{comment}}</td>
+        <td style="text-align: center">{{remove}}</td>
+    </tr>
+</script>
 
 <script>
     $.Oda.App.Controller.Planning.start();

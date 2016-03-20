@@ -136,7 +136,7 @@
                                     }
                                     return str;
                                 },
-                                legend: [0, 2, 4, 6, 10]
+                                legend: [4, 6, 10]
                             });
                         }},{
                             start: startMonth.format('YYYY-MM-DD'),
@@ -647,6 +647,8 @@
                 "currentEvent": {},
                 "patients": [],
                 "address": [],
+                "actionsType": [],
+                "actionsSubType": [],
                 /**
                  * @returns {$.Oda.App.Controller.Planning}
                  */
@@ -654,6 +656,12 @@
                     try {
                         $.Oda.App.Controller.Planning.sessionGoogleStart();
                         $.Oda.App.Controller.Planning.displayPlanning();
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/actions/type/", {callback : function(response){
+                            $.Oda.App.Controller.Planning.actionsType = response.data;
+                        }});
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/actions/sub_type/", {callback : function(response){
+                            $.Oda.App.Controller.Planning.actionsSubType = response.data;
+                        }});
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.start : " + er.message);
@@ -1148,6 +1156,7 @@
                                     }});
 
                                     $.Oda.App.Controller.Planning.displayMemos({patientId: eventData.patient_id});
+                                    $.Oda.App.Controller.Planning.displayAction();
 
                                     tinymce.init({
                                         selector: '#eventNote',
@@ -1347,6 +1356,8 @@
                     }
                 },
                 /**
+                 * @param {Object} p_params
+                 * @param p_params.id
                  * @returns {$.Oda.App.Controller.Planning}
                  */
                 deleteEvent: function (params) {
@@ -1362,7 +1373,7 @@
                         });
                         return this;
                     } catch (er) {
-                        $.Oda.Log.error("$.Oda.App.Controller.Planning.start : " + er.message);
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.deleteEvent : " + er.message);
                         return null;
                     }
                 },
@@ -1383,6 +1394,186 @@
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.readMemo : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                displayAction: function () {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/actions/search/event/", {callback : function(response){
+                            $("#tabActions > tbody").empty();
+                            for(var index in response.data) {
+                                var elt = response.data[index];
+                                if(elt.active === "1"){
+                                    var comment = elt.comment;
+                                    if(comment.length > 50){
+                                        comment = comment.substr(0,50) + " ...";
+                                    }
+                                    var strHtml = $.Oda.Display.TemplateHtml.create({
+                                        template : "tlpRowTabActions"
+                                        , scope : {
+                                            "id": elt.id,
+                                            "type": elt.action_type_label,
+                                            "subType": elt.action_sub_type_label,
+                                            "comment": comment,
+                                            "remove": ' <button type="button" class="btn btn-danger btn-xs" onclick="$.Oda.App.Controller.Planning.removeAction({id:'+elt.id+'});"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>'
+                                        }
+                                    });
+                                    $('#tabActions > tbody:last-child').append(strHtml);
+                                }
+                            }
+                        }},{
+                            "event_id": $.Oda.App.Controller.Planning.currentEvent.id
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.displayAction : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                formAction: function () {
+                    try {
+                        var strTypes = "";
+                        for(var index in $.Oda.App.Controller.Planning.actionsType){
+                            var elt = $.Oda.App.Controller.Planning.actionsType[index];
+                            if(elt.active === '1'){
+                                strTypes += '<option value="'+ elt.id +'">' + elt.label + '</option>';
+                            }
+                        }
+                        var strHtml = $.Oda.Display.TemplateHtml.create({
+                            template : "tlpNewAction"
+                            , scope : {
+                                "types": strTypes
+                            }
+                        });
+                        $.Oda.Display.render({
+                            "id": "divActionNew",
+                            "html": strHtml
+                        });
+                        $.Oda.Display.render({
+                            "id": "divBtActionNew",
+                            "html": '<button id="btSubmitNewAction" type="button" oda-label="oda-main.bt-submit" onclick="$.Oda.App.Controller.Planning.submitAction();" class="btn btn-primary disabled" disabled>oda-main.submit</button> <button type="button" oda-label="patients.cancelMemo" onclick="$.Oda.App.Controller.Planning.cancelAction();" class="btn btn-secondary">cancelMemo</button>'
+                        });
+                        $('#divActionNew').fadeIn();
+                        $.Oda.Scope.Gardian.add({
+                            id : "gNewAction",
+                            listElt : ["typeActionId", "newActionComment"],
+                            function : function(e){
+                                if( ($("#typeActionId").data("isOk")) ){
+                                    var strSubTypes = "";
+                                    for(var index in $.Oda.App.Controller.Planning.actionsSubType){
+                                        var elt = $.Oda.App.Controller.Planning.actionsSubType[index];
+                                        if((elt.active === '1') && (elt.action_type_id === $('#typeActionId').val())){
+                                            strSubTypes += '<option value="'+ elt.id +'">' + elt.label + '</option>';
+                                        }
+                                    }
+                                    var strHtml = $.Oda.Display.TemplateHtml.create({
+                                        template : "tlpActionSubType"
+                                        , scope : {
+                                            "subTypes": strSubTypes
+                                        }
+                                    });
+                                    $.Oda.Display.render({
+                                        "id": "divActionSubType",
+                                        "html": strHtml
+                                    });
+
+                                    for(var index in $.Oda.App.Controller.Planning.actionsType){
+                                        var elt = $.Oda.App.Controller.Planning.actionsType[index];
+                                        if(elt.id === $('#typeActionId').val()){
+                                            $('#newActionComment').prop('placeholder', elt.placeholder);
+                                        }
+                                    }
+                                    
+                                    $("#btSubmitNewAction").removeClass("disabled");
+                                    $("#btSubmitNewAction").removeAttr("disabled");
+                                }else{
+                                    $('#divActionSubType').html('');
+                                    $("#btSubmitNewAction").addClass("disabled");
+                                    $("#btSubmitNewAction").attr("disabled", true);
+                                }
+                            }
+                        });
+
+                        $('#downCount').html(255);
+                        $('#newActionComment').keyup(function() {
+                            var length = $(this).val().length;
+                            var RestLength = 255-length;
+                            $('#downCount').html(RestLength);
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.formAction : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                submitAction: function () {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/actions/", {type:'POST',callback : function(){
+                            $('#divActionNew').hide();
+                            $('#newActionComment').empty();
+                            $('#downCount').html(255);
+                            $.Oda.Display.render({
+                                "id": "divBtActionNew",
+                                "html": '<button type="button" oda-label="planning.actionNew" onclick="$.Oda.App.Controller.Planning.formAction();" class="btn btn-primary">actionNew</button>'
+                            });
+                            $.Oda.App.Controller.Planning.displayAction();
+                        }},{
+                            "event_id": $.Oda.App.Controller.Planning.currentEvent.id,
+                            "action_type_id": $('#typeActionId').val(),
+                            "action_sub_type_id": $('#actionSubTypeId').val(),
+                            "comment": $('#newActionComment').val(),
+                            "author_id": $.Oda.Session.id
+                        });
+
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.submitAction : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                cancelAction: function () {
+                    try {
+                        $('#divActionNew').hide();
+                        $('#newActionComment').empty();
+                        $('#downCount').html(255);
+                        $.Oda.Display.render({
+                            "id": "divBtActionNew",
+                            "html": '<button type="button" oda-label="planning.actionNew" onclick="$.Oda.App.Controller.Planning.formAction();" class="btn btn-primary">actionNew</button>'
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.cancelAction : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.id
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                removeAction: function (params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/actions/"+params.id, {type:'DELETE',callback : function(response){
+                            $.Oda.App.Controller.Planning.displayAction();
+                        }});
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.removeAction : " + er.message);
                         return null;
                     }
                 },
