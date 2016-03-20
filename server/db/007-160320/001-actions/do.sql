@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `@prefix@tab_actions_sub_type` (
   `label` varchar(250) NOT NULL,
   `active` TINYINT(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  KEY `action_id` (`action_id`)
+  KEY `action_id` (`action_type_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
 
 --
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `@prefix@tab_actions_type` (
 -- Contenu de la table `tab_actions_type`
 --
 
-INSERT INTO `@prefix@tab_actions_type` (`label`) VALUES
+INSERT INTO `@prefix@tab_actions_type` (`label`, `placeholder`) VALUES
   ('Toilette', 'participation, douleurs, difficultés'),
   ('Transfert', 'appréhensions, douleurs, difficultés'),
   ('Repas', 'stimulations, quantités'),
