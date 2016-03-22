@@ -27,5 +27,12 @@
         <script src="bower_components/tinymce/tinymce.min.js"></script>
         <script src="bower_components/d3/d3.min.js"></script>
         <script src="bower_components/cal-heatmap/cal-heatmap.min.js"></script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUzDOo12Id5r6J768Z90n4VY0firWlh5g&callback=initMap"></script>
+        <script>
+            $.Oda.Google.Map = {};
+            function initMap(){
+                $.Oda.Google.Map.service = new google.maps.DistanceMatrixService();
+            }
+        </script>
     </body>
 </html>

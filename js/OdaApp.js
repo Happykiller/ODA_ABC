@@ -920,7 +920,7 @@
                                     if($('#countTime').exists()){
                                         $('#countTime').html(countTime);
                                     }else{
-                                        $('.fc-toolbar .fc-left').append(' <div id="countTime">'+countTime+'</div>');
+                                        $('.fc-toolbar .fc-left').append(' <span>Temps avec patient : </span><div id="countTime">'+countTime+'</div><span>, </span><div id="trajetInfo"></div>');
                                     }
                                 }},{
                                     "start": currentStart.format('YYYY-MM-DD'),
@@ -940,6 +940,11 @@
                                     }
                                     callback(events);
                                 }},{
+                                    "start": start.format('YYYY-MM-DD'),
+                                    "end": end.format('YYYY-MM-DD')
+                                });
+
+                                $.Oda.App.Controller.Planning.calcTrajet({
                                     "start": start.format('YYYY-MM-DD'),
                                     "end": end.format('YYYY-MM-DD')
                                 });
@@ -1574,6 +1579,73 @@
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.removeAction : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.start
+                 * @param p_params.end
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                calcTrajet: function (p_params) {
+                    try {
+                        if($.Oda.Google.Map.service !== undefined){
+                            var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/trajet/"+$.Oda.Session.id, {callback : function(response){
+                                var distanceTotal = 0;
+                                var durationTotal = 0;
+                                var trajetUnknow = {
+                                    address_id_ori: 0,
+                                    addresse_label_ori: "",
+                                    address_id_dest: 0,
+                                    address_label_dest: ""
+                                }
+                                var trajets = response.data;
+                                for(var index in trajets){
+                                    var trajet = trajets[index];
+                                    if(trajet.distance !== null){
+                                        distanceTotal += parseInt(trajet.distance_m);
+                                        durationTotal += parseInt(trajet.duration_s);
+                                    }else if(trajetUnknow.address_id_ori === 0){
+                                        trajetUnknow.address_id_ori = trajet.address_id_ori;
+                                        trajetUnknow.address_label_ori = trajet.address_label_ori;
+                                        trajetUnknow.address_id_dest = trajet.address_id_dest;
+                                        trajetUnknow.address_label_dest = trajet.address_label_dest;
+                                    }
+                                }
+                                var displayTime = moment.duration(durationTotal, "seconds");
+                                var displayDistance = distanceTotal / 1000;
+                                $('#trajetInfo').html('Temps de trajet : '+displayTime.hours()+'h'+displayTime.minutes()+'m, distance parcouru : '+ displayDistance+'km')
+                                if(trajetUnknow.address_id_ori !== 0){
+                                    $.Oda.Google.Map.service.getDistanceMatrix({
+                                        origins: [trajetUnknow.address_label_ori],
+                                        destinations: [trajetUnknow.address_label_dest],
+                                        travelMode: google.maps.TravelMode.BICYCLING
+                                    }, function(responseMap, status){
+                                        var responseMap = responseMap.rows[0].elements[0];
+                                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/address/trajet/", {type:"POST", callback : function(response){
+                                            $.Oda.App.Controller.Planning.calcTrajet({
+                                                "start": p_params.start,
+                                                "end": p_params.end
+                                            });
+                                        }},{
+                                            address_id_ori: trajetUnknow.address_id_ori,
+                                            address_id_dest: trajetUnknow.address_id_dest,
+                                            distance: responseMap.distance.text,
+                                            distance_m: responseMap.distance.value,
+                                            duration: responseMap.duration.text,
+                                            duration_s: responseMap.duration.value
+                                        });
+                                    });
+                                }
+                            }},{
+                                "start": p_params.start,
+                                "end": p_params.end
+                            });
+                        }
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.calcTrajet : " + er.message);
                         return null;
                     }
                 },

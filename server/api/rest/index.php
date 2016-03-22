@@ -153,6 +153,14 @@ $slim->get('/report/heat/:userId', function ($userId) use ($slim) {
     $INTERFACE->getHeat($userId);
 });
 
+$slim->get('/report/trajet/:userId', function ($userId) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->slim = $slim;
+    $params->arrayInput = array("start", "end");
+    $INTERFACE = new ReportInterface($params);
+    $INTERFACE->getAllTrajet($userId);
+});
+
 //--------------------------------------------------------------------------
 // ADDRESS
 
@@ -162,6 +170,15 @@ $slim->get('/address/search/patient/:id', function ($id) use ($slim) {
     $params->slim = $slim;
     $INTERFACE = new AddressInterface($params);
     $INTERFACE->getByPatientId($id);
+});
+
+$slim->post('/address/trajet/', function () use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("address_id_ori","address_id_dest","distance","distance_m","duration","duration_s");
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new AddressInterface($params);
+    $INTERFACE->createTrajet();
 });
 
 //--------------------------------------------------------------------------
