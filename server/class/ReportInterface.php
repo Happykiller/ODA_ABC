@@ -102,7 +102,7 @@ class ReportInterface extends OdaRestInterface {
             FROM `tab_events` a
             WHERE 1 = 1
               AND a.`active` = 1
-              AND a.`$userId` = :user_id
+              AND a.`author_id` = :user_id
             ;
             
             DROP TABLE IF EXISTS tmp1;
