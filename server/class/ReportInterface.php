@@ -90,6 +90,7 @@ class ReportInterface extends OdaRestInterface {
               a.`id` as 'event_id_dest',
               a.`address_id` AS 'address_id_dest',
               a.`start` as 'start_dest',
+              a.`author_id`,
               (
                 SELECT MAX(b.`start`) as 'start_ori'
                 FROM `tab_events` b
@@ -113,6 +114,7 @@ class ReportInterface extends OdaRestInterface {
               FROM `tmp0` a, `tab_events` b
               WHERE 1=1
               AND a.`start_ori` = b.`start`
+              AND a.`author_id` = b.`author_id`
             ;";
             $params->bindsValue = [
                 "user_id" => $userId,
