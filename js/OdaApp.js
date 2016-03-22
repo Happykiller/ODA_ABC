@@ -1613,9 +1613,10 @@
                                         trajetUnknow.address_label_dest = trajet.address_label_dest;
                                     }
                                 }
-                                var displayTime = moment.duration(durationTotal, "seconds");
+                                var hours = Math.floor(durationTotal / 60 / 60);
+                                var minute = Math.ceil((durationTotal - (hours*60*60)) / 60);
                                 var displayDistance = distanceTotal / 1000;
-                                $('#trajetInfo').html('Temps de trajet : '+displayTime.hours()+'h'+displayTime.minutes()+'m, distance parcouru : '+ displayDistance+'km')
+                                $('#trajetInfo').html('Temps de trajet : '+hours+'h'+minute+'m, distance parcouru : '+ displayDistance+'km')
                                 if(trajetUnknow.address_id_ori !== 0){
                                     $.Oda.Google.Map.service.getDistanceMatrix({
                                         origins: [trajetUnknow.address_label_ori],
