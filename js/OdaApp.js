@@ -945,8 +945,8 @@
                                 });
 
                                 $.Oda.App.Controller.Planning.calcTrajet({
-                                    "start": start.format('YYYY-MM-DD'),
-                                    "end": end.format('YYYY-MM-DD')
+                                    "start": currentStart.format('YYYY-MM-DD'),
+                                    "end": currentEnd.format('YYYY-MM-DD')
                                 });
                             },
                             eventMouseover: function(calEvent, jsEvent) {
@@ -1590,6 +1590,7 @@
                  */
                 calcTrajet: function (p_params) {
                     try {
+                        console.log(p_params);
                         if($.Oda.Google.Map.service !== undefined){
                             var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/trajet/"+$.Oda.Session.id, {callback : function(response){
                                 var distanceTotal = 0;
