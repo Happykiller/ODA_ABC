@@ -1468,21 +1468,22 @@
                             "html": '<button id="btSubmitNewAction" type="button" oda-label="oda-main.bt-submit" onclick="$.Oda.App.Controller.Planning.submitAction();" class="btn btn-primary disabled" disabled>oda-main.submit</button> <button type="button" oda-label="patients.cancelMemo" onclick="$.Oda.App.Controller.Planning.cancelAction();" class="btn btn-secondary">cancelMemo</button>'
                         });
                         $('#divActionNew').fadeIn();
+
                         $.Oda.Scope.Gardian.add({
-                            id : "gNewAction",
-                            listElt : ["typeActionId", "newActionComment"],
-                            function : function(e){
-                                if( ($("#typeActionId").data("isOk")) ){
+                            id: "gChangeActionId",
+                            listElt: ["typeActionId"],
+                            function: function (e) {
+                                if (($("#typeActionId").data("isOk"))) {
                                     var strSubTypes = "";
-                                    for(var index in $.Oda.App.Controller.Planning.actionsSubType){
+                                    for (var index in $.Oda.App.Controller.Planning.actionsSubType) {
                                         var elt = $.Oda.App.Controller.Planning.actionsSubType[index];
-                                        if((elt.active === '1') && (elt.action_type_id === $('#typeActionId').val())){
-                                            strSubTypes += '<option value="'+ elt.id +'">' + elt.label + '</option>';
+                                        if ((elt.active === '1') && (elt.action_type_id === $('#typeActionId').val())) {
+                                            strSubTypes += '<option value="' + elt.id + '">' + elt.label + '</option>';
                                         }
                                     }
                                     var strHtml = $.Oda.Display.TemplateHtml.create({
-                                        template : "tlpActionSubType"
-                                        , scope : {
+                                        template: "tlpActionSubType"
+                                        , scope: {
                                             "subTypes": strSubTypes
                                         }
                                     });
@@ -1491,19 +1492,26 @@
                                         "html": strHtml
                                     });
 
-                                    for(var index in $.Oda.App.Controller.Planning.actionsType){
+                                    for (var index in $.Oda.App.Controller.Planning.actionsType) {
                                         var elt = $.Oda.App.Controller.Planning.actionsType[index];
-                                        if(elt.id === $('#typeActionId').val()){
+                                        if (elt.id === $('#typeActionId').val()) {
                                             $('#newActionComment').prop('placeholder', elt.placeholder);
                                         }
                                     }
-                                    
-                                    $("#btSubmitNewAction").removeClass("disabled");
-                                    $("#btSubmitNewAction").removeAttr("disabled");
                                 }else{
                                     $('#divActionSubType').html('');
-                                    $("#btSubmitNewAction").addClass("disabled");
-                                    $("#btSubmitNewAction").attr("disabled", true);
+                                }
+                            }
+                        });
+
+                        $.Oda.Scope.Gardian.add({
+                            id : "gNewAction",
+                            listElt : ["typeActionId", "newActionComment","actionSubTypeId"],
+                            function : function(e){
+                                if( ($("#typeActionId").data("isOk")) && ($("#actionSubTypeId").data("isOk")) ){
+                                    $("#btSubmitNewAction").btEnable();
+                                }else{
+                                    $("#btSubmitNewAction").btDisable();
                                 }
                             }
                         });
@@ -1590,7 +1598,6 @@
                  */
                 calcTrajet: function (p_params) {
                     try {
-                        console.log(p_params);
                         if($.Oda.Google.Map.service !== undefined){
                             var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/trajet/"+$.Oda.Session.id, {callback : function(response){
                                 var distanceTotal = 0;
