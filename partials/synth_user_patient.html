@@ -1,0 +1,39 @@
+<div class="container">
+    <h2 oda-label="synth_user_patient.title"></h2>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label for="patientId" oda-label="synth_user_patient.patientId">synth_user_patient.patientId</label>
+            <select class="form-control" oda-input-select="patientId" required>
+                <option value="" oda-label="oda-main.select-default"></option>
+                {{patientIds}}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="week" oda-label="synth_user_patient.week">synth_user_patient.week</label>
+            <div class="form-group">
+                <input type="date" class="form-control" oda-input-text="week" oda-input-text-tips="synth_user_patient.week-tips" oda-input-text-placeholder="synth_user_patient.week-placeholder" oda-input-text-check="Oda.Regexs:noInjection" required>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12" id="report">
+        </div>
+    </div>
+</div>
+
+<script id="tlpSynth" type="text/template">
+    <div class="row">
+        <div class="col-md-12" style="text-align: center">
+            <p><h2 oda-label="synth_user_patient.title" style="font-weight: bold"></h2></p>
+            <p><h3>Semaine du <span style="font-weight: bold">{{start}}</span> au <span style="font-weight: bold">{{end}}</span></h3></p>
+            <p><h3>Patient <span style="font-weight: bold">{{patient}}</span> prise en charge par <span style="font-weight: bold">{{user}}</span></h3></p>
+        </div>
+    </div>
+</script>
+
+
+<script>
+    $.Oda.App.Controller.SynthUserPatient.start();
+</script>

@@ -155,4 +155,111 @@ class ReportInterface extends OdaRestInterface {
             die();
         }
     }
+
+    /**
+     */
+    function getSynthUserPatient() {
+        try {
+            $datas = new stdClass();
+
+            $params = new OdaPrepareReqSql();
+            $params->sql = "SELECT a.`name_first`, a.`name_last`
+                FROM `tab_patients` a
+                WHERE 1=1
+                AND a.`id` = :patientId
+            ;";
+            $params->bindsValue = [
+                "patientId" => $this->inputs["patientId"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_GET_ONE;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+            $datas->patientInfo = $retour->data;
+
+            $params = new OdaPrepareReqSql();
+            $params->sql = "SELECT a.`nom` as 'name_first', a.`prenom` as 'name_last'
+                FROM `api_tab_utilisateurs` a
+                WHERE 1=1
+                AND a.`id` = :userId
+            ;";
+            $params->bindsValue = [
+                "userId" => $this->inputs["userId"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_GET_ONE;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+            $datas->userInfo = $retour->data;
+
+            $params = new OdaPrepareReqSql();
+            $params->sql = "SELECT DATE_FORMAT(a.`start`, '%Y-%m-%d') as 'date'
+                FROM `tab_events` a
+                WHERE 1=1
+                AND a.`patient_id` = :patientId
+                AND a.`author_id` = :userId
+                AND a.`start` >= :dateStart
+                AND a. `end` <= (STR_TO_DATE(:dateEnd,'%Y-%m-%d') + INTERVAL 1 DAY)
+                GROUP BY DATE_FORMAT(a.`start`, '%Y-%m-%d')
+            ;";
+            $params->bindsValue = [
+                "userId" => $this->inputs["userId"],
+                "patientId" => $this->inputs["patientId"],
+                "dateStart" => $this->inputs["dateStart"],
+                "dateEnd" => $this->inputs["dateEnd"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_GET_ALL;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+            $dates = $retour->data->data;
+
+            $datas->time = 0;
+            $datas->dates = [];
+            foreach ($dates as $value){
+                $date = new stdClass();
+                $date->date = $value->date;
+
+                $params = new OdaPrepareReqSql();
+                $params->sql = "SELECT a.`id`, a.`start`, a.`end`, timestampdiff(SECOND, a.`start`, a.`end`) as 'time'
+                    FROM `tab_events` a
+                    WHERE 1=1
+                    AND a.`patient_id` = :patientId
+                    AND a.`author_id` = :userId
+                    AND DATE_FORMAT(a.`start`, '%Y-%m-%d') = :date
+                ;";
+                $params->bindsValue = [
+                    "userId" => $this->inputs["userId"],
+                    "patientId" => $this->inputs["patientId"],
+                    "date" => $value->date
+                ];
+                $params->typeSQL = OdaLibBd::SQL_GET_ALL;
+                $retour = $this->BD_ENGINE->reqODASQL($params);
+                $date->events = $retour->data->data;
+
+                $date->time = 0;
+                foreach ($date->events as $event){
+                    $params = new OdaPrepareReqSql();
+                    $params->sql = "SELECT c.`label` as 'actions_type', d.`label` as 'actions_sub_type', a.`comment`
+                        FROM `tab_actions` a, `tab_events` b, `tab_actions_type` c, `tab_actions_sub_type` d
+                        WHERE 1=1
+                        AND a.`event_id` = b.`id`
+                        AND a.`action_type_id` = c.`id`
+                        AND a.`action_sub_type_id` = d.`id`
+                        AND a.`event_id` = :eventId
+                    ;";
+                    $params->bindsValue = [
+                        "eventId" => $event->id
+                    ];
+                    $params->typeSQL = OdaLibBd::SQL_GET_ALL;
+                    $retour = $this->BD_ENGINE->reqODASQL($params);
+                    $event->actions = $retour->data->data;
+
+                    $date->time += $event->time;
+                }
+                $datas->time += $date->time;
+                $datas->dates[] = $date;
+            }
+
+            $this->addDataObject($datas);
+        } catch (Exception $ex) {
+            $this->object_retour->strErreur = $ex.'';
+            $this->object_retour->statut = self::STATE_ERROR;
+            die();
+        }
+    }
 }

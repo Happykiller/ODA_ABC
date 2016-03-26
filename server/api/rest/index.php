@@ -161,6 +161,14 @@ $slim->get('/report/trajet/:userId', function ($userId) use ($slim) {
     $INTERFACE->getAllTrajet($userId);
 });
 
+$slim->get('/report/synth_user_patient', function () use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->slim = $slim;
+    $params->arrayInput = array("userId", "patientId", "dateStart", "dateEnd");
+    $INTERFACE = new ReportInterface($params);
+    $INTERFACE->getSynthUserPatient();
+});
+
 //--------------------------------------------------------------------------
 // ADDRESS
 

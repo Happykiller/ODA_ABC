@@ -71,6 +71,13 @@
                     "dependencies" : ["fullcalendar"]
                 });
 
+                $.Oda.Router.addRoute("synth_user_patient", {
+                    "path" : "partials/synth_user_patient.html",
+                    "title" : "synthUserPatient.title",
+                    "urls" : ["synth_user_patient"],
+                    "middleWares" : ["support","auth"]
+                });
+
                 $.Oda.Router.startRooter();
 
                 return this;
@@ -1655,6 +1662,81 @@
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.calcTrajet : " + er.message);
+                        return null;
+                    }
+                },
+            },
+            SynthUserPatient: {
+                /**
+                 * @param {object} p_params
+                 * @param p_params.id
+                 * @returns {$.Oda.App.Controller.SynthUserPatient}
+                 */
+                start: function (p_params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/synth_user_patient", {callback : function(response){
+                            console.log(response);
+                            var strHtml = $.Oda.Display.TemplateHtml.create({
+                                template : "tlpSynth"
+                                , scope : {
+                                    start: moment('2016-03-21').format('DD/MM/YYYY'),
+                                    end: moment('2016-03-27').format('DD/MM/YYYY'),
+                                    patient: response.data.patientInfo.name_first + " " + response.data.patientInfo.name_last,
+                                    user: response.data.userInfo.name_first + " " + response.data.userInfo.name_last
+                                }
+                            });
+                            $("#report").html(strHtml);
+                        }},{
+                            userId: 3,
+                            patientId: 6,
+                            dateStart: '2016-03-21',
+                            dateEnd: '2016-03-27'
+                        });
+
+
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/", {callback : function(response){
+                            $.Oda.App.Controller.Planning.patients = response.data;
+                            for(var index in response.data){
+                                var elt = response.data[index];
+                                if(elt.active === '1'){
+                                    $('#patientId').append('<option value="'+ elt.id +'">' + elt.name_first + ' ' + elt.name_last + ( (elt.address_id_default===null)?' (Pas d\'adresse)':'' ) + '</option>')
+                                }
+                            }
+                        }});
+
+                        $.Oda.Scope.Gardian.add({
+                            id : "gSynth",
+                            listElt : ["patientId", "week"],
+                            function : function(e){
+                                var $week = $('#week');
+                                var $patientId = $('#patientId');
+                                if( ($patientId.data("isOk")) && ($week.data("isOk")) ){
+                                    var dateStart = moment($week.val()).startOf('week').format('YYYY-MM-DD');
+                                    var dateEnd = moment($week.val()).endOf('week').format('YYYY-MM-DD');
+                                    console.log(dateStart,dateEnd);
+                                    var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/synth_user_patient", {callback : function(response){
+                                        console.log(response);
+                                        var strHtml = $.Oda.Display.TemplateHtml.create({
+                                            template : "tlpSynth"
+                                            , scope : {
+
+                                            }
+                                        });
+                                        $("#report").html(strHtml);
+                                    }},{
+                                        userId: $.Oda.Session.id,
+                                        patientId: $patientId.val(),
+                                        dateStart: dateStart,
+                                        dateEnd: dateEnd
+                                    });
+                                }else{
+                                    $("#report").html('');
+                                }
+                            }
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.SynthUserPatient.start : " + er.message);
                         return null;
                     }
                 },
