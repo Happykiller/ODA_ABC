@@ -192,6 +192,7 @@ class ReportInterface extends OdaRestInterface {
             $params->sql = "SELECT DATE_FORMAT(a.`start`, '%Y-%m-%d') as 'date'
                 FROM `tab_events` a
                 WHERE 1=1
+                AND a.`active` = 1
                 AND a.`patient_id` = :patientId
                 AND a.`author_id` = :userId
                 AND a.`start` >= :dateStart
@@ -218,6 +219,7 @@ class ReportInterface extends OdaRestInterface {
                 $params->sql = "SELECT a.`id`, a.`start`, a.`end`, timestampdiff(SECOND, a.`start`, a.`end`) as 'time', a.`note`
                     FROM `tab_events` a
                     WHERE 1=1
+                    AND a.`active` = 1
                     AND a.`patient_id` = :patientId
                     AND a.`author_id` = :userId
                     AND DATE_FORMAT(a.`start`, '%Y-%m-%d') = :date
