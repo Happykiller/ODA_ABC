@@ -215,7 +215,7 @@ class ReportInterface extends OdaRestInterface {
                 $date->date = $value->date;
 
                 $params = new OdaPrepareReqSql();
-                $params->sql = "SELECT a.`id`, a.`start`, a.`end`, timestampdiff(SECOND, a.`start`, a.`end`) as 'time'
+                $params->sql = "SELECT a.`id`, a.`start`, a.`end`, timestampdiff(SECOND, a.`start`, a.`end`) as 'time', a.`note`
                     FROM `tab_events` a
                     WHERE 1=1
                     AND a.`patient_id` = :patientId

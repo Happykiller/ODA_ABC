@@ -24,15 +24,36 @@
 </div>
 
 <script id="tlpSynth" type="text/template">
-    <div class="row">
-        <div class="col-md-12" style="text-align: center">
-            <p><h2 oda-label="synth_user_patient.title" style="font-weight: bold"></h2></p>
-            <p><h3>Semaine du <span style="font-weight: bold">{{start}}</span> au <span style="font-weight: bold">{{end}}</span></h3></p>
-            <p><h3>Patient <span style="font-weight: bold">{{patient}}</span> prise en charge par <span style="font-weight: bold">{{user}}</span></h3></p>
-        </div>
-    </div>
-</script>
+        <p style="text-align: center;font-weight: bold;font-size: large;" oda-label="synth_user_patient.title"></p>
 
+        <p>Semaine du <span style="font-weight: bold">{{start}}</span> au <span style="font-weight: bold">{{end}}</span></p>
+
+        <p>Patient <span style="font-weight: bold">{{patient}}</span> prise en charge par <span style="font-weight: bold">{{user}}</span></p>
+
+        <table class="table table-bordered" id="tabSynth">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Durée</th>
+                    <th>Début</th>
+                    <th>Fin</th>
+                    <th>Action</th>
+                    <th>Type</th>
+                    <th>Commentaires</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        Temps total : {{time}}
+
+        <p style="font-weight: bold;text-align: center">Être à vos côtés est notre priorité !</p>
+
+        <p style="text-align: center;font-size: 10px;">ABC Home Services 29, Boulevard des Alpes - 38240 Meylan - 04.76.61.44.22 / 06.78.16.28.96 - abc-home-services@hotmail.com</p>
+
+        <p style="text-align: center;font-size: 10px;">SARL au capital de 1000euro - RCS Grenoble B 812230597 - N°TVA : FR 05 812230597 - Agrément SAP 812230597</p>
+</script>
 
 <script>
     $.Oda.App.Controller.SynthUserPatient.start();

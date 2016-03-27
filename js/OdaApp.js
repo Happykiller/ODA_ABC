@@ -48,6 +48,13 @@
                     ]
                 });
 
+                $.Oda.Router.addDependencies("jsToPdf", {
+                    ordered : true,
+                    "list" : [
+                        { "elt" : "js/jspdf.min.js", "type" : "script"}
+                    ]
+                });
+
                 $.Oda.Router.addRoute("home", {
                     "path" : "partials/home.html",
                     "title" : "home.title",
@@ -75,7 +82,8 @@
                     "path" : "partials/synth_user_patient.html",
                     "title" : "synthUserPatient.title",
                     "urls" : ["synth_user_patient"],
-                    "middleWares" : ["support","auth"]
+                    "middleWares" : ["support","auth"],
+                    "dependencies" : ["jsToPdf"]
                 });
 
                 $.Oda.Router.startRooter();
@@ -1674,26 +1682,6 @@
                  */
                 start: function (p_params) {
                     try {
-                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/synth_user_patient", {callback : function(response){
-                            console.log(response);
-                            var strHtml = $.Oda.Display.TemplateHtml.create({
-                                template : "tlpSynth"
-                                , scope : {
-                                    start: moment('2016-03-21').format('DD/MM/YYYY'),
-                                    end: moment('2016-03-27').format('DD/MM/YYYY'),
-                                    patient: response.data.patientInfo.name_first + " " + response.data.patientInfo.name_last,
-                                    user: response.data.userInfo.name_first + " " + response.data.userInfo.name_last
-                                }
-                            });
-                            $("#report").html(strHtml);
-                        }},{
-                            userId: 3,
-                            patientId: 6,
-                            dateStart: '2016-03-21',
-                            dateEnd: '2016-03-27'
-                        });
-
-
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/", {callback : function(response){
                             $.Oda.App.Controller.Planning.patients = response.data;
                             for(var index in response.data){
@@ -1713,16 +1701,45 @@
                                 if( ($patientId.data("isOk")) && ($week.data("isOk")) ){
                                     var dateStart = moment($week.val()).startOf('week').format('YYYY-MM-DD');
                                     var dateEnd = moment($week.val()).endOf('week').format('YYYY-MM-DD');
-                                    console.log(dateStart,dateEnd);
                                     var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/synth_user_patient", {callback : function(response){
-                                        console.log(response);
                                         var strHtml = $.Oda.Display.TemplateHtml.create({
                                             template : "tlpSynth"
                                             , scope : {
-
+                                                start: moment('2016-03-21').format('DD/MM/YYYY'),
+                                                end: moment('2016-03-27').format('DD/MM/YYYY'),
+                                                patient: response.data.patientInfo.name_first + " " + response.data.patientInfo.name_last,
+                                                user: response.data.userInfo.name_first + " " + response.data.userInfo.name_last,
+                                                time: $.Oda.Date.convertSecondsToTime(response.data.time)
                                             }
                                         });
+                                        $("#btDlPdf").remove();
                                         $("#report").html(strHtml);
+
+                                        var strPatientCode = response.data.patientInfo.name_last.substr(0,2).toUpperCase() + response.data.patientInfo.name_first.substr(0,2).toUpperCase();
+                                        $("#report").after('<button id="btDlPdf" type="button" onclick="$.Oda.App.Controller.SynthUserPatient.getPdfReport({patientCode:\''+strPatientCode+'\'});" class="btn btn-info">'+$.Oda.I8n.getByString('synth_user_patient.pdf')+'</button>');
+
+                                        for(var indexDate in response.data.dates){
+                                            var elt = response.data.dates[indexDate];
+                                            var colored = indexDate % 2;
+                                            var strHtmlDate = '<tr '+(colored?'class="rowColored"':'')+'><td style="font-weight: bold;">'+moment(elt.date).format('DD/MM/YYYY')+'</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
+
+                                            $('#tabSynth > tbody:last-child').append(strHtmlDate);
+
+                                            for(var indexEvent in elt.events){
+                                                var event = elt.events[indexEvent];
+                                                var strHtmlEvent = '<tr '+(colored?'class="rowColored"':'')+'><td></td><td>'+$.Oda.Date.convertSecondsToTime(event.time)+'</td><td>'+moment(event.start).format('HH:mm')+'</td><td>'+moment(event.end).format('HH:mm')+'</td><td></td><td></td><td>'+event.note+'</td></tr>';
+
+                                                $('#tabSynth > tbody:last-child').append(strHtmlEvent);
+
+                                                for(var indexActions in event.actions){
+                                                    var action = event.actions[indexActions];
+                                                    var strHtmlEvent = '<tr '+(colored?'class="rowColored"':'')+'><td></td><td></td><td></td><td></td><td>'+action.actions_type+'</td><td>'+action.actions_sub_type+'</td><td>'+action.comment+'</td></tr>';
+
+                                                    $('#tabSynth > tbody:last-child').append(strHtmlEvent);
+                                                }
+                                            }
+
+                                        }
                                     }},{
                                         userId: $.Oda.Session.id,
                                         patientId: $patientId.val(),
@@ -1730,6 +1747,7 @@
                                         dateEnd: dateEnd
                                     });
                                 }else{
+                                    $("#btDlPdf").remove();
                                     $("#report").html('');
                                 }
                             }
@@ -1737,6 +1755,47 @@
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.SynthUserPatient.start : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {object} p_params
+                 * @param p_params.patientCode
+                 * @returns {$.Oda.App.Controller.synthUserPatient}
+                 */
+                getPdfReport: function (p_params) {
+                    try {
+                        $.Oda.Display.Notification.info($.Oda.I8n.get('synth_user_patient','waitingDl'));
+
+                        var pdf = new jsPDF('p', 'pt', 'a4');
+                        var margins = {
+                            top: 80,
+                            bottom: 60,
+                            left: 40,
+                            width: 522
+                        };
+                        var source = $('#report').html();
+                        pdf.fromHTML(
+                            source,
+                            margins.left,
+                            margins.top,
+                            {
+                                width: margins.width,
+                                pagesplit: true
+                            },
+                            function (dispose) {
+                                var currentTime = new Date();
+                                var annee = currentTime.getFullYear();
+                                var mois = $.Oda.Tooling.pad2(currentTime.getMonth()+1);
+                                var jour = $.Oda.Tooling.pad2(currentTime.getDate());
+                                var strDate = annee + mois + jour;
+                                pdf.save('synth_'+ $.Oda.Session.code_user + '_' + p_params.patientCode + '_' + strDate + '.pdf');
+                            },
+                            margins
+                        );
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.synthUserPatient.getPdfReport : " + er.message);
                         return null;
                     }
                 },
