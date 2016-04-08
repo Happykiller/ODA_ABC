@@ -927,7 +927,9 @@
                                     currentStart = start;
                                 }
 
-                                var currentEnd = moment(new Date(start.toDate().getFullYear(), start.toDate().getMonth() + 2, 0));
+                                var currentEnd = moment(currentStart).endOf('month');
+
+                                console.log(currentEnd);
 
                                 var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/count_time/"+ $.Oda.Session.id, {callback : function(response){
                                     var countTime = response.data.split(':');
