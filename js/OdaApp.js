@@ -929,8 +929,6 @@
 
                                 var currentEnd = moment(currentStart).endOf('month');
 
-                                console.log(currentEnd);
-
                                 var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/count_time/"+ $.Oda.Session.id, {callback : function(response){
                                     var countTime = response.data.split(':');
                                     countTime = countTime[0] + 'h' + countTime[1];
@@ -1707,8 +1705,8 @@
                                         var strHtml = $.Oda.Display.TemplateHtml.create({
                                             template : "tlpSynth"
                                             , scope : {
-                                                start: moment('2016-03-21').format('DD/MM/YYYY'),
-                                                end: moment('2016-03-27').format('DD/MM/YYYY'),
+                                                start: moment(dateStart).format('DD/MM/YYYY'),
+                                                end: moment(dateEnd).format('DD/MM/YYYY'),
                                                 patient: response.data.patientInfo.name_first + " " + response.data.patientInfo.name_last,
                                                 user: response.data.userInfo.name_first + " " + response.data.userInfo.name_last,
                                                 time: $.Oda.Date.convertSecondsToTime(response.data.time)
