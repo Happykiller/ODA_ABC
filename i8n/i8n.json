@@ -30,7 +30,8 @@
       "newMemo": "Nouveau mémo",
       "charRemaining": "Caractères restants",
       "submitMemo": "Soumettre mémo",
-      "cancelMemo": "Annuler"
+      "cancelMemo": "Annuler",
+      "editAddress": "Editer l'adresse n°{{id}}"
     }
   },{
     "groupName" : "planning"

@@ -53,8 +53,14 @@
     
 ## Address
 
+* `/address/:id`
+    * type : GET
 * `/address/search/patient/:id`
     * type : GET
+    * public : false
+* `/address/trajet/`
+    * type : GET
+    * mandatory params : "address_id_ori","address_id_dest","distance","distance_m","duration","duration_s"
     * public : false
 
 ## Memos

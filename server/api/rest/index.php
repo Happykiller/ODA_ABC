@@ -172,6 +172,13 @@ $slim->get('/report/synth_user_patient', function () use ($slim) {
 //--------------------------------------------------------------------------
 // ADDRESS
 
+$slim->get('/address/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->slim = $slim;
+    $INTERFACE = new AddressInterface($params);
+    $INTERFACE->getById($id);
+});
+
 $slim->get('/address/search/patient/:id', function ($id) use ($slim) {
     $params = new OdaPrepareInterface();
     $params->modePublic = false;
@@ -187,6 +194,15 @@ $slim->post('/address/trajet/', function () use ($slim) {
     $params->slim = $slim;
     $INTERFACE = new AddressInterface($params);
     $INTERFACE->createTrajet();
+});
+
+$slim->put('/address/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->arrayInput = array("title", "street", "city", "postCode");
+    $params->slim = $slim;
+    $INTERFACE = new AddressInterface($params);
+    $INTERFACE->update($id);
 });
 
 //--------------------------------------------------------------------------

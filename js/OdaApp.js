@@ -426,6 +426,66 @@
                         return null;
                     }
                 },
+                editAddress : function (params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/address/"+params.id, {callback : function(response){
+                            var strHtml = $.Oda.Display.TemplateHtml.create({
+                                template : "tlpEditAddress"
+                                , scope : response.data
+                            });
+
+                            $.Oda.Display.Popup.open({
+                                "name": "popEditAddress",
+                                "label": $.Oda.I8n.get('patients', 'editAddress', {variables: {id: params.id}}),
+                                "details": strHtml,
+                                "footer": '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submitEdit" onclick="$.Oda.App.Controller.Patients.submitEditAddress({id: '+params.id+'});" class="btn btn-primary disabled" disabled>Submit</button >',
+                                "callback" : function(){
+                                    $.Oda.Scope.Gardian.add({
+                                        id : "gEditAddress",
+                                        listElt : ["addressTitle", "street", "city", "postCode"],
+                                        function : function(e){
+                                            console.log(e);
+                                            if( ($("#addressTitle").data("isOk")) && ($("#street").data("isOk")) && ($("#city").data("isOk")) && ($("#postCode").data("isOk")) ){
+                                                $("#submitEdit").btEnable();
+                                            }else{
+                                                $("#submitEdit").btDisable();
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+
+                        }});
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.editAddress : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.id
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                submitEditAddress : function (params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/address/"+params.id, {type: 'PUT', callback : function(response){
+                            $.Oda.Display.Popup.close({name:"popEditAddress"});
+                            $.Oda.App.Controller.Patients.displayAddress({
+                                "patientId" : $.Oda.App.Controller.Patients.currentPatient.id
+                            });
+                        }},{
+                            "title": $('#addressTitle').val(),
+                            "street": $('#street').val(),
+                            "city": $('#city').val(),
+                            "postCode": $('#postCode').val()
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.submitEditAddress : " + er.message);
+                        return null;
+                    }
+                },
                 /**
                  * @param {Object} p_params
                  * @param p_params.id

@@ -240,8 +240,8 @@ class PatientInterface extends OdaRestInterface {
             $params->sql = "INSERT INTO  `tab_adress` (
                     `code` ,
                     `adress`,
-                    `code_postal`,
-                    `city`
+                    `city`,
+                    `code_postal`
                 )
                 VALUES (
                     :title, :street, :city, :postCode

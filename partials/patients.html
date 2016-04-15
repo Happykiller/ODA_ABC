@@ -150,6 +150,37 @@
     </div>
 </script>
 
+<script id="tlpEditAddress" type="text/template">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="addressTitle" oda-label="patients.addressTitle">patients.addressTitle</label>
+                <input value="{{code}}" required type="text" class="form-control" oda-input-text="addressTitle" oda-input-text-tips="patients.addressTitle-tips" oda-input-text-placeholder="patients.addressTitle-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="street" oda-label="patients.street">patients.street</label>
+                <input value="{{adress}}" required type="text" class="form-control" oda-input-text="street" oda-input-text-tips="patients.street-tips" oda-input-text-placeholder="patients.street-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="city" oda-label="patients.city">patients.city</label>
+                <input value="{{city}}" required type="text" class="form-control" oda-input-text="city" oda-input-text-tips="patients.city-tips" oda-input-text-placeholder="patients.city-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="postCode" oda-label="patients.postCode">patients.postCode</label>
+                <input value="{{code_postal}}" required type="text" class="form-control" oda-input-text="postCode" oda-input-text-tips="patients.postCode-tips" oda-input-text-placeholder="patients.postCode-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+    </div>
+</script>
+
 <script>
     $.Oda.App.Controller.Patients.start();
 </script>
