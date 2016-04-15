@@ -444,7 +444,6 @@
                                         id : "gEditAddress",
                                         listElt : ["addressTitle", "street", "city", "postCode"],
                                         function : function(e){
-                                            console.log(e);
                                             if( ($("#addressTitle").data("isOk")) && ($("#street").data("isOk")) && ($("#city").data("isOk")) && ($("#postCode").data("isOk")) ){
                                                 $("#submitEdit").btEnable();
                                             }else{
