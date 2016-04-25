@@ -715,6 +715,67 @@
                         return null;
                     }
                 },
+                /**
+                 * @param {Object} params
+                 * @param params.id
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                editMemo : function (params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/memo/"+params.id, {callback : function(response){
+                            var strHtml = $.Oda.Display.TemplateHtml.create({
+                                template : "tlpEditMemo"
+                                , scope : response.data
+                            });
+
+                            $.Oda.Display.Popup.open({
+                                "name": "popEditMemo",
+                                "label": $.Oda.I8n.get('patients', 'editMemo', {variables: {id: params.id}}),
+                                "details": strHtml,
+                                "footer": '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submitEdit" onclick="$.Oda.App.Controller.Patients.submitEditMemo({id: '+params.id+'});" class="btn btn-primary disabled" disabled>Submit</button >',
+                                "callback" : function(){
+                                    var length = response.data.content.length;
+                                    var RestLength = 255-length;
+                                    $('#downCount').html(RestLength);
+                                    $('#editMemo').keyup(function() {
+                                        var length = $(this).val().length;
+                                        var RestLength = 255-length;
+                                        $('#downCount').html(RestLength);
+                                        if(RestLength > 0){
+                                            $("#submitEdit").btEnable();
+                                        }else{
+                                            $("#submitEdit").btDisable();
+                                        }
+                                    });
+                                }
+                            });
+
+                        }});
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.editMemo : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param params.id
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                submitEditMemo : function (params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/memo/"+params.id, {type: 'PUT', callback : function(response){
+                            $.Oda.Display.Popup.close({name:"popEditMemo"});
+                            $.Oda.App.Controller.Patients.displayMemos();
+                        }},{
+                            "content": $('#editMemo').val()
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.submitEditMemo : " + er.message);
+                        return null;
+                    }
+                },
             },
             "Planning": {
                 "dayClicked": {},

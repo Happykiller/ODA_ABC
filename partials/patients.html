@@ -181,6 +181,17 @@
     </div>
 </script>
 
+<script id="tlpEditMemo" type="text/template">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <textarea class="form-control" rows="2" id="editMemo" maxlength="255">{{content}}</textarea>
+                <span class="downChar"><label id="downCount"></label> <label oda-label="patients.charRemaining"></label></span>
+            </div>
+        </div>
+    </div>
+</script>
+
 <script>
     $.Oda.App.Controller.Patients.start();
 </script>

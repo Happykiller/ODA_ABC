@@ -19,6 +19,32 @@ class MemoInterface extends OdaRestInterface {
 
     /**
      */
+    function getById($id) {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "SELECT a.`id`, a.`patient_id`, a.`author_id`, a.`content`, a.`read`, a.`read`, a.`date_create`
+                FROM `tab_memos` a
+                WHERE 1=1
+                AND a.`id` = :id
+            ;";
+            $params->bindsValue = [
+                "id" => $id
+            ];
+            $params->typeSQL = OdaLibBd::SQL_GET_ONE;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new stdClass();
+            $params->retourSql = $retour;
+            $this->addDataObject($retour->data);
+        } catch (Exception $ex) {
+            $this->object_retour->strErreur = $ex.'';
+            $this->object_retour->statut = self::STATE_ERROR;
+            die();
+        }
+    }
+
+    /**
+     */
     function create() {
         try {
             $params = new OdaPrepareReqSql();
@@ -142,6 +168,33 @@ class MemoInterface extends OdaRestInterface {
             $this->object_retour->strErreur = $ex.'';
             $this->object_retour->statut = self::STATE_ERROR;
             die();
+        }
+    }
+
+    /**
+     * @param $id
+     */
+    function update($id) {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "UPDATE `tab_memos`
+                SET
+                `content`= :content
+                WHERE 1=1
+                AND `id` = :id
+                ;";
+            $params->bindsValue = [
+                "id" => $id,
+                "content" => $this->inputs["content"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_SCRIPT;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new stdClass();
+            $params->value = $retour->data;
+            $this->addDataStr($params);
+        } catch (Exception $ex) {
+            $this->dieInError($ex.'');
         }
     }
 }

@@ -31,7 +31,8 @@
       "charRemaining": "Caractères restants",
       "submitMemo": "Soumettre mémo",
       "cancelMemo": "Annuler",
-      "editAddress": "Editer l'adresse n°{{id}}"
+      "editAddress": "Editer l'adresse n°{{id}}",
+      "editMemo": "Editer le mémo n°{{id}}"
     }
   },{
     "groupName" : "planning"
