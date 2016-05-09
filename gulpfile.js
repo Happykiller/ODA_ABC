@@ -7,7 +7,7 @@ gulp.task('browser-sync', function() {
     plugins.browserSync.init({
         proxy: "localhost:80/abc/"
     });
-    gulp.watch(["js/**/*","partials/**/*","i8n/**/*","css/**/*.css"], function(){
+    gulp.watch(["js/**/*","partials/**/*","i8n/**/*","css/**/*.css","test/resources/**/*"], function(){
         plugins.browserSync.reload();
     });
 });

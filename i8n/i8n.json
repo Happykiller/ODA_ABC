@@ -64,7 +64,11 @@
       "actionSubType": "sous Type",
       "actionComment": "Commentaires",
       "actionNew": "Nouvelle action",
-      "action": "Action"
+      "action": "Action",
+      "weekDetails": "Détails de la semaine n&deg;{{week}}",
+      "distance": "Distance parcourur",
+      "time": "Temps de trajet",
+      "countTime": "Temps avec patient"
     }
   },{
     "groupName": "synth_user_patient"

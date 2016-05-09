@@ -245,6 +245,22 @@
     </tr>
 </script>
 
+<script id="weekDetailsTpl" type="text/template">
+    <div class="row">
+        <div class="col-md-12">
+            <label oda-label="planning.countTime">planning.countTime</label>: <span id="weekCountTime"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label oda-label="planning.time">planning.time</label>: {{time}}
+        </div>
+        <div class="col-md-6">
+            <label oda-label="planning.distance">planning.distance</label>: {{distance}}
+        </div>
+    </div>
+</script>
+
 <script>
     $.Oda.App.Controller.Planning.start();
 </script>

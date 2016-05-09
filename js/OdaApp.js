@@ -1094,13 +1094,78 @@
                                 $.Oda.App.Controller.Planning.dayClicked = {"date":calEvent.start, "jsEvent":jsEvent, "view":view, "cell" : $(this)};
                                 $.Oda.App.Controller.Planning.editEvent(calEvent);
                             },
-                            "viewRender": function(view, element){
-                                //console.log("viewRender");
+                            viewRender: function(view, element){
+                                $.Oda.App.Controller.Planning.renderWeekBt({start: view.start});
                             }
                         })
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.displayPlanning : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} params
+                 * @param {MomentJs} params.start
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                renderWeekBt: function (params) {
+                    try {
+                        console.log(params.start.format('YYYY'));
+                        $('td[class="fc-week-number"]').each(function(){
+                            var elt = $(this);
+                            var week = elt.text();
+                            elt.html('<a href="javascript:$.Oda.App.Controller.Planning.viewWeekDetails({year: '+params.start.format('YYYY')+', week: '+week+'});" class="btn btn-primary btn-xs">'+week+'</a>')
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.renderWeekBt. : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param {int} p_params.year
+                 * @param {int} p_params.week
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                viewWeekDetails : function (p_params) {
+                    try {
+                        var start = moment().year(p_params.year).week(p_params.week).format('YYYY-MM-DD');
+                        var end = moment().day("Monday").year(p_params.year).week(p_params.week).format('YYYY-MM-DD');
+                        if($.Oda.Google.Map.service !== undefined) {
+                            var call = $.Oda.Interface.callRest($.Oda.Context.rest + "api/rest/report/trajet/" + $.Oda.Session.id, {callback: function (response) {
+                                var report = $.Oda.App.Tooling.calcReportTrajet({listTrajet:response.data});
+                                var strHtml = $.Oda.Display.TemplateHtml.create({
+                                    template: "weekDetailsTpl",
+                                    scope: {
+                                        time: report.timeDisplay,
+                                        distance: report.distanceDisplay
+                                    }
+                                });
+                                $.Oda.Display.Popup.open({
+                                    "name" : "weekDetails",
+                                    "label" : $.Oda.I8n.get('planning','weekDetails',{variables: {week : p_params.week}}),
+                                    "details" : strHtml,
+                                    "callback" : function(){
+                                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/count_time/"+ $.Oda.Session.id, {callback : function(response){
+                                            var countTime = response.data.split(':');
+                                            countTime = countTime[0] + 'h' + countTime[1];
+                                            $('#weekCountTime').html(countTime);
+                                        }},{
+                                            "start": start,
+                                            "end": end
+                                        });
+                                    }
+                                });
+                            }}, {
+                                "start": start,
+                                "end": end
+                            });
+                        }
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.viewWeekDetails : " + er.message);
                         return null;
                     }
                 },
@@ -1920,6 +1985,44 @@
                     }
                 },
             }
+        },
+        
+        Tooling: {
+            /**
+             * @param {Object} p_params
+             * @param p_params.listTrajet
+             * @returns {$.Oda.App}
+             */
+            calcReportTrajet : function (p_params) {
+                try {
+                    var response = {
+                        time: 0,
+                        timeDisplay: '0h0m',
+                        distance: 0,
+                        distanceDisplay: '0km'
+                    };
+
+                    for(var index in p_params.listTrajet){
+                        var trajet = p_params.listTrajet[index];
+                        if(trajet.distance !== null){
+                            response.distance += parseInt(trajet.distance_m);
+                            response.time += parseInt(trajet.duration_s);
+                        }
+                    }
+
+                    var hours = Math.floor(response.time / 60 / 60);
+                    var minute = Math.ceil((response.time - (hours*60*60)) / 60);
+                    var distanceKm = response.distance / 1000;
+
+                    response.timeDisplay = hours+'h'+minute+'m';
+                    response.distanceDisplay = distanceKm+'km';
+
+                    return response;
+                } catch (er) {
+                    $.Oda.Log.error("$.Oda.App.Tooling.calcReportTrajet : " + er.message);
+                    return null;
+                }
+            },
         }
     };
 
