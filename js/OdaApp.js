@@ -1111,7 +1111,6 @@
                  */
                 renderWeekBt: function (params) {
                     try {
-                        console.log(params.start.format('YYYY'));
                         $('td[class="fc-week-number"]').each(function(){
                             var elt = $(this);
                             var week = elt.text();
