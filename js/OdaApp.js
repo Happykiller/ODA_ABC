@@ -1034,8 +1034,12 @@
                             lang: 'fr',
                             weekNumbers : true,
                             dayClick: function(date, jsEvent, view) {
-                                $.Oda.App.Controller.Planning.dayClicked = {"date":date, "jsEvent":jsEvent, "view":view, "cell" : $(this)};
-                                $.Oda.App.Controller.Planning.createEvent();
+                                var re = /^btDay-/gi;
+                                var patt = new RegExp(re);
+                                if(!((jsEvent.target.id !== undefined) && patt.test(jsEvent.target.id))){
+                                    $.Oda.App.Controller.Planning.dayClicked = {"date":date, "jsEvent":jsEvent, "view":view, "cell" : $(this)};
+                                    $.Oda.App.Controller.Planning.createEvent();
+                                }
                             },
                             eventOrder: 'eventStart',
                             events: function(start, end, timezone, callback) {
@@ -1096,6 +1100,7 @@
                             },
                             viewRender: function(view, element){
                                 $.Oda.App.Controller.Planning.renderWeekBt({start: view.start});
+                                $.Oda.App.Controller.Planning.renderDayBt({start: view.start});
                             }
                         })
                         return this;
@@ -1123,6 +1128,81 @@
                     }
                 },
                 /**
+                 * @param {Object} params
+                 * @param {MomentJs} params.start
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                renderDayBt: function (params) {
+                    try {
+                        $('td .fc-day-number').each(function(){
+                            var elt = $(this);
+                            var day = elt.text();
+                            var date = elt.data("date");
+                            elt.html('<a id="btDay-'+date+'" href="javascript:$.Oda.App.Controller.Planning.viewDayDetails({date: \''+date+'\'});" type="button" class="btn btn-primary btn-xs">'+day+'</a>')
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.renderDayBt. : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} params
+                 * @param {MomentJs} params.date
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                viewDayDetails: function (params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest + "api/rest/report/trajet/" + $.Oda.Session.id, {callback: function (response) {
+
+                            var strHtmlTrajet = "";
+                            for(var index in response.data){
+                                var trajet = response.data[index];
+                                console.log(trajet);
+                                if(index === '0'){
+                                    strHtmlTrajet += '|-' + trajet.address_label_ori + '<br>';
+                                }
+                                strHtmlTrajet += '|' + '<br>',
+                                strHtmlTrajet += '|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + trajet.distance + ' - ' + trajet.duration + '<br>',
+                                strHtmlTrajet += '|' + '<br>',
+                                strHtmlTrajet += '|-' + trajet.address_label_dest + '<br>';
+                            }
+
+                            var report = $.Oda.App.Tooling.calcReportTrajet({listTrajet:response.data});
+                            var strHtml = $.Oda.Display.TemplateHtml.create({
+                                template: "dayDetailsTpl",
+                                scope: {
+                                    time: report.timeDisplay,
+                                    distance: report.distanceDisplay,
+                                    timeline: strHtmlTrajet
+                                }
+                            });
+                            $.Oda.Display.Popup.open({
+                                "name" : "dayDetails",
+                                "label" : $.Oda.I8n.get('planning','dayDetails',{variables: {day : params.date}}),
+                                "details" : strHtml,
+                                "callback" : function(){
+                                    var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/count_time/"+ $.Oda.Session.id, {callback : function(response){
+                                        var countTime = response.data.split(':');
+                                        countTime = countTime[0] + 'h' + countTime[1];
+                                        $('#dayCountTime').html(countTime);
+                                    }},{
+                                        "start": params.date,
+                                        "end": params.date
+                                    });
+                                }
+                            });
+                        }}, {
+                            "start": params.date,
+                            "end": params.date
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.renderDayBt. : " + er.message);
+                        return null;
+                    }
+                },
+                /**
                  * @param {Object} p_params
                  * @param {int} p_params.year
                  * @param {int} p_params.week
@@ -1130,7 +1210,7 @@
                  */
                 viewWeekDetails : function (p_params) {
                     try {
-                        var start = moment().year(p_params.year).week(p_params.week).format('YYYY-MM-DD');
+                        var start = moment().day("Monday").year(p_params.year).week(p_params.week).subtract(6, 'days').format('YYYY-MM-DD');
                         var end = moment().day("Monday").year(p_params.year).week(p_params.week).format('YYYY-MM-DD');
                         if($.Oda.Google.Map.service !== undefined) {
                             var call = $.Oda.Interface.callRest($.Oda.Context.rest + "api/rest/report/trajet/" + $.Oda.Session.id, {callback: function (response) {

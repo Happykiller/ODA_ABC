@@ -26,7 +26,7 @@ class ReportInterface extends OdaRestInterface {
                 WHERE 1=1
                 AND a.`user_id` = :user_id
                 AND a.`start` >= :start
-                AND a.`end` <= :end
+                AND a.`end` <= DATE_ADD(STR_TO_DATE(:end,'%Y-%m-%d'), INTERVAL 1 DAY)
                 AND a.`active` = 1
             ;";
             $params->bindsValue = [
@@ -57,7 +57,7 @@ class ReportInterface extends OdaRestInterface {
                 WHERE 1=1
                 AND a.`user_id` = :user_id
                 AND a.`start` >= :start
-                AND a.`end` <= :end
+                AND a.`end` <= DATE_ADD(STR_TO_DATE(:end,'%Y-%m-%d'), INTERVAL 1 DAY)
                 AND a.`active` = 1
                 GROUP BY DATE_FORMAT(a.`start`, '%Y-%m-%d')
             ;";
@@ -105,7 +105,7 @@ class ReportInterface extends OdaRestInterface {
               AND a.`active` = 1
                 AND a.`user_id` = :user_id
                 AND a.`start` >= :start
-                AND a.`end` <= :end
+                AND a.`end` <= DATE_ADD(STR_TO_DATE(:end,'%Y-%m-%d'), INTERVAL 1 DAY)
             ;
             
             DROP TABLE IF EXISTS tmp1;

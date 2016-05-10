@@ -68,7 +68,8 @@
       "weekDetails": "Détails de la semaine n&deg;{{week}}",
       "distance": "Distance parcourur",
       "time": "Temps de trajet",
-      "countTime": "Temps avec patient"
+      "countTime": "Temps avec patient",
+      "dayDetails": "Détails du jour {{day}}"
     }
   },{
     "groupName": "synth_user_patient"
