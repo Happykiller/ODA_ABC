@@ -1158,7 +1158,6 @@
                             var strHtmlTrajet = "";
                             for(var index in response.data){
                                 var trajet = response.data[index];
-                                console.log(trajet);
                                 if(index === '0'){
                                     strHtmlTrajet += '|-' + trajet.address_label_ori + '<br>';
                                 }
