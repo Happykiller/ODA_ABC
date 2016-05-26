@@ -169,6 +169,14 @@ $slim->get('/report/synth_user_patient', function () use ($slim) {
     $INTERFACE->getSynthUserPatient();
 });
 
+$slim->get('/report/reportDetailMonth/:userId', function ($userId) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->slim = $slim;
+    $params->arrayInput = array("dateStart", "dateEnd");
+    $INTERFACE = new ReportInterface($params);
+    $INTERFACE->getDetailMonth($userId);
+});
+
 //--------------------------------------------------------------------------
 // ADDRESS
 

@@ -2081,7 +2081,14 @@
                             function: function (e) {
                                 var $month = $('#month');
                                 if($month.val() !== ""){
-                                    console.log($month.val());
+                                    var dateStart = $month.val() + "-01";
+                                    var dateEnd = moment($month.val()).endOf('month').format('YYYY-MM-DD');
+                                    var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/reportDetailMonth/"+$.Oda.Session.id, {callback : function(response){
+                                        $.Oda.Log.trace(response);
+                                    }},{
+                                        dateStart: dateStart,
+                                        dateEnd: dateEnd
+                                    });
                                 }
                             }
                         });
