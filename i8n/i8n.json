@@ -80,5 +80,11 @@
       "pdf": "Pdf",
       "waitingDl": "Merci de patienter votre téléchargement va commencer."
     }
+  },{
+  "groupName": "reportDetailMonth",
+  "fr": {
+      "title": "Rapport mensuel détaillé",
+      "selectMonth": "Selectioner le mois"
+    }
   }
 ]

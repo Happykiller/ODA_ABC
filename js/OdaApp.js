@@ -86,6 +86,14 @@
                     "dependencies" : ["jsToPdf"]
                 });
 
+                $.Oda.Router.addRoute("reportDetailMonth", {
+                    "path" : "partials/reportDetailMonth.html",
+                    "title" : "reportDetailMonth.title",
+                    "urls" : ["reportDetailMonth"],
+                    "middleWares" : ["support","auth"],
+                    "dependencies" : ["jsToPdf"]
+                });
+
                 $.Oda.Router.startRooter();
 
                 return this;
@@ -1939,11 +1947,9 @@
             },
             SynthUserPatient: {
                 /**
-                 * @param {object} p_params
-                 * @param p_params.id
                  * @returns {$.Oda.App.Controller.SynthUserPatient}
                  */
-                start: function (p_params) {
+                start: function () {
                     try {
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/", {callback : function(response){
                             $.Oda.App.Controller.Planning.patients = response.data;
@@ -2062,6 +2068,30 @@
                         return null;
                     }
                 },
+            },
+            ReportDetailMonth: {
+                /**
+                 * @returns {$.Oda.App.Controller.ReportDetailMonth}
+                 */
+                start: function () {
+                    try {
+                        $.Oda.Scope.Gardian.add({
+                            id: "gMonth",
+                            listElt: ["month"],
+                            function: function (e) {
+                                var $month = $('#month');
+                                if($month.val() !== ""){
+                                    console.log($month.val());
+                                }
+                            }
+                        });
+
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.ReportDetailMonth.start : " + er.message);
+                        return null;
+                    }
+                }
             }
         },
         
