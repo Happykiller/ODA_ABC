@@ -2081,21 +2081,205 @@
                             function: function (e) {
                                 var $month = $('#month');
                                 if($month.val() !== ""){
+                                    $.Oda.Display.loading({elt : $('#reportMonth')});
+                                    
                                     var dateStart = $month.val() + "-01";
                                     var dateEnd = moment($month.val()).endOf('month').format('YYYY-MM-DD');
-                                    var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/reportDetailMonth/"+$.Oda.Session.id, {callback : function(response){
-                                        $.Oda.Log.trace(response);
-                                    }},{
-                                        dateStart: dateStart,
-                                        dateEnd: dateEnd
+
+                                    var week = {
+                                        monday: null,
+                                        sunday:  null
+                                    };
+
+                                    var monday = new Date(dateStart);
+                                    while(monday.getDay() !== 1){
+                                        monday.setDate(monday.getDate()-1);
+                                    }
+                                    monday = moment(monday);
+                                    week.monday = monday.format('YYYY-MM-DD');
+                                    week.sunday = monday.add(6, 'days').format('YYYY-MM-DD');
+
+                                    var listWeek = [week];
+
+                                    var ok = true;
+                                    var index = 0;
+                                    while ((index < 6) && ok){
+                                        var lastMonday = moment(listWeek[listWeek.length-1].monday);
+                                        var week = {
+                                            monday: lastMonday.add(7, 'days').format('YYYY-MM-DD'),
+                                            sunday: lastMonday.add(6, 'days').format('YYYY-MM-DD')
+                                        };
+                                        if((week.monday.indexOf($month.val()) > -1) || (week.sunday.indexOf($month.val()) > -1)){
+                                            listWeek.push(week);
+                                        }else{
+                                            ok = false;
+                                        }
+                                        index++;
+                                    }
+
+                                    listWeek[0].monday = dateStart;
+                                    listWeek[listWeek.length-1].sunday = dateEnd;
+                                    
+                                    var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/count_time/"+$.Oda.Session.id, {
+                                        context: {
+                                            dateStart: dateStart,
+                                            dateEnd: dateEnd
+                                        },
+                                        callback: function(response){
+                                            var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/trajet/"+$.Oda.Session.id, {
+                                                context: {
+                                                    dateStart: response.context.dateStart,
+                                                    dateEnd: response.context.dateEnd,
+                                                    patientTime: response.data
+                                                },
+                                                callback : function(response){
+                                                    var trajet = $.Oda.App.Tooling.calcReportTrajet({listTrajet: response.data});
+
+                                                    var strHtml = $.Oda.Display.TemplateHtml.create({
+                                                        template : "tlpReportMonth"
+                                                        , scope : {
+                                                            dateStart: response.context.dateStart,
+                                                            dateEnd: response.context.dateEnd,
+                                                            patientTime: response.context.patientTime,
+                                                            trajetTime: trajet.timeDisplay,
+                                                            distance: trajet.distanceDisplay
+                                                        }
+                                                    });
+                                                    $('#reportMonth').html(strHtml);
+                                                }
+                                            },{
+                                                start: response.context.dateStart,
+                                                end: response.context.dateEnd
+                                            });
+                                        }
+                                    },{
+                                        start: dateStart,
+                                        end: dateEnd
                                     });
+
+                                    $('#reportListWeek').html('');
+                                    for(var index in listWeek){
+                                        var week = listWeek[index];
+                                        $('#reportListWeek').append('<div id="week-'+index+'"></div><br>');
+                                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/count_time/"+$.Oda.Session.id, {
+                                            context: {
+                                                start: week.monday,
+                                                end: week.sunday,
+                                                weekIndex: index
+                                            },
+                                            callback : function(response){
+                                                var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/trajet/"+$.Oda.Session.id, {
+                                                    context: {
+                                                        start: response.context.start,
+                                                        end: response.context.end,
+                                                        weekIndex: response.context.weekIndex,
+                                                        patientTime: response.data
+                                                    },
+                                                    callback : function(response){
+                                                        var trajet = $.Oda.App.Tooling.calcReportTrajet({listTrajet: response.data});
+
+                                                        var strHtml = $.Oda.Display.TemplateHtml.create({
+                                                            template : "tlpReportWeek"
+                                                            , scope : {
+                                                                dateStart: response.context.start,
+                                                                dateEnd: response.context.end,
+                                                                patientTime: response.context.patientTime,
+                                                                trajetTime: trajet.timeDisplay,
+                                                                distance: trajet.distanceDisplay,
+                                                                weekIndex: response.context.weekIndex
+                                                            }
+                                                        });
+                                                        $('#week-'+response.context.weekIndex).html(strHtml);
+                                                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/search/user/"+$.Oda.Session.id, {
+                                                            context: {
+                                                                weekIndex: response.context.weekIndex
+                                                            },
+                                                            callback : function(response){
+                                                                var strHtml = "<ul>";
+
+                                                                for(var index in response.data){
+                                                                    var event = response.data[index];
+                                                                    strHtml += $.Oda.Display.TemplateHtml.create({
+                                                                        template : "tlpReportWeekDetailEvent"
+                                                                        , scope : {
+                                                                            start: event.start,
+                                                                            end: event.end,
+                                                                            countTime: event.countTime,
+                                                                            firstName: event.patient_name_first,
+                                                                            lastName: event.patient_name_last,
+                                                                        }
+                                                                    });
+                                                                }
+
+                                                                strHtml += "</ul>";
+                                                                $('#weekListDetail-'+response.context.weekIndex).html(strHtml);
+                                                            }
+                                                        },{
+                                                            start: response.context.start,
+                                                            end: response.context.end
+                                                        });
+                                                    }
+                                                },{
+                                                    start: response.context.start,
+                                                    end: response.context.end
+                                                });
+                                            }
+                                        },{
+                                            start: week.monday,
+                                            end: week.sunday
+                                        });
+                                    }
                                 }
+
+                                $("#btPdf").html('<br><button id="btDlPdf" type="button" onclick="$.Oda.App.Controller.ReportDetailMonth.getPdfReport({month:\''+$month.val()+'\'});" class="btn btn-info">'+$.Oda.I8n.getByString('synth_user_patient.pdf')+'</button>');
                             }
                         });
-
+                        
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.ReportDetailMonth.start : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {object} p_params
+                 * @param p_params.month
+                 * @returns {$.Oda.App.Controller.ReportDetailMonth}
+                 */
+                getPdfReport: function (p_params) {
+                    try {
+                        $.Oda.Display.Notification.info($.Oda.I8n.get('synth_user_patient','waitingDl'));
+
+                        var pdf = new jsPDF('p', 'pt', 'a4');
+                        var margins = {
+                            top: 80,
+                            bottom: 60,
+                            left: 40,
+                            width: 522
+                        };
+                        var source = $('#report').html();
+                        source = '<h1>Rapport détaillé pour ' + $.Oda.Session.code_user + ' ' + p_params.month +'</h1>' + source;
+                        pdf.fromHTML(
+                            source,
+                            margins.left,
+                            margins.top,
+                            {
+                                width: margins.width,
+                                pagesplit: true
+                            },
+                            function (dispose) {
+                                var currentTime = new Date();
+                                var annee = currentTime.getFullYear();
+                                var mois = $.Oda.Tooling.pad2(currentTime.getMonth()+1);
+                                var jour = $.Oda.Tooling.pad2(currentTime.getDate());
+                                var strDate = annee + mois + jour;
+                                pdf.save('reportMonth-'+ $.Oda.Session.code_user + '_' + p_params.month + '.pdf');
+                            },
+                            margins
+                        );
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.ReportDetailMonth.getPdfReport : " + er.message);
                         return null;
                     }
                 }

@@ -106,10 +106,6 @@
     * mandatory params : "userId", "patientId", "dateStart", "dateEnd"
     * type : GET
     * public : false
-* `/report/reportDetailMonth/:userId`
-    * mandatory params : "dateStart", "dateEnd"
-    * type : GET
-    * public : false
     
 ## Actions
 

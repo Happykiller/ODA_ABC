@@ -264,13 +264,4 @@ class ReportInterface extends OdaRestInterface {
             die();
         }
     }
-
-    function getDetailMonth($userId){
-        try{
-            $datas = new stdClass();
-            $this->addDataObject($datas);
-        }catch (Exception $ex){
-            $this->dieInError($ex->getMessage());
-        }
-    }
 }

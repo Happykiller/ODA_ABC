@@ -9,12 +9,61 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12" id="report">
-
+    <div id="btPdf"></div>
+    <br>
+    <div id="report">
+        <div class="row">
+            <div class="col-md-12" id="reportMonth"></div>
+        </div>
+        <br>
+        <div class="row">
+            <ul>
+                <li style="list-style: none;">
+                    <div class="col-md-12" id="reportListWeek"></div>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
+
+<script id="tlpReportMonth" type="text/template">
+    <label>Statistiques mois {{dateStart}} - {{dateEnd}}</label>
+    <ul>
+        <li>
+            Temps avec patient : {{patientTime}}
+        </li>
+        <li>
+            Temps de trajet : {{trajetTime}}
+        </li>
+        <li>
+            Distance parcouru : {{distance}}
+        </li>
+    </ul>
+</script>
+
+<script id="tlpReportWeek" type="text/template">
+    <label>Statistiques semaine {{dateStart}} - {{dateEnd}}</label>
+    <ul>
+        <li>
+            Temps avec patient : {{patientTime}}
+        </li>
+        <li>
+            Temps de trajet : {{trajetTime}}
+        </li>
+        <li>
+            Distance parcouru : {{distance}}
+        </li>
+        <li style="list-style: none;">
+            <div id="weekListDetail-{{weekIndex}}"></div>
+        </li>
+    </ul>
+</script>
+
+<script id="tlpReportWeekDetailEvent" type="text/template">
+    <li>
+        {{start}} / {{end}} ({{countTime}}) - {{firstName}} {{lastName}}
+    </li>
+</script>
 
 <script>
     $.Oda.App.Controller.ReportDetailMonth.start();

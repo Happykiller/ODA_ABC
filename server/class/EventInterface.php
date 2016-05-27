@@ -24,14 +24,15 @@ class EventInterface extends OdaRestInterface {
             $params->sql = "SELECT a.`id`, a.`start`, a.`end`,
             a.`patient_id`, b.`name_first` as 'patient_name_first', b.`name_last` as 'patient_name_last',
             a.`address_id`,
-            a.`googleId`, a.`googleEtag`, a.`googleICalUID`, a.`googleHtmlLink`
+            a.`googleId`, a.`googleEtag`, a.`googleICalUID`, a.`googleHtmlLink`, IFNULL(TIMEDIFF(a.`end`, a.`start`),'00:00:00') as 'countTime'
             FROM `tab_events` a, `tab_patients` b
             WHERE 1=1
             AND a.`patient_id` = b.`id`
             AND a.`user_id` = :user_id
             AND a.`start` >= :start
-            AND a.`end` <= :end
+            AND a.`end` <= DATE_ADD(STR_TO_DATE(:end,'%Y-%m-%d'), INTERVAL 1 DAY)
             AND a.`active` = 1
+            ORDER BY a.`start` ASC
             ;";
             $params->bindsValue = [
                 "user_id" => $userId,
@@ -140,7 +141,7 @@ class EventInterface extends OdaRestInterface {
             $params = new OdaPrepareReqSql();
             $params->sql = "SELECT a.`id`, a.`patient_id`, a.`start`, a.`end`, a.`user_id`, a.`address_id`,
                 a.`googleId`, a.`googleEtag`, a.`googleICalUID`, a.`googleHtmlLink`,
-                a.`note`
+                a.`note`, IFNULL(TIMEDIFF(a.`end`, a.`start`),'00:00:00') as 'countTime'
                 FROM `tab_events` a
                 WHERE 1=1
                 AND a.`id` = :id
