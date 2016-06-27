@@ -13,6 +13,12 @@
     </div>
 </div>
 
+<style>
+.bootstrap-select .dropdown-toggle {
+    width: 90%;
+}
+</style>
+
 <script id="formCreatePatient" type="text/template">
     <div class="row">
         <div class="col-lg-3 col-sm-6">
@@ -55,7 +61,36 @@
                 </div>
             </div>
         </div>
+    </div>
+    <button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Patients.submitEditPatient({id:{{id}} });" class="btn btn-primary disabled" disabled>Submit</button>
+    <hr>
+    <div class="row">
         <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="color" oda-label="patients.color">color</label>
+                <select id="color" class="selectpicker" onChange="$.Oda.App.Controller.Patients.changeColor({id:{{id}} });">
+                    <option data-content="<span class='label bg-turquoise'>Turquoise</span>" value="turquoise" {{(color==='turquoise')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-emerald'>emerald</span>" value="emerald" {{(color==='emerald')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-peter_river'>peter_river</span>" value="peter_river" {{(color==='peter_river')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-amethyst'>amethyst</span>" value="amethyst" {{(color==='amethyst')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-wet_asphalt'>wet_asphalt</span>" value="wet_asphalt" {{(color==='wet_asphalt')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-green_sea'>green_sea</span>" value="green_sea" {{(color==='green_sea')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-nephritis'>nephritis</span>" value="nephritis" {{(color==='nephritis')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-belize_hole'>belize_hole</span>" value="belize_hole" {{(color==='belize_hole')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-wisteria'>wisteria</span>" value="wisteria" {{(color==='turquoise')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-midnight_blue'>midnight_blue</span>" value="midnight_blue" {{(color==='midnight_blue')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-sun_flower'>sun_flower</span>" value="sun_flower" {{(color==='sun_flower')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-carrot'>carrot</span>" value="carrot" {{(color==='carrot')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-alizarin'>alizarin</span>" value="alizarin" {{(color==='alizarin')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-clouds'>clouds</span>" value="clouds" {{(color==='clouds')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-concrete'>concrete</span>" value="concrete" {{(color==='concrete')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-orange'>orange</span>" value="orange" {{(color==='orange')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-pimpkin'>pimpkin</span>" value="pimpkin" {{(color==='pimpkin')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-pomegranate'>pomegranate</span>" value="pomegranate" {{(color==='pomegranate')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-sliver'>sliver</span>" value="sliver" {{(color==='sliver')?'selected':''}}></option>
+                    <option data-content="<span class='label bg-asbestos'>asbestos</span>" value="asbestos" {{(color==='asbestos')?'selected':''}}></option>
+                </select>
+            </div>
         </div>
     </div>
     <hr>

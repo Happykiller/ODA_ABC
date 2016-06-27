@@ -22,7 +22,7 @@ class EventInterface extends OdaRestInterface {
         try {
             $params = new OdaPrepareReqSql();
             $params->sql = "SELECT a.`id`, a.`start`, a.`end`,
-            a.`patient_id`, b.`name_first` as 'patient_name_first', b.`name_last` as 'patient_name_last',
+            a.`patient_id`, b.`name_first` as 'patient_name_first', b.`name_last` as 'patient_name_last', b.`color` as  'patient_color',
             a.`address_id`,
             a.`googleId`, a.`googleEtag`, a.`googleICalUID`, a.`googleHtmlLink`, IFNULL(TIMEDIFF(a.`end`, a.`start`),'00:00:00') as 'countTime'
             FROM `tab_events` a, `tab_patients` b

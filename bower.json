@@ -18,6 +18,7 @@
     "Oda": "*",
     "fullcalendar" : "*",
     "tinymce": "*",
-    "cal-heatmap": "*"
+    "cal-heatmap": "*",
+    "bootstrap-select": "*"
   }
 }

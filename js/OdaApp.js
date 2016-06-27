@@ -173,6 +173,7 @@
                 },
             },
             "Patients": {
+                patientsNeedRefresh: false,
                 "currentPatient": {},
                 /**
                  * @returns {$.Oda.App.Controller.Patients}
@@ -200,6 +201,14 @@
                                         header: "Nom",
                                         value: function(data, type, full, meta, row){
                                             return row.name_first + " " + row.name_last;
+                                        }
+                                    },
+                                    {
+                                        header: $.Oda.I8n.get('patients','color'),
+                                        align: 'center',
+                                        size: '100px',
+                                        value: function(data, type, full, meta, row){
+                                            return '<a class="btn btn-default btn-xs bg-'+row.color+'">&nbsp;&nbsp;&nbsp;</a>';
                                         }
                                     },
                                     {
@@ -302,7 +311,8 @@
                                     "id": response.data.id,
                                     "firstName": response.data.name_first,
                                     "lastName": response.data.name_last,
-                                    "checked": (response.data.active==='1')?"checked":""
+                                    "checked": (response.data.active==='1')?"checked":"",
+                                    "color": response.data.color
                                 }
                             });
 
@@ -311,18 +321,24 @@
                                 "size" : "lg",
                                 "label" : $.Oda.I8n.get('patients','editPatient'),
                                 "details" : strHtml,
-                                "footer" : '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Patients.submitEditPatient({id:'+response.data.id+'});" class="btn btn-primary disabled" disabled>Submit</button >',
                                 "callback" : function(){
+                                    $('.selectpicker').selectpicker();
+
+                                    $('#pEditPatient').on('hidden.bs.modal', function (e) {
+                                        if($.Oda.App.Controller.Patients.patientsNeedRefresh){
+                                            $.Oda.App.Controller.Patients.patientsNeedRefresh = false;
+                                            $.Oda.App.Controller.Patients.displayPatients();
+                                        }
+                                    })
+
                                     $.Oda.Scope.Gardian.add({
                                         id : "gEditPatient",
                                         listElt : ["firstName", "lastName", "active"],
                                         function : function(e){
                                             if( ($("#firstName").data("isOk")) && ($("#lastName").data("isOk")) ){
-                                                $("#submit").removeClass("disabled");
-                                                $("#submit").removeAttr("disabled");
+                                                $("#submit").btEnable();
                                             }else{
-                                                $("#submit").addClass("disabled");
-                                                $("#submit").attr("disabled", true);
+                                                $("#submit").btDisable();
                                             }
                                         }
                                     });
@@ -345,6 +361,7 @@
                 submitEditPatient: function (params) {
                     try {
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/"+params.id, {type:'PUT',callback : function(response){
+                            $.Oda.App.Controller.Patients.patientsNeedRefresh = false;
                             $.Oda.Display.Popup.close({name:"pEditPatient"});
                             $.Oda.App.Controller.Patients.displayPatients();
                         }},{
@@ -355,6 +372,26 @@
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Patients.submitPatient : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.id
+                 * @returns {$.Oda.Controller.Patients}
+                 */
+                changeColor : function (p_params) {
+                    try {
+                        var $color = $('#color');
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/"+p_params.id+"/color/", {type: 'put', callback : function(response){
+                            $.Oda.Display.Notification.successI8n('patients.changeColorSuccess');
+                            $.Oda.App.Controller.Patients.patientsNeedRefresh = true;
+                        }},{
+                            "color": $color.val()
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.Controller.Patients.changeColor : " + er.message);
                         return null;
                     }
                 },
@@ -434,6 +471,11 @@
                         return null;
                     }
                 },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.patientId
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
                 editAddress : function (params) {
                     try {
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/address/"+params.id, {callback : function(response){
@@ -1083,6 +1125,7 @@
                                         event.end = elt.end;
                                         event.id = elt.id;
                                         event.title = elt.patient_name_first + "." +  elt.patient_name_last.substr(0,1);
+                                        event.className = 'bg-' + elt.patient_color;
                                         events.push(event);
                                     }
                                     callback(events);

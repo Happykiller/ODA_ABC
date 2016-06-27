@@ -89,6 +89,15 @@ $slim->post('/patient/:id/new_address/', function ($id) use ($slim) {
     $INTERFACE->newAddress($id);
 });
 
+$slim->put('/patient/:id/color/', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->arrayInput = array("color");
+    $params->slim = $slim;
+    $INTERFACE = new PatientInterface($params);
+    $INTERFACE->changeColor($id);
+});
+
 //--------------------------------------------------------------------------
 // EVENT
 

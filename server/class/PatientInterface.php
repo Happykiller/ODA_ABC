@@ -21,7 +21,7 @@ class PatientInterface extends OdaRestInterface {
     function getAll() {
         try {
             $params = new OdaPrepareReqSql();
-            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`active`,
+            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`active`, a.`color`,
                 a.`address_id_default`, b.`code`, b.`adress`, b.`city`, b.`code_postal`
                 FROM `tab_patients` a
                 LEFT OUTER JOIN `tab_adress` b
@@ -72,7 +72,7 @@ class PatientInterface extends OdaRestInterface {
     function getById($id) {
         try {
             $params = new OdaPrepareReqSql();
-            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`active`,
+            $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`active`, a.`color`,
                 a.`address_id_default`, b.`code`, b.`adress`, b.`city`, b.`code_postal`
                 FROM `tab_patients` a
                 LEFT OUTER JOIN `tab_adress` b
@@ -276,6 +276,37 @@ class PatientInterface extends OdaRestInterface {
             $params = new stdClass();
             $params->retourSql = $retour;
             $this->addDataReqSQL($params);
+        } catch (Exception $ex) {
+            $this->object_retour->strErreur = $ex.'';
+            $this->object_retour->statut = self::STATE_ERROR;
+            die();
+        }
+    }
+
+
+
+    /**
+     * @param $id
+     */
+    function changeColor($id) {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "UPDATE `tab_patients`
+                SET
+                `color`= :color
+                WHERE 1=1
+                AND `id` = :id
+                ;";
+            $params->bindsValue = [
+                "id" => $id,
+                "color" => $this->inputs["color"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_SCRIPT;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new stdClass();
+            $params->value = $retour->data;
+            $this->addDataStr($params);
         } catch (Exception $ex) {
             $this->object_retour->strErreur = $ex.'';
             $this->object_retour->statut = self::STATE_ERROR;

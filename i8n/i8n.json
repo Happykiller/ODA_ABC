@@ -32,7 +32,9 @@
       "submitMemo": "Soumettre mémo",
       "cancelMemo": "Annuler",
       "editAddress": "Editer l'adresse n°{{id}}",
-      "editMemo": "Editer le mémo n°{{id}}"
+      "editMemo": "Editer le mémo n°{{id}}",
+      "color": "Couleur",
+      "changeColorSuccess": "Changement de couleur réussi !"
     }
   },{
     "groupName" : "planning"
