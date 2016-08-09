@@ -71,7 +71,8 @@
       "distance": "Distance parcourur",
       "time": "Temps de trajet",
       "countTime": "Temps avec patient",
-      "dayDetails": "Détails du jour {{day}}"
+      "dayDetails": "Détails du jour {{day}}",
+      "bt-repeat": "Répéter"
     }
   },{
     "groupName": "synth_user_patient"

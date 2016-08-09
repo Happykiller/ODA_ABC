@@ -15,6 +15,7 @@
     "qunit": "latest"
   },
   "dependencies": {
+    "d3": "3.5.17",
     "Oda": "*",
     "fullcalendar" : "*",
     "tinymce": "*",

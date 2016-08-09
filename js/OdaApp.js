@@ -1468,7 +1468,8 @@
 
                             var strFooter = "";
                             strFooter += '<button type="button" oda-label="oda-main.bt-delete" oda-submit="delete" onclick="$.Oda.App.Controller.Planning.deleteEvent({id:'+eventData.id+'});" class="btn btn-danger pull-left">oda-main.bt-delete</button >';
-                            strFooter += '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Planning.submitEditEvent({id:'+eventData.id+'});" class="btn btn-primary disabled" disabled>Submit</button >';
+                            strFooter += '<button type="button" oda-label="planning.bt-repeat" oda-submit="repeat" onclick="$.Oda.App.Controller.Planning.repeatEvent({id:'+eventData.id+'});" class="btn btn-warning text-center" style="margin-right:33%;">oda-main.bt-repeat</button >';
+                            strFooter += '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Planning.submitEditEvent({id:'+eventData.id+'});" class="btn btn-primary disabled" disabled>oda-main.bt-submit</button >';
 
                             $.Oda.Display.Popup.open({
                                 "name" : "editEvent",
