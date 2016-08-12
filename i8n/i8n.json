@@ -72,7 +72,10 @@
       "time": "Temps de trajet",
       "countTime": "Temps avec patient",
       "dayDetails": "Détails du jour {{day}}",
-      "bt-repeat": "Répéter"
+      "bt-repeat": "Répéter",
+      "repeat": "Répéter",
+      "date": "Date",
+      "repeatSynth": "Rappel de l'évènement à copier"
     }
   },{
     "groupName": "synth_user_patient"

@@ -139,12 +139,14 @@ class EventInterface extends OdaRestInterface {
     function getById($id) {
         try {
             $params = new OdaPrepareReqSql();
-            $params->sql = "SELECT a.`id`, a.`patient_id`, a.`start`, a.`end`, a.`user_id`, a.`address_id`,
+            $params->sql = "SELECT a.`id`, a.`patient_id`, c.`name_first`, c.`name_last`,  a.`start`, a.`end`, a.`user_id`, a.`address_id`, b.`code` as 'address_code',
                 a.`googleId`, a.`googleEtag`, a.`googleICalUID`, a.`googleHtmlLink`,
                 a.`note`, IFNULL(TIMEDIFF(a.`end`, a.`start`),'00:00:00') as 'countTime'
-                FROM `tab_events` a
+                FROM `tab_events` a, `tab_adress` b, `tab_patients` c
                 WHERE 1=1
                 AND a.`id` = :id
+                AND a.`address_id` = b.`id`
+                AND a.`patient_id` = c.`id`
             ;";
             $params->bindsValue = [
                 "id" => $id

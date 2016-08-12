@@ -282,6 +282,25 @@
     </div>
 </script>
 
+<script id="tplRepeat" type="text/template">
+    <div class="row">
+        <div class="col-md-12">
+            <label oda-label="planning.repeatSynth">planning.repeatSynth</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <label oda-label="planning.patient">planning.patient</label>: {{patientName}}
+        </div>
+        <div class="col-md-4">
+            <label oda-label="planning.address">planning.address</label>: {{adresseCode}}
+        </div>
+        <div class="col-md-4">
+            <label oda-label="planning.date">planning.date</label>: {{date}} {{startHours}}:{{startMinutes}} - {{endHours}}:{{endMinutes}}
+        </div>
+    </div>
+</script>
+
 <script>
     $.Oda.App.Controller.Planning.start();
 </script>

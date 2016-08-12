@@ -1988,6 +1988,60 @@
                         return null;
                     }
                 },
+                /**
+                 * @param {Object} p_params
+                 * @param params.id
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                repeatEvent : function (params) {
+                    try {
+                        $.Oda.Display.Popup.close({name:"editEvent"});
+
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/"+params.id, {callback : function(response) {
+                            $.Oda.App.Controller.Planning.currentEvent = response.data;
+                            var eventData = response.data;
+                            var dateUs = eventData.start.substr(0, 10);
+                            var startHours = eventData.start.substr(11, 2);
+                            var startMinutes = eventData.start.substr(14, 2);
+                            var endHours = eventData.end.substr(11, 2);
+                            var endMinutes = eventData.end.substr(14, 2);
+
+                            var strHtml = $.Oda.Display.TemplateHtml.create({
+                                template: "tplRepeat"
+                                , scope: {
+                                    id: params.id,
+                                    startHours: startHours,
+                                    startMinutes: startMinutes,
+                                    endHours: endHours,
+                                    endMinutes: endMinutes,
+                                    patient_id: eventData.patient_id,
+                                    address_id: eventData.address_id,
+                                    date: $.Oda.Date.getStrDateFrFromUs(dateUs),
+                                    adresseCode: eventData.address_code,
+                                    patientName: eventData.name_first + " " + eventData.name_last
+                                }
+                            });
+
+                            var strFooter = "";
+                            strFooter += '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Planning.submitRepeat({id:' + params.id + '});" class="btn btn-primary">oda-main.bt-submit</button >';
+
+                            $.Oda.Display.Popup.open({
+                                    "name": "popRepeat",
+                                    "label": $.Oda.I8n.get('planning', 'repeat') + ' N°' + params.id,
+                                    "details": strHtml,
+                                    "footer": strFooter,
+                                    "callback": function () {
+
+                                    }
+                                }
+                            );
+                        }});
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.repeatEvent : " + er.message);
+                        return null;
+                    }
+                },
             },
             SynthUserPatient: {
                 /**
