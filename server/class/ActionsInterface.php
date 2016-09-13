@@ -22,7 +22,7 @@ class ActionsInterface extends OdaRestInterface {
         try {
             $params = new OdaPrepareReqSql();
             $params->sql = "SELECT a.`id`, a.`event_id`, a.`comment`, a.`active`,
-                a.`action_type_id`, b.`label` as  'action_type_label',
+                a.`action_type_id`, b.`label` as 'action_type_label',
                 a.`action_sub_type_id`, c.`label` as 'action_sub_type_label'
                 FROM `tab_actions` a, `tab_actions_type` b, `tab_actions_sub_type` c
                 WHERE 1=1
@@ -91,6 +91,7 @@ class ActionsInterface extends OdaRestInterface {
             $params->sql = "SELECT a.`id`, a.`label`, a.`placeholder`, a.`active`
                 FROM `tab_actions_type` a
                 WHERE 1=1
+                ORDER BY a.`label` ASC
             ;";
             $params->typeSQL = OdaLibBd::SQL_GET_ALL;
             $retour = $this->BD_ENGINE->reqODASQL($params);
@@ -112,6 +113,7 @@ class ActionsInterface extends OdaRestInterface {
             $params->sql = "SELECT a.`id`, a.`action_type_id`, a.`label`, a.`active`
                 FROM `tab_actions_sub_type` a
                 WHERE 1=1
+                ORDER BY a.`label` ASC
             ;";
             $params->typeSQL = OdaLibBd::SQL_GET_ALL;
             $retour = $this->BD_ENGINE->reqODASQL($params);
