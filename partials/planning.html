@@ -299,6 +299,72 @@
             <label oda-label="planning.date">planning.date</label>: {{date}} {{startHours}}:{{startMinutes}} - {{endHours}}:{{endMinutes}}
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="checkbox">
+                <input type="checkbox" id="monday">
+                <label oda-label="oda-calendar.monday"></label>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="checkbox">
+                <input type="checkbox" id="tuesday">
+                <label oda-label="oda-calendar.tuesday"></label>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="checkbox">
+                <input type="checkbox" id="wednesday">
+                <label oda-label="oda-calendar.wednesday"></label>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="checkbox">
+                <input type="checkbox" id="thursday">
+                <label oda-label="oda-calendar.thursday"></label>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="checkbox">
+                <input type="checkbox" id="friday">
+                <label oda-label="oda-calendar.friday"></label>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="checkbox">
+                <input type="checkbox" id="saturday">
+                <label oda-label="oda-calendar.saturday"></label>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="checkbox">
+                <input type="checkbox" id="sunday">
+                <label oda-label="oda-calendar.sunday"></label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="start" oda-label="planning.start">planning.start</label>
+                <input value="{{start}}" required type="date" class="form-control" oda-input-text="start" oda-input-text-tips="planning.start" oda-input-text-check="Oda.Regexs:oda-date">
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="end" oda-label="planning.end">planning.end</label>
+                <input value="{{end}}" required type="date" class="form-control" oda-input-text="end" oda-input-text-tips="planning.end" oda-input-text-check="Oda.Regexs:oda-date">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="loop" oda-label="planning.loop">planning.loop</label>
+                <input value="2" required type="number" class="form-control" oda-input-text="loop" oda-input-text-tips="planning.loop">
+            </div>
+        </div>
+    </div>
 </script>
 
 <script>

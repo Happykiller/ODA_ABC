@@ -34,7 +34,10 @@
       "editAddress": "Editer l'adresse n°{{id}}",
       "editMemo": "Editer le mémo n°{{id}}",
       "color": "Couleur",
-      "changeColorSuccess": "Changement de couleur réussi !"
+      "changeColorSuccess": "Changement de couleur réussi !",
+      "start": "Début",
+      "end": "Fin",
+      "loop": "Nombre d'itération"
     }
   },{
     "groupName" : "planning"
