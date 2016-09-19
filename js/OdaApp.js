@@ -834,6 +834,7 @@
                 "address": [],
                 "actionsType": [],
                 "actionsSubType": [],
+                tmpRepeat:{},
                 /**
                  * @returns {$.Oda.App.Controller.Planning}
                  */
@@ -2005,6 +2006,8 @@
                             var startMinutes = eventData.start.substr(14, 2);
                             var endHours = eventData.end.substr(11, 2);
                             var endMinutes = eventData.end.substr(14, 2);
+                            var tomorrow = moment(eventData.start).add(1, 'days').format('YYYY-MM-DD');
+                            var end = moment(eventData.start).add(15, 'days').format('YYYY-MM-DD');
 
                             var strHtml = $.Oda.Display.TemplateHtml.create({
                                 template: "tplRepeat"
@@ -2018,12 +2021,25 @@
                                     address_id: eventData.address_id,
                                     date: $.Oda.Date.getStrDateFrFromUs(dateUs),
                                     adresseCode: eventData.address_code,
-                                    patientName: eventData.name_first + " " + eventData.name_last
+                                    patientName: eventData.name_first + " " + eventData.name_last,
+                                    start: tomorrow,
+                                    end: end
                                 }
                             });
 
+                            $.Oda.App.Controller.Planning.tmpRepeat = {
+                                id: params.id,
+                                startHours: startHours,
+                                startMinutes: startMinutes,
+                                endHours: endHours,
+                                endMinutes: endMinutes,
+                                patient_id: eventData.patient_id,
+                                address_id: eventData.address_id,
+                                date: dateUs,
+                            };
+
                             var strFooter = "";
-                            strFooter += '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Planning.submitRepeat({id:' + params.id + '});" class="btn btn-primary">oda-main.bt-submit</button >';
+                            strFooter += '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Planning.submitRepeat({id:' + params.id + '});" class="btn btn-primary disabled" disabled>oda-main.bt-submit</button >';
 
                             $.Oda.Display.Popup.open({
                                     "name": "popRepeat",
@@ -2031,7 +2047,37 @@
                                     "details": strHtml,
                                     "footer": strFooter,
                                     "callback": function () {
+                                        if( $("#loop").val() > 0 ){
+                                            $("#end").parent().hide();
+                                        }else{
+                                            $("#end").parent().show();
+                                        }
 
+                                        $.Oda.Scope.Gardian.add({
+                                            id : "gardianLoop",
+                                            listElt : ["loop"],
+                                            function : function(e){
+                                                if( parseInt($("#loop").val()) > 0 ){
+                                                    $("#end").parent().hide();
+                                                }else{
+                                                    $("#end").parent().show();
+                                                }
+                                            }
+                                        });
+
+                                        $.Oda.Scope.Gardian.add({
+                                            id : "gardianRepeatSubmit",
+                                            listElt : ["monday","tuesday"],
+                                            function : function(e){
+                                                if( $("#monday").prop("checked") || $("#tuesday").prop("checked") || $("#wednesday").prop("checked")
+                                                    || $("#thursday").prop("checked") || $("#friday").prop("checked") || $("#saturday").prop("checked")
+                                                    || $("#sunday").prop("checked") ){
+                                                    $("#submit").btEnable();
+                                                }else{
+                                                    $("#submit").btDisable();
+                                                }
+                                            }
+                                        });
                                     }
                                 }
                             );
@@ -2039,6 +2085,88 @@
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.repeatEvent : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                submitRepeat : function () {
+                    try {
+                        $.Oda.App.Controller.Planning.tmpRepeat.monday = $("#monday").prop("checked");
+                        $.Oda.App.Controller.Planning.tmpRepeat.tuesday = $("#tuesday").prop("checked");
+                        $.Oda.App.Controller.Planning.tmpRepeat.wednesday = $("#wednesday").prop("checked");
+                        $.Oda.App.Controller.Planning.tmpRepeat.thursday = $("#thursday").prop("checked");
+                        $.Oda.App.Controller.Planning.tmpRepeat.friday = $("#friday").prop("checked");
+                        $.Oda.App.Controller.Planning.tmpRepeat.saturday = $("#saturday").prop("checked");
+                        $.Oda.App.Controller.Planning.tmpRepeat.sunday = $("#sunday").prop("checked");
+                        $.Oda.App.Controller.Planning.tmpRepeat.start = $("#start").val();
+                        $.Oda.App.Controller.Planning.tmpRepeat.end = $("#end").val();
+                        $.Oda.App.Controller.Planning.tmpRepeat.loop = parseInt($("#loop").val());
+                        console.log($.Oda.App.Controller.Planning.tmpRepeat);
+
+                        var listDateToCreate = $.Oda.App.Controller.Planning.calcListDate($.Oda.App.Controller.Planning.tmpRepeat);
+
+                        $.Oda.Display.Popup.close({name:"popRepeat"});
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.submitRepeat : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} params
+                 * @returns {$.Oda.Controller.Planning}
+                 */
+                calcListDate : function (params) {
+                    try {
+                        var result = [];
+
+                        var nextSunday = moment(params.start).day(7).format('YYYY-MM-DD');
+                        console.log(nextSunday);
+
+                        if(params.loop > 0){
+                            params.end = moment(nextSunday).add(7*params.loop, 'days').format('YYYY-MM-DD');
+                        }
+
+                        var itera = (params.loop>0)?params.loop:0;
+
+                        for (var i = 0; i < itera; i++) {
+                            var elt = moment(nextSunday).day(1+(i*7));
+                            if(params.monday){
+                                result.push(elt.format('YYYY-MM-DD'));
+                            }
+                            var elt = moment(nextSunday).day(2+(i*7));
+                            if(params.tuesday){
+                                result.push(elt.format('YYYY-MM-DD'));
+                            }
+                            var elt = moment(nextSunday).day(3+(i*7));
+                            if(params.wednesday){
+                                result.push(elt.format('YYYY-MM-DD'));
+                            }
+                            var elt = moment(nextSunday).day(4+(i*7));
+                            if(params.thursday){
+                                result.push(elt.format('YYYY-MM-DD'));
+                            }
+                            var elt = moment(nextSunday).day(5+(i*7));
+                            if(params.friday){
+                                result.push(elt.format('YYYY-MM-DD'));
+                            }
+                            var elt = moment(nextSunday).day(6+(i*7));
+                            if(params.saturday){
+                                result.push(elt.format('YYYY-MM-DD'));
+                            }
+                            var elt = moment(nextSunday).day(7+(i*7));
+                            if(params.sunday){
+                                result.push(elt.format('YYYY-MM-DD'));
+                            }
+                        }
+
+                        console.log(result);
+
+                        return result;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.Controller.Planning.calcListDate : " + er.message);
                         return null;
                     }
                 },

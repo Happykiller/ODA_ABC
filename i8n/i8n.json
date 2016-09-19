@@ -34,10 +34,7 @@
       "editAddress": "Editer l'adresse n°{{id}}",
       "editMemo": "Editer le mémo n°{{id}}",
       "color": "Couleur",
-      "changeColorSuccess": "Changement de couleur réussi !",
-      "start": "Début",
-      "end": "Fin",
-      "loop": "Nombre d'itération"
+      "changeColorSuccess": "Changement de couleur réussi !"
     }
   },{
     "groupName" : "planning"
@@ -78,7 +75,8 @@
       "bt-repeat": "Répéter",
       "repeat": "Répéter",
       "date": "Date",
-      "repeatSynth": "Rappel de l'évènement à copier"
+      "repeatSynth": "Rappel de l'évènement à copier",
+      "loop": "Nombre d'itération en semaine"
     }
   },{
     "groupName": "synth_user_patient"
