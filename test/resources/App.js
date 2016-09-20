@@ -36,8 +36,52 @@ QUnit.test( "$.Oda.App.Controller.Planning.calcListDate", function(assert) {
         sunday: false,
         loop: 3
     };
-
     var expected = ["2016-09-19", "2016-09-21", "2016-09-26", "2016-09-28", "2016-10-03", "2016-10-05"];
+    assert.deepEqual($.Oda.App.Controller.Planning.calcListDate(inputs), expected, "Test OK : Passed!" );
 
+    var inputs = {
+        id: 826,
+        address_id: "19",
+        patient_id: "15",
+        date: "2016-09-16",
+        startHours : "15",
+        startMinutes : "00",
+        endHours: "16",
+        endMinutes: "00",
+        start : "2016-09-17",
+        end: "2016-09-27",
+        monday: true,
+        tuesday: false,
+        wednesday: true,
+        thursday: false,
+        friday: false,
+        saturday: false,
+        sunday: false,
+        loop: 0
+    };
+    var expected = ["2016-09-19", "2016-09-21", "2016-09-26"];
+    assert.deepEqual($.Oda.App.Controller.Planning.calcListDate(inputs), expected, "Test OK : Passed!" );
+
+    var inputs = {
+        id: 826,
+        address_id: "19",
+        patient_id: "15",
+        date: "2016-09-16",
+        startHours : "15",
+        startMinutes : "00",
+        endHours: "16",
+        endMinutes: "00",
+        start : "2016-09-17",
+        end: "2016-09-27",
+        monday: true,
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false,
+        saturday: false,
+        sunday: true,
+        loop: 2
+    };
+    var expected = ["2016-09-19", "2016-09-25", "2016-09-26", "2016-10-02"];
     assert.deepEqual($.Oda.App.Controller.Planning.calcListDate(inputs), expected, "Test OK : Passed!" );
 });

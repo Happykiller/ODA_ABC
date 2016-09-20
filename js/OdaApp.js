@@ -42,9 +42,7 @@
                     "list" : [
                         { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/fullcalendar.min.css", "type" : "css"},
                         { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/fullcalendar.min.js", "type" : "script"},
-                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/lang/fr.js", "type" : "script"},
-                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/lang/es.js", "type" : "script"},
-                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/lang/it.js", "type" : "script"}
+                        { "elt" : $.Oda.Context.rootPath + $.Oda.Context.vendorName + "/fullcalendar/dist/locale/fr.js", "type" : "script"}
                     ]
                 });
 
@@ -2027,6 +2025,21 @@
                                 }
                             });
 
+                            var patient = {};
+                            for(var index in $.Oda.App.Controller.Planning.patients){
+                                if($.Oda.App.Controller.Planning.patients[index].id === eventData.patient_id){
+                                    patient = $.Oda.App.Controller.Planning.patients[index];
+                                    break;
+                                }
+                            }
+
+                            var title = patient.name_first + " " + patient.name_last;
+
+                            var location = null;
+                            if(patient.address_id_default !== null){
+                                location = patient.adress + " " + patient.city + " " + patient.code_postal + " france";
+                            }
+
                             $.Oda.App.Controller.Planning.tmpRepeat = {
                                 id: params.id,
                                 startHours: startHours,
@@ -2036,6 +2049,8 @@
                                 patient_id: eventData.patient_id,
                                 address_id: eventData.address_id,
                                 date: dateUs,
+                                title: title,
+                                location: location
                             };
 
                             var strFooter = "";
@@ -2103,9 +2118,18 @@
                         $.Oda.App.Controller.Planning.tmpRepeat.start = $("#start").val();
                         $.Oda.App.Controller.Planning.tmpRepeat.end = $("#end").val();
                         $.Oda.App.Controller.Planning.tmpRepeat.loop = parseInt($("#loop").val());
-                        console.log($.Oda.App.Controller.Planning.tmpRepeat);
 
                         var listDateToCreate = $.Oda.App.Controller.Planning.calcListDate($.Oda.App.Controller.Planning.tmpRepeat);
+
+                        for(var index in listDateToCreate){
+                            var elt = listDateToCreate[index];
+
+                            var padStartHour = $.Oda.Tooling.pad2(elt);
+                            var start = elt + " " +  $.Oda.App.Controller.Planning.tmpRepeat.startHours + ":" + $.Oda.App.Controller.Planning.tmpRepeat.startMinutes + ":00";
+                            var end = elt + " " +  $.Oda.App.Controller.Planning.tmpRepeat.endHours + ":" + $.Oda.App.Controller.Planning.tmpRepeat.endMinutes + ":00";
+
+                            $.Oda.App.Controller.Planning.duplicate({start:start, end:end});
+                        }
 
                         $.Oda.Display.Popup.close({name:"popRepeat"});
                         return this;
@@ -2118,55 +2142,91 @@
                  * @param {Object} params
                  * @returns {$.Oda.Controller.Planning}
                  */
-                calcListDate : function (params) {
+                calcListDate: function (params) {
                     try {
                         var result = [];
 
                         var nextSunday = moment(params.start).day(7).format('YYYY-MM-DD');
-                        console.log(nextSunday);
 
                         if(params.loop > 0){
-                            params.end = moment(nextSunday).add(7*params.loop, 'days').format('YYYY-MM-DD');
+                            params.end = moment(nextSunday).add(7*params.loop+1, 'days').format('YYYY-MM-DD');
                         }
 
-                        var itera = (params.loop>0)?params.loop:0;
+                        var diffDays = Math.ceil(moment(params.end).diff(moment(params.start), 'day') / 7);
+
+                        var itera = (params.loop>0)?params.loop:diffDays;
 
                         for (var i = 0; i < itera; i++) {
                             var elt = moment(nextSunday).day(1+(i*7));
-                            if(params.monday){
+                            if((params.monday) &&( moment(params.end).isAfter(elt))){
                                 result.push(elt.format('YYYY-MM-DD'));
                             }
                             var elt = moment(nextSunday).day(2+(i*7));
-                            if(params.tuesday){
+                            if((params.tuesday) &&( moment(params.end).isAfter(elt))){
                                 result.push(elt.format('YYYY-MM-DD'));
                             }
                             var elt = moment(nextSunday).day(3+(i*7));
-                            if(params.wednesday){
+                            if((params.wednesday) &&( moment(params.end).isAfter(elt))){
                                 result.push(elt.format('YYYY-MM-DD'));
                             }
                             var elt = moment(nextSunday).day(4+(i*7));
-                            if(params.thursday){
+                            if((params.thursday) &&( moment(params.end).isAfter(elt))){
                                 result.push(elt.format('YYYY-MM-DD'));
                             }
                             var elt = moment(nextSunday).day(5+(i*7));
-                            if(params.friday){
+                            if((params.friday) &&( moment(params.end).isAfter(elt))){
                                 result.push(elt.format('YYYY-MM-DD'));
                             }
                             var elt = moment(nextSunday).day(6+(i*7));
-                            if(params.saturday){
+                            if((params.saturday) &&( moment(params.end).isAfter(elt))){
                                 result.push(elt.format('YYYY-MM-DD'));
                             }
                             var elt = moment(nextSunday).day(7+(i*7));
-                            if(params.sunday){
+                            if((params.sunday) &&( moment(params.end).isAfter(elt))){
                                 result.push(elt.format('YYYY-MM-DD'));
                             }
                         }
-
-                        console.log(result);
 
                         return result;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.Controller.Planning.calcListDate : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param p_params.start
+                 * @param p_params.end
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                duplicate: function (p_params) {
+                    try {
+                        $.Oda.App.Controller.Planning.createAppointment({
+                            callback: function (params) {
+                                var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/", {type:'POST',callback : function(response){
+                                    $('#calendar').fullCalendar( 'refetchEvents' );
+                                }},{
+                                    "patient_id": $.Oda.App.Controller.Planning.tmpRepeat.patient_id,
+                                    "start": p_params.start,
+                                    "end": p_params.end,
+                                    "user_id": $.Oda.Session.id,
+                                    "author_id": $.Oda.Session.id,
+                                    "googleId": params.googleId,
+                                    "googleEtag": params.googleEtag,
+                                    "googleHtmlLink": params.googleHtmlLink,
+                                    "googleICalUID": params.googleICalUID
+                                });
+                            },
+                            "start": p_params.start,
+                            "end": p_params.end,
+                            "title": $.Oda.App.Controller.Planning.tmpRepeat.title,
+                            "location": $.Oda.App.Controller.Planning.tmpRepeat.location,
+                            "comment": "comment"
+                        });
+
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.duplicate.duplicate : " + er.message);
                         return null;
                     }
                 },
