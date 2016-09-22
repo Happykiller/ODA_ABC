@@ -846,6 +846,19 @@
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/actions/sub_type/", {callback : function(response){
                             $.Oda.App.Controller.Planning.actionsSubType = response.data;
                         }});
+
+                        $.Oda.Scope.Gardian.add({
+                            id : "gardianCreateNewEvent",
+                            listElt : ["newEventDate"],
+                            function : function(e){
+                                if( $("#newEventDate").data("isOk") ){
+                                    $("#submitNewEvent").btEnable();
+                                }else{
+                                    $("#submitNewEvent").btDisable();
+                                }
+                            }
+                        });
+                        
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.start : " + er.message);
@@ -2230,6 +2243,20 @@
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.duplicate.duplicate : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Planning}
+                 */
+                createEventFromDate : function () {
+                    try {
+                        var theDate = moment($('#newEventDate').val()).format('YYYY-MM-DD');
+                        $.Oda.App.Controller.Planning.dayClicked = {"date":theDate};
+                        $.Oda.App.Controller.Planning.createEvent();
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.createEventFromDate : " + er.message);
                         return null;
                     }
                 },

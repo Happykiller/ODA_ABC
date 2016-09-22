@@ -10,6 +10,20 @@
         <div class="col-md-12" id="calendar">
         </div>
     </div>
+    <br>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <input class="form-control" type="date" oda-input-text="newEventDate" oda-input-text-check="Oda.Regexs:noInjection" required>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <button type="button" oda-submit="submitNewEvent" oda-label="planning.createEvent" onclick="$.Oda.App.Controller.Planning.createEventFromDate();" class="btn btn-primary disabled" disabled>createEvent</button>
+            </div>
+        </div>
+    </div>
+    <br>
 </div>
 
 <script id="formCreateEvent" type="text/template">
