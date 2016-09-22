@@ -1996,20 +1996,52 @@
                     try {
                         $.Oda.Display.Popup.close({name:"editEvent"});
 
-                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/"+params.id, {callback : function(response) {
-                            $.Oda.App.Controller.Planning.currentEvent = response.data;
-                            var eventData = response.data;
-                            var dateUs = eventData.start.substr(0, 10);
-                            var startHours = eventData.start.substr(11, 2);
-                            var startMinutes = eventData.start.substr(14, 2);
-                            var endHours = eventData.end.substr(11, 2);
-                            var endMinutes = eventData.end.substr(14, 2);
-                            var tomorrow = moment(eventData.start).add(1, 'days').format('YYYY-MM-DD');
-                            var end = moment(eventData.start).add(15, 'days').format('YYYY-MM-DD');
+                        $.Oda.Tooling.timeout(function(){
+                            var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/"+params.id, {callback : function(response) {
+                                $.Oda.App.Controller.Planning.currentEvent = response.data;
+                                var eventData = response.data;
+                                var dateUs = eventData.start.substr(0, 10);
+                                var startHours = eventData.start.substr(11, 2);
+                                var startMinutes = eventData.start.substr(14, 2);
+                                var endHours = eventData.end.substr(11, 2);
+                                var endMinutes = eventData.end.substr(14, 2);
+                                var tomorrow = moment(eventData.start).add(1, 'days').format('YYYY-MM-DD');
+                                var end = moment(eventData.start).add(15, 'days').format('YYYY-MM-DD');
 
-                            var strHtml = $.Oda.Display.TemplateHtml.create({
-                                template: "tplRepeat"
-                                , scope: {
+                                var strHtml = $.Oda.Display.TemplateHtml.create({
+                                    template: "tplRepeat"
+                                    , scope: {
+                                        id: params.id,
+                                        startHours: startHours,
+                                        startMinutes: startMinutes,
+                                        endHours: endHours,
+                                        endMinutes: endMinutes,
+                                        patient_id: eventData.patient_id,
+                                        address_id: eventData.address_id,
+                                        date: $.Oda.Date.getStrDateFrFromUs(dateUs),
+                                        adresseCode: eventData.address_code,
+                                        patientName: eventData.name_first + " " + eventData.name_last,
+                                        start: tomorrow,
+                                        end: end
+                                    }
+                                });
+
+                                var patient = {};
+                                for(var index in $.Oda.App.Controller.Planning.patients){
+                                    if($.Oda.App.Controller.Planning.patients[index].id === eventData.patient_id){
+                                        patient = $.Oda.App.Controller.Planning.patients[index];
+                                        break;
+                                    }
+                                }
+
+                                var title = patient.name_first + " " + patient.name_last;
+
+                                var location = null;
+                                if(patient.address_id_default !== null){
+                                    location = patient.adress + " " + patient.city + " " + patient.code_postal + " france";
+                                }
+
+                                $.Oda.App.Controller.Planning.tmpRepeat = {
                                     id: params.id,
                                     startHours: startHours,
                                     startMinutes: startMinutes,
@@ -2017,86 +2049,57 @@
                                     endMinutes: endMinutes,
                                     patient_id: eventData.patient_id,
                                     address_id: eventData.address_id,
-                                    date: $.Oda.Date.getStrDateFrFromUs(dateUs),
-                                    adresseCode: eventData.address_code,
-                                    patientName: eventData.name_first + " " + eventData.name_last,
-                                    start: tomorrow,
-                                    end: end
-                                }
-                            });
+                                    date: dateUs,
+                                    title: title,
+                                    location: location
+                                };
 
-                            var patient = {};
-                            for(var index in $.Oda.App.Controller.Planning.patients){
-                                if($.Oda.App.Controller.Planning.patients[index].id === eventData.patient_id){
-                                    patient = $.Oda.App.Controller.Planning.patients[index];
-                                    break;
-                                }
-                            }
+                                var strFooter = "";
+                                strFooter += '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Planning.submitRepeat({id:' + params.id + '});" class="btn btn-primary disabled" disabled>oda-main.bt-submit</button >';
 
-                            var title = patient.name_first + " " + patient.name_last;
+                                $.Oda.Display.Popup.open({
+                                        "name": "popRepeat",
+                                        "label": $.Oda.I8n.get('planning', 'repeat') + ' N°' + params.id,
+                                        "details": strHtml,
+                                        "footer": strFooter,
+                                        "callback": function () {
+                                            if( $("#loop").val() > 0 ){
+                                                $("#end").parent().hide();
+                                            }else{
+                                                $("#end").parent().show();
+                                            }
 
-                            var location = null;
-                            if(patient.address_id_default !== null){
-                                location = patient.adress + " " + patient.city + " " + patient.code_postal + " france";
-                            }
+                                            $.Oda.Scope.Gardian.add({
+                                                id : "gardianLoop",
+                                                listElt : ["loop"],
+                                                function : function(e){
+                                                    if( parseInt($("#loop").val()) > 0 ){
+                                                        $("#end").parent().hide();
+                                                    }else{
+                                                        $("#end").parent().show();
+                                                    }
+                                                }
+                                            });
 
-                            $.Oda.App.Controller.Planning.tmpRepeat = {
-                                id: params.id,
-                                startHours: startHours,
-                                startMinutes: startMinutes,
-                                endHours: endHours,
-                                endMinutes: endMinutes,
-                                patient_id: eventData.patient_id,
-                                address_id: eventData.address_id,
-                                date: dateUs,
-                                title: title,
-                                location: location
-                            };
-
-                            var strFooter = "";
-                            strFooter += '<button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Planning.submitRepeat({id:' + params.id + '});" class="btn btn-primary disabled" disabled>oda-main.bt-submit</button >';
-
-                            $.Oda.Display.Popup.open({
-                                    "name": "popRepeat",
-                                    "label": $.Oda.I8n.get('planning', 'repeat') + ' N°' + params.id,
-                                    "details": strHtml,
-                                    "footer": strFooter,
-                                    "callback": function () {
-                                        if( $("#loop").val() > 0 ){
-                                            $("#end").parent().hide();
-                                        }else{
-                                            $("#end").parent().show();
+                                            $.Oda.Scope.Gardian.add({
+                                                id : "gardianRepeatSubmit",
+                                                listElt : ["monday","tuesday"],
+                                                function : function(e){
+                                                    if( $("#monday").prop("checked") || $("#tuesday").prop("checked") || $("#wednesday").prop("checked")
+                                                        || $("#thursday").prop("checked") || $("#friday").prop("checked") || $("#saturday").prop("checked")
+                                                        || $("#sunday").prop("checked") ){
+                                                        $("#submit").btEnable();
+                                                    }else{
+                                                        $("#submit").btDisable();
+                                                    }
+                                                }
+                                            });
                                         }
-
-                                        $.Oda.Scope.Gardian.add({
-                                            id : "gardianLoop",
-                                            listElt : ["loop"],
-                                            function : function(e){
-                                                if( parseInt($("#loop").val()) > 0 ){
-                                                    $("#end").parent().hide();
-                                                }else{
-                                                    $("#end").parent().show();
-                                                }
-                                            }
-                                        });
-
-                                        $.Oda.Scope.Gardian.add({
-                                            id : "gardianRepeatSubmit",
-                                            listElt : ["monday","tuesday"],
-                                            function : function(e){
-                                                if( $("#monday").prop("checked") || $("#tuesday").prop("checked") || $("#wednesday").prop("checked")
-                                                    || $("#thursday").prop("checked") || $("#friday").prop("checked") || $("#saturday").prop("checked")
-                                                    || $("#sunday").prop("checked") ){
-                                                    $("#submit").btEnable();
-                                                }else{
-                                                    $("#submit").btDisable();
-                                                }
-                                            }
-                                        });
                                     }
-                                }
-                            );
-                        }});
+                                );
+                            }});
+                        }, 500);
+
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.repeatEvent : " + er.message);
