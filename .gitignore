@@ -10,3 +10,7 @@ server/vendor
 server/vendor/*
 node_modules
 node_modules/*
+config/config.js
+server/config/config.php
+*.lock
+server/resources/*
