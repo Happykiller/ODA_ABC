@@ -4,6 +4,9 @@
 # IntelliJ project files
 .idea
 *.iml
-out
-gen
-# Created by .ignore support plugin (hsz.mobi)
+bower_components
+bower_components/*
+server/vendor
+server/vendor/*
+node_modules
+node_modules/*

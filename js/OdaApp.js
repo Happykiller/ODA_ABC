@@ -157,7 +157,11 @@
                                     }
                                     return str;
                                 },
-                                legend: [4, 6, 10]
+                                legend: [4, 6, 10],
+                                onClick: function(date, nb) {
+                                    var dateSelected = moment(date).format('YYYY-MM-DD');
+                                    $.Oda.Router.navigateTo({route:'planning',args:{date:dateSelected}});
+                                }
                             });
                         }},{
                             start: startMonth.format('YYYY-MM-DD'),
@@ -1095,6 +1099,7 @@
                         $('#calendar').fullCalendar({
                             lang: 'fr',
                             weekNumbers : true,
+                            defaultDate: $.Oda.Router.current.args.date,
                             dayClick: function(date, jsEvent, view) {
                                 var re = /^btDay-/gi;
                                 var patt = new RegExp(re);
@@ -1165,7 +1170,7 @@
                                 $.Oda.App.Controller.Planning.renderWeekBt({start: view.start});
                                 $.Oda.App.Controller.Planning.renderDayBt({start: view.start});
                             }
-                        })
+                        });
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Planning.displayPlanning : " + er.message);
