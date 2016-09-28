@@ -2101,7 +2101,7 @@
 
                                             $.Oda.Scope.Gardian.add({
                                                 id : "gardianRepeatSubmit",
-                                                listElt : ["monday","tuesday"],
+                                                listElt : ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
                                                 function : function(e){
                                                     if( $("#monday").prop("checked") || $("#tuesday").prop("checked") || $("#wednesday").prop("checked")
                                                         || $("#thursday").prop("checked") || $("#friday").prop("checked") || $("#saturday").prop("checked")
@@ -2139,18 +2139,10 @@
                         $.Oda.App.Controller.Planning.tmpRepeat.start = $("#start").val();
                         $.Oda.App.Controller.Planning.tmpRepeat.end = $("#end").val();
                         $.Oda.App.Controller.Planning.tmpRepeat.loop = parseInt($("#loop").val());
+                        $.Oda.App.Controller.Planning.tmpRepeat.listDateToCreate = $.Oda.App.Controller.Planning.calcListDate($.Oda.App.Controller.Planning.tmpRepeat);
+                        $.Oda.App.Controller.Planning.tmpRepeat.index = 0; 
 
-                        var listDateToCreate = $.Oda.App.Controller.Planning.calcListDate($.Oda.App.Controller.Planning.tmpRepeat);
-
-                        for(var index in listDateToCreate){
-                            var elt = listDateToCreate[index];
-
-                            var padStartHour = $.Oda.Tooling.pad2(elt);
-                            var start = elt + " " +  $.Oda.App.Controller.Planning.tmpRepeat.startHours + ":" + $.Oda.App.Controller.Planning.tmpRepeat.startMinutes + ":00";
-                            var end = elt + " " +  $.Oda.App.Controller.Planning.tmpRepeat.endHours + ":" + $.Oda.App.Controller.Planning.tmpRepeat.endMinutes + ":00";
-
-                            $.Oda.App.Controller.Planning.duplicate({start:start, end:end});
-                        }
+                        $.Oda.App.Controller.Planning.depileRepeat();
 
                         $.Oda.Display.Popup.close({name:"popRepeat"});
                         return this;
@@ -2167,7 +2159,14 @@
                     try {
                         var result = [];
 
-                        var nextSunday = moment(params.start).day(7).format('YYYY-MM-DD');
+                        var startMoment = moment(params.start);
+                        var nextSunday;
+
+                        if(startMoment.day() !== 1){
+                            nextSunday = startMoment.day(7).format('YYYY-MM-DD');
+                        }else{
+                            nextSunday = startMoment.format('YYYY-MM-DD');
+                        }
 
                         if(params.loop > 0){
                             params.end = moment(nextSunday).add(7*params.loop+1, 'days').format('YYYY-MM-DD');
@@ -2215,21 +2214,24 @@
                     }
                 },
                 /**
-                 * @param {Object} p_params
-                 * @param p_params.start
-                 * @param p_params.end
                  * @returns {$.Oda.App.Controller.Planning}
                  */
-                duplicate: function (p_params) {
+                depileRepeat: function () {
                     try {
+                        var elt = $.Oda.App.Controller.Planning.tmpRepeat.listDateToCreate[$.Oda.App.Controller.Planning.tmpRepeat.index];
+
+                        var padStartHour = $.Oda.Tooling.pad2(elt);
+                        var start = elt + " " +  $.Oda.App.Controller.Planning.tmpRepeat.startHours + ":" + $.Oda.App.Controller.Planning.tmpRepeat.startMinutes + ":00";
+                        var end = elt + " " +  $.Oda.App.Controller.Planning.tmpRepeat.endHours + ":" + $.Oda.App.Controller.Planning.tmpRepeat.endMinutes + ":00"; 
+
                         $.Oda.App.Controller.Planning.createAppointment({
                             callback: function (params) {
                                 var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/event/", {type:'POST',callback : function(response){
                                     $('#calendar').fullCalendar( 'refetchEvents' );
                                 }},{
                                     "patient_id": $.Oda.App.Controller.Planning.tmpRepeat.patient_id,
-                                    "start": p_params.start,
-                                    "end": p_params.end,
+                                    "start": start,
+                                    "end": end,
                                     "user_id": $.Oda.Session.id,
                                     "author_id": $.Oda.Session.id,
                                     "googleId": params.googleId,
@@ -2238,16 +2240,21 @@
                                     "googleICalUID": params.googleICalUID
                                 });
                             },
-                            "start": p_params.start,
-                            "end": p_params.end,
+                            "start": start,
+                            "end": end,
                             "title": $.Oda.App.Controller.Planning.tmpRepeat.title,
                             "location": $.Oda.App.Controller.Planning.tmpRepeat.location,
                             "comment": "comment"
                         });
 
+                        $.Oda.App.Controller.Planning.tmpRepeat.index++;
+                        if($.Oda.App.Controller.Planning.tmpRepeat.index < $.Oda.App.Controller.Planning.tmpRepeat.listDateToCreate.length){
+                            $.Oda.Tooling.timeout($.Oda.App.Controller.Planning.depileRepeat, 500);
+                        }
+
                         return this;
                     } catch (er) {
-                        $.Oda.Log.error("$.Oda.App.Controller.Planning.duplicate.duplicate : " + er.message);
+                        $.Oda.Log.error("$.Oda.App.Controller.Planning.depileRepeat : " + er.message);
                         return null;
                     }
                 },
