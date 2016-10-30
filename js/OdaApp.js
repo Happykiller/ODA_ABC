@@ -2291,13 +2291,14 @@
 
                         $.Oda.Scope.Gardian.add({
                             id : "gSynth",
-                            listElt : ["patientId", "week"],
+                            listElt : ["patientId", "begin", "end"],
                             function : function(e){
-                                var $week = $('#week');
+                                var $begin = $('#begin');
+                                var $end = $('#end');
                                 var $patientId = $('#patientId');
-                                if( ($patientId.data("isOk")) && ($week.data("isOk")) ){
-                                    var dateStart = moment($week.val()).startOf('week').format('YYYY-MM-DD');
-                                    var dateEnd = moment($week.val()).endOf('week').format('YYYY-MM-DD');
+                                if( ($patientId.data("isOk")) && ($begin.data("isOk")) && ($end.data("isOk")) ){
+                                    var dateStart = moment($begin.val()).format('YYYY-MM-DD');
+                                    var dateEnd = moment($end.val()).format('YYYY-MM-DD');
                                     var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/report/synth_user_patient", {callback : function(response){
                                         var strHtml = $.Oda.Display.TemplateHtml.create({
                                             template : "tlpSynth"

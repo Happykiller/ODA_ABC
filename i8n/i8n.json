@@ -84,6 +84,8 @@
       "title": "Fiche de synthèse et d'évaluation hebdomadaire",
       "patientId": "Patient",
       "week": "Semaine",
+      "begin": "Début",
+      "end": "Fin",
       "pdf": "Pdf",
       "waitingDl": "Merci de patienter votre téléchargement va commencer."
     }
