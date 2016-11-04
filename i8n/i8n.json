@@ -81,7 +81,7 @@
   },{
     "groupName": "synth_user_patient"
     , "fr": {
-      "title": "Fiche de synthèse et d'évaluation hebdomadaire",
+      "title": "Fiche de synthèse par client",
       "patientId": "Patient",
       "week": "Semaine",
       "begin": "Début",
