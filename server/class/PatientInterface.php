@@ -73,7 +73,8 @@ class PatientInterface extends OdaRestInterface {
         try {
             $params = new OdaPrepareReqSql();
             $params->sql = "SELECT a.`id`, a.`name_first`, a.`name_last`, a.`active`, a.`color`,
-                a.`address_id_default`, b.`code`, b.`adress`, b.`city`, b.`code_postal`
+                a.`address_id_default`, b.`code`, b.`adress`, b.`city`, b.`code_postal`,
+                a.`birthday`, a.`secu`, a.`telPerso`, a.`contratStart`, a.`nbHours`, a.`costHour`, a.`health`, a.`notes`
                 FROM `tab_patients` a
                 LEFT OUTER JOIN `tab_adress` b
                 ON a.`address_id_default` = b.`id`
@@ -104,6 +105,14 @@ class PatientInterface extends OdaRestInterface {
                 SET
                 `name_first`= :name_first,
                 `name_last`= :name_last,
+                `birthday`= :birthday,
+                `secu`= :secu,
+                `telPerso`= :telPerso,
+                `contratStart`= :contratStart,
+                `nbHours`= :nbHours,
+                `costHour`= :costHour,
+                `health`= :health, 
+                `notes`= :notes,
                 `active`= :active
                 WHERE 1=1
                 AND `id` = :id
@@ -112,6 +121,14 @@ class PatientInterface extends OdaRestInterface {
                 "id" => $id,
                 "name_first" => $this->inputs["name_first"],
                 "name_last" => $this->inputs["name_last"],
+                "birthday" => $this->inputs["birthday"],
+                "secu" => $this->inputs["secu"],
+                "telPerso" => $this->inputs["telPerso"],
+                "contratStart" => $this->inputs["contratStart"],
+                "nbHours" => $this->inputs["nbHours"],
+                "costHour" => $this->inputs["costHour"],
+                "health" => $this->inputs["health"],
+                "notes" => $this->inputs["notes"],
                 "active" => $this->inputs["active"]
             ];
             $params->typeSQL = OdaLibBd::SQL_SCRIPT;

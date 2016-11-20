@@ -34,7 +34,31 @@
       "editAddress": "Editer l'adresse n°{{id}}",
       "editMemo": "Editer le mémo n°{{id}}",
       "color": "Couleur",
-      "changeColorSuccess": "Changement de couleur réussi !"
+      "changeColorSuccess": "Changement de couleur réussi !",
+      "birthday": "Date de naissance",
+      "birthday-tips": "dd/mm/yyyy",
+      "birthday-placeholder": "dd/mm/yyyy",
+      "secu": "Numéro de sécurité social",
+      "secu-tips": "xxxxxx",
+      "secu-placeholder": "xxxxxx",
+      "telPerso": "Téléphone personnel",
+      "telPerso-tips": "00.00.00.00.00",
+      "telPerso-placeholder": "00.00.00.00.00",
+      "patient": "Patient",
+      "contrat": "Contrat",
+      "nbHours": "Nombre d'heure",
+      "nbHours-tips": "42",
+      "nbHours-placeholder": "42",
+      "costHour": "Coût de l'heure",
+      "costHour-tips": "15€",
+      "costHour-placeholder": "15€",
+      "notes": "Notes",
+      "health": "Etat de santé",
+      "family": "Famille",
+      "intervenant": "Intervenants",
+      "contratStart": "Date début contrat",
+      "contratStart-tips": "dd/mm/yyyy",
+      "contratStart-placeholder": "dd/mm/yyyy"
     }
   },{
     "groupName" : "planning"

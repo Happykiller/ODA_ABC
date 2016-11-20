@@ -37,6 +37,7 @@
 </script>
 
 <script id="formEditPatient" type="text/template">
+    <label oda-label="patients.patient">patients.patient</label>
     <div class="row">
         <div class="col-lg-3 col-sm-6">
             <div class="form-group">
@@ -61,8 +62,83 @@
                 </div>
             </div>
         </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="birthday" oda-label="patients.birthday">patients.birthday</label>
+                <input value="{{birthday}}" type="date" class="form-control" oda-input-text="birthday" oda-input-text-tips="patients.birthday-tips" oda-input-text-placeholder="patients.birthday-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
     </div>
-    <button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Patients.submitEditPatient({id:{{id}} });" class="btn btn-primary disabled" disabled>Submit</button>
+    <div class="row">
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="secu" oda-label="patients.secu">patients.secu</label>
+                <input value="{{secu}}" type="number" class="form-control" oda-input-text="secu" oda-input-text-tips="patients.secu-tips" oda-input-text-placeholder="secu.firstName-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="telPerso" oda-label="patients.telPerso">patients.telPerso</label>
+                <input value="{{telPerso}}" type="text" class="form-control" oda-input-text="telPerso" oda-input-text-tips="patients.telPerso-tips" oda-input-text-placeholder="patients.telPerso-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+    </div>
+
+    <label oda-label="patients.contrat">patients.contrat</label>
+    <div class="row">
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="nbHours" oda-label="patients.nbHours">patients.nbHours</label>
+                <input value="{{nbHours}}" type="number" class="form-control" oda-input-text="nbHours" oda-input-text-tips="patients.nbHours-tips" oda-input-text-placeholder="patients.nbHours-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="costHour" oda-label="patients.costHour">patients.costHour</label>
+                <input value="{{costHour}}" type="number" class="form-control" oda-input-text="costHour" oda-input-text-tips="patients.costHour-tips" oda-input-text-placeholder="patients.costHour-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="contratStart" oda-label="patients.contratStart">patients.contratStart</label>
+                <input value="{{contratStart}}" type="date" class="form-control" oda-input-text="contratStart" oda-input-text-tips="patients.contratStart-tips" oda-input-text-placeholder="patients.contratStart-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+    </div>
+
+    <label oda-label="patients.family">patients.family</label>
+    <div class="row">
+
+    </div>
+
+    <label oda-label="patients.intervenant">patients.intervenant</label>
+    <div class="row">
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label oda-label="patients.health">patients.health</label>
+                <textarea class="form-control" rows="2" id="health">{{health}}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label oda-label="patients.notes">patients.notes</label>
+                <textarea class="form-control" rows="5" id="notes">{{notes}}</textarea>
+            </div>
+        </div>
+    </div>
+
+
+    <button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Patients.submitEditPatient({id:{{id}} });" class="btn btn-primary disabled center-block" disabled>Submit</button>
+
+
+
     <hr>
     <div class="row">
         <div class="col-lg-3 col-sm-6">

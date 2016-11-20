@@ -314,7 +314,15 @@
                                     "firstName": response.data.name_first,
                                     "lastName": response.data.name_last,
                                     "checked": (response.data.active==='1')?"checked":"",
-                                    "color": response.data.color
+                                    "color": response.data.color,
+                                    "birthday": response.data.birthday,
+                                    "secu": response.data.secu,
+                                    "telPerso": response.data.telPerso,
+                                    "contratStart": response.data.contratStart,
+                                    "nbHours": response.data.nbHours,
+                                    "costHour": response.data.costHour,
+                                    "health": response.data.health,
+                                    "notes": response.data.notes
                                 }
                             });
 
@@ -335,9 +343,11 @@
 
                                     $.Oda.Scope.Gardian.add({
                                         id : "gEditPatient",
-                                        listElt : ["firstName", "lastName", "active"],
+                                        listElt : ["firstName", "lastName", "birthday", "secu", "telPerso", "contratStart", "nbHours", "costHour", "active"],
                                         function : function(e){
-                                            if( ($("#firstName").data("isOk")) && ($("#lastName").data("isOk")) ){
+                                            if( ($("#firstName").data("isOk")) && ($("#lastName").data("isOk"))
+                                                && ($("#birthday").data("isOk")) && ($("#secu").data("isOk")) && ($("#telPerso").data("isOk")) && ($("#contratStart").data("isOk"))
+                                                && ($("#nbHours").data("isOk"))  && ($("#costHour").data("isOk"))){
                                                 $("#submit").btEnable();
                                             }else{
                                                 $("#submit").btDisable();
@@ -369,6 +379,14 @@
                         }},{
                             "name_first": $('#firstName').val(),
                             "name_last": $('#lastName').val(),
+                            "birthday": $('#birthday').val(),
+                            "secu": $('#secu').val(),
+                            "telPerso": $('#telPerso').val(),
+                            "contratStart": $('#contratStart').val(),
+                            "nbHours": $('#nbHours').val(),
+                            "costHour": $('#costHour').val(),
+                            "health": $('#health').val(),
+                            "notes": $('#notes').val(),
                             "active": ($('#active').prop("checked"))?1:0
                         });
                         return this;
