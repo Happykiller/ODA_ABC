@@ -12,9 +12,9 @@ CREATE TABLE `@prefix@tab_contacts` (
   `value` varchar(250) NOT NULL,
   `author_id` int(11) NOT NULL,
   `date_create` datetime NOT NULL,
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `patient_id` (`patient_id`),
-  ADD KEY `author_id` (`author_id`)
+   PRIMARY KEY (`id`),
+   KEY `patient_id` (`patient_id`),
+   KEY `author_id` (`author_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
