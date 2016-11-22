@@ -14,7 +14,7 @@ CREATE TABLE `@prefix@tab_contacts` (
   `date_create` datetime NOT NULL,
   ADD PRIMARY KEY (`id`),
   ADD KEY `patient_id` (`patient_id`),
-  ADD KEY `author_id` (`author_id`);
+  ADD KEY `author_id` (`author_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
