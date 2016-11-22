@@ -58,7 +58,14 @@
       "intervenant": "Intervenants",
       "contratStart": "Date début contrat",
       "contratStart-tips": "dd/mm/yyyy",
-      "contratStart-placeholder": "dd/mm/yyyy"
+      "contratStart-placeholder": "dd/mm/yyyy",
+      "newContactFamily": "Nouveau contact pour la famille",
+      "newContactLabel": "Label",
+      "newContactLabel-tips": "Label",
+      "newContactLabel-placeholder": "Label",
+      "newContactValue": "Coordonnée",
+      "newContactValue-tips": "Coordonnée",
+      "newContactValue-placeholder": "Coordonnée"
     }
   },{
     "groupName" : "planning"

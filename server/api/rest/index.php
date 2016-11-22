@@ -98,6 +98,24 @@ $slim->put('/patient/:id/color/', function ($id) use ($slim) {
     $INTERFACE->changeColor($id);
 });
 
+$slim->get('/patient/:id/contact/', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("category");
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new PatientInterface($params);
+    $INTERFACE->getContactByPatientId($id);
+});
+
+$slim->post('/patient/:id/new_contact/', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->arrayInput = array("category", "contactLabel", "contactValue", "author_id");
+    $params->slim = $slim;
+    $INTERFACE = new PatientInterface($params);
+    $INTERFACE->newContactFamily($id);
+});
+
 //--------------------------------------------------------------------------
 // EVENT
 

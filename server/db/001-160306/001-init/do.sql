@@ -48,16 +48,20 @@ CREATE TABLE `@prefix@tab_patients` (
   `name_first` varchar(250) NOT NULL,
   `name_last` varchar(250) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `birthday` DATE NOT NULL,
+  `secu` INT(11) NOT NULL,
+  `telPerso` VARCHAR(50) NOT NULL,
+  `contratStart` DATE NOT NULL,
+  `nbHours` INT(3) NOT NULL,
+  `costHour` DECIMAL(10,2) NOT NULL,
+  `health` VARCHAR(1000) NOT NULL,
+  `notes` TEXT NOT NULL,
   `adress_id` int(11) DEFAULT NULL,
   `create_date` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `adress_id` (`adress_id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Contraintes pour les tables exportées
---
 
 --
 -- Contraintes pour la table `tab_patients`
@@ -87,10 +91,6 @@ CREATE TABLE `@prefix@tab_events` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Contraintes pour les tables exportées
---
-
---
 -- Contraintes pour la table `tab_events`
 --
 ALTER TABLE `@prefix@tab_events`
@@ -98,6 +98,31 @@ ADD CONSTRAINT `fk_patient_author` FOREIGN KEY (`author_id`) REFERENCES `@prefix
 ADD CONSTRAINT `fk_event_patient` FOREIGN KEY (`patient_id`) REFERENCES `@prefix@tab_patients` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 ADD CONSTRAINT `fk_patient_user` FOREIGN KEY (`user_id`) REFERENCES `@prefix@api_tab_utilisateurs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tab_contacts`
+--
+
+CREATE TABLE `@prefix@tab_contacts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `patient_id` int(11) NOT NULL,
+  `category` varchar(250) NOT NULL,
+  `label` varchar(250) NOT NULL,
+  `value` varchar(250) NOT NULL,
+  `author_id` int(11) NOT NULL,
+  `date_create` datetime NOT NULL,
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `patient_id` (`patient_id`),
+  ADD KEY `author_id` (`author_id`);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Contraintes pour la table `tab_contacts`
+--
+ALTER TABLE `@prefix@tab_contacts`
+  ADD CONSTRAINT `fk_contacts_author` FOREIGN KEY (`author_id`) REFERENCES `@prefix@api_tab_utilisateurs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_contacts_patient` FOREIGN KEY (`patient_id`) REFERENCES `@prefix@tab_patients` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- --------------------------------------------------------
 SET FOREIGN_KEY_CHECKS=1;

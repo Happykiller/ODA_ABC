@@ -322,7 +322,10 @@
                                     "nbHours": response.data.nbHours,
                                     "costHour": response.data.costHour,
                                     "health": response.data.health,
-                                    "notes": response.data.notes
+                                    "notes": response.data.notes,
+                                    "btContact": $.Oda.Display.TemplateHtml.create({
+                                        template : "tmBtNewContactFamily"
+                                    })
                                 }
                             });
 
@@ -356,6 +359,7 @@
                                     });
                                     $.Oda.App.Controller.Patients.displayAddress({patientId: patientId});
                                     $.Oda.App.Controller.Patients.displayMemos();
+                                    $.Oda.App.Controller.Patients.displayContactsFamily();
                                 }
                             });
                         }});
@@ -746,7 +750,7 @@
                         });
                         return this;
                     } catch (er) {
-                        $.Oda.Log.error("$.Oda.App.Controller.Patients.submitMemo : " + er.message);
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.cancelMemo : " + er.message);
                         return null;
                     }
                 },
@@ -843,6 +847,140 @@
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.Patients.submitEditMemo : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                displayContactsFamily : function () {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/"+$.Oda.App.Controller.Patients.currentPatient.id+"/contact/", {callback : function(response){
+                            $.Oda.Display.Table.createDataTable({
+                                target: 'divTabContactsFamily',
+                                data: response.data,
+                                option: {
+                                    "aaSorting": [[0, 'desc']],
+                                },
+                                attribute: [
+                                    {
+                                        header: $.Oda.I8n.get("patients","newContactLabel"),
+                                        align: "center",
+                                        value: function(data, type, full, meta, row){
+                                            return row.label;
+                                        }
+                                    },
+                                    {
+                                        header: $.Oda.I8n.get("patients","newContactValue"),
+                                        align: "center",
+                                        value: function(data, type, full, meta, row){
+                                            return row.value;
+                                        }
+                                    },
+                                    {
+                                        header: "Action",
+                                        size: "75px",
+                                        align: 'center',
+                                        value: function(data, type, full, meta, row){
+                                            var strHtml = '';
+                                            strHtml += ' <button type="button" class="btn btn-danger btn-xs" onclick="$.Oda.App.Controller.Patients.removeContact({id:'+row.id+'});"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>';
+                                            return strHtml;
+                                        }
+                                    }
+                                ]
+                            })
+                        }},{
+                            "category": "FAMILY"
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.displayContactsFamily : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                displayContactFamily : function () {
+                    try {
+                        var strHtml = $.Oda.Display.TemplateHtml.create({
+                            template : "tlpNewContact"
+                        });
+                        $.Oda.Display.render({
+                            "id": "divNewContactFamily",
+                            "html": strHtml
+                        });
+                        $('#divNewContactFamily').fadeIn();
+                        $.Oda.Scope.Gardian.add({
+                            id : "gardianNewContactFamily",
+                            listElt : ["newContactLabel","newContactValue"],
+                            function : function(e){
+                                if( $("#newContactLabel").data("isOk") && $("#newContactValue").data("isOk") ){
+                                    $("#btStubmitNewContact").btEnable();
+                                }else{
+                                    $("#btStubmitNewContact").btDisable();
+                                }
+                            }
+                        });
+                        $.Oda.Display.render({
+                            "id": "divBtContactFamily",
+                            "html": $.Oda.Display.TemplateHtml.create({
+                                template : "tmBtNewContactFamilyOpen"
+                            })
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.displayContactFamily : " + er.message);
+                        return null;
+                    }
+                },
+                
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                cancelNewContactFamily : function () {
+                    try {
+                        $('#divNewContactFamily').hide();
+                        $('#newContactLabel').empty();
+                        $('#newContactValue').empty();
+                        $.Oda.Display.render({
+                            "id": "divBtContactFamily",
+                            "html": $.Oda.Display.TemplateHtml.create({
+                                template : "tmBtNewContactFamily"
+                            })
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.cancelNewContactFamily : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                submitNewContactFamily : function () {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/"+$.Oda.App.Controller.Patients.currentPatient.id+"/new_contact/", {type: 'POST', callback : function(response){
+                            $('#divNewContactFamily').hide();
+                            $('#newContactLabel').empty();
+                            $('#newContactValue').empty();
+                            $.Oda.Display.render({
+                                "id": "divBtContactFamily",
+                                "html": $.Oda.Display.TemplateHtml.create({
+                                    template : "tmBtNewContactFamily"
+                                })
+                            });
+                            $.Oda.App.Controller.Patients.displayContactsFamily();
+                        }},{
+                            "patient_id": $.Oda.App.Controller.Patients.currentPatient.id,
+                            "category": "FAMILY",
+                            "contactLabel": $('#newContactLabel').val(),
+                            "contactValue": $('#newContactValue').val(),
+                            "author_id": $.Oda.Session.id
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.submitNewContactFamily : " + er.message);
                         return null;
                     }
                 },

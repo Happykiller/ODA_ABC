@@ -37,7 +37,7 @@
 </script>
 
 <script id="formEditPatient" type="text/template">
-    <label oda-label="patients.patient">patients.patient</label>
+    <h3 oda-label="patients.patient">patients.patient</h3>
     <div class="row">
         <div class="col-lg-3 col-sm-6">
             <div class="form-group">
@@ -84,7 +84,7 @@
         </div>
     </div>
 
-    <label oda-label="patients.contrat">patients.contrat</label>
+    <h3 oda-label="patients.contrat">patients.contrat</h3>
     <div class="row">
         <div class="col-lg-3 col-sm-6">
             <div class="form-group">
@@ -106,16 +106,23 @@
         </div>
     </div>
 
-    <label oda-label="patients.family">patients.family</label>
+    <!--family-->
+    <h3 oda-label="patients.family">patients.family</h3>
+    <div class="row">
+        <div class="col-md-12" id="divTabContactsFamily"><oda-loading></oda-loading></div>
+        <div class="col-md-12" id="divNewContactFamily" style="display: none;"></div>
+        <div class="col-md-12" id="divBtContactFamily">
+            {{btContact}}
+        </div>
+    </div>
+
+    <!--intervenant-->
+    <h3 oda-label="patients.intervenant">patients.intervenant</h3>
     <div class="row">
 
     </div>
 
-    <label oda-label="patients.intervenant">patients.intervenant</label>
-    <div class="row">
-
-    </div>
-
+    <!--health-->
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
@@ -125,6 +132,7 @@
         </div>
     </div>
 
+    <!--notes-->
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
@@ -134,10 +142,7 @@
         </div>
     </div>
 
-
     <button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Patients.submitEditPatient({id:{{id}} });" class="btn btn-primary disabled center-block" disabled>Submit</button>
-
-
 
     <hr>
     <div class="row">
@@ -170,6 +175,7 @@
         </div>
     </div>
     <hr>
+    <!--memos-->
     <div class="row">
         <label oda-label="patients.memos">patients.memos</label>
         <div class="col-md-12" id="divTabMemos">
@@ -301,6 +307,31 @@
             </div>
         </div>
     </div>
+</script>
+
+<script id="tlpNewContact" type="text/template">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="newContactLabel" oda-label="patients.newContactLabel">patients.newContactLabel</label>
+                <input required type="text" class="form-control" oda-input-text="newContactLabel" oda-input-text-tips="patients.newContactLabel-tips" oda-input-text-placeholder="patients.newContactLabel-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="newContactValue" oda-label="patients.newContactValue">patients.newContactValue</label>
+                <input required type="text" class="form-control" oda-input-text="newContactValue" oda-input-text-tips="patients.newContactValue-tips" oda-input-text-placeholder="patients.newContactValue-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id="tmBtNewContactFamily" type="text/template">
+    <button type="button" oda-label="patients.newContactFamily" onclick="$.Oda.App.Controller.Patients.displayContactFamily();" class="btn btn-sm btn-primary">patients.newContactFamily</button>
+</script>
+
+<script id="tmBtNewContactFamilyOpen" type="text/template">
+    <button type="button" oda-submit="btStubmitNewContact" oda-label="oda-main.bt-submit" onclick="$.Oda.App.Controller.Patients.submitNewContactFamily();" class="btn btn-primary disabled" disabled>oda-main.bt-submit</button> <button type="button" oda-label="oda-main.bt-cancel" onclick="$.Oda.App.Controller.Patients.cancelNewContactFamily();" class="btn btn-secondary">oda-main.bt-cancel</button>
 </script>
 
 <script>

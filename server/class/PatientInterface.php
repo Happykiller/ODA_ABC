@@ -13,7 +13,7 @@ use \stdClass;
  * Tool
  *
  * @author  Fabrice Rosito <rosito.fabrice@gmail.com>
- * @version 0.150221
+ * @version 0.161122
  */
 class PatientInterface extends OdaRestInterface {
     /**
@@ -300,8 +300,6 @@ class PatientInterface extends OdaRestInterface {
         }
     }
 
-
-
     /**
      * @param $id
      */
@@ -328,6 +326,65 @@ class PatientInterface extends OdaRestInterface {
             $this->object_retour->strErreur = $ex.'';
             $this->object_retour->statut = self::STATE_ERROR;
             die();
+        }
+    }
+
+    /**
+     */
+    function newContactFamily($id) {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "INSERT INTO  `tab_contacts` (
+                    `patient_id` ,
+                    `category`,
+                    `label`,
+                    `value`,
+                    `author_id`,
+                    `date_create`
+                )
+                VALUES (
+                    :patient_id, :category, :label, :value, :author_id, NOW()
+                )
+            ;";
+            $params->bindsValue = [
+                "patient_id" => $id,
+                "category" => $this->inputs["category"],
+                "label" => $this->inputs["contactLabel"],
+                "value" => $this->inputs["contactValue"],
+                "author_id" => $this->inputs["author_id"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_INSERT_ONE;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new stdClass();
+            $params->retourSql = $retour;
+            $this->addDataReqSQL($params);
+        } catch (Exception $ex) {
+            $this->dieInError($ex.'');
+        }
+    }
+
+    /**
+     */
+    function getContactByPatientId($id) {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "SELECT a.`id`, a.`patient_id`, a.`category`, a.`label`, a.`value`, a.`author_id`, a.`date_create`
+                FROM `tab_contacts` a
+                WHERE 1=1
+                AND a.`patient_id` = :patient_id
+                AND a.`category` = :category
+            ;";
+            $params->bindsValue = [
+                "patient_id" => $id,
+                "category" => $this->inputs["category"]
+            ];
+            $params->typeSQL = OdaLibBd::SQL_GET_ALL;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $this->addDataObject($retour->data->data);
+        } catch (Exception $ex) {
+            $this->dieInError($ex.'');
         }
     }
 }

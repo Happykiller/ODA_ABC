@@ -28,6 +28,14 @@
     * type : POST
     * mandatory params : "title","street","city","postCode"
     * public : false
+* `/patient/:id/contact/`
+    * type : GET
+    * mandatory params : "category"
+    * public : false
+* `/patient/:id/new_contact/`
+    * type : POST
+    * mandatory params : "category", "contactLabel", "contactValue", "author_id"
+    * public : false
     
 ## Event
 
