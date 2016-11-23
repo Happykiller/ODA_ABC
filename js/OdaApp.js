@@ -887,7 +887,6 @@
                                             }else{
                                                 var patt = new RegExp($.Oda.Regexs.mail);
                                                 var isMail = patt.test(row.value);
-                                                console.log(isMail);
                                                 if(isMail){
                                                     strHtml = '<a href="mailto:'+row.value+'">'+row.value+'</a>'
                                                 }else{
@@ -1052,7 +1051,6 @@
                                             }else{
                                                 var patt = new RegExp($.Oda.Regexs.mail);
                                                 var isMail = patt.test(row.value);
-                                                console.log(isMail);
                                                 if(isMail){
                                                     strHtml = '<a href="mailto:'+row.value+'">'+row.value+'</a>'
                                                 }else{
