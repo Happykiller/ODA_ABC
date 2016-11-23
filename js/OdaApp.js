@@ -878,7 +878,23 @@
                                         header: $.Oda.I8n.get("patients","newContactValue"),
                                         align: "center",
                                         value: function(data, type, full, meta, row){
-                                            return row.value;
+                                            var strHtml = "";
+                                            var re = /^(07|06)/g;
+                                            var patt = new RegExp(re);
+                                            var isTel = patt.test(row.value);
+                                            if(isTel){
+                                                strHtml = '<a href="tel:'+row.value+'">'+row.value+'</a>'
+                                            }else{
+                                                var patt = new RegExp($.Oda.Regexs.mail);
+                                                var isMail = patt.test(row.value);
+                                                console.log(isMail);
+                                                if(isMail){
+                                                    strHtml = '<a href="mailto:'+row.value+'">'+row.value+'</a>'
+                                                }else{
+                                                    strHtml = row.value;
+                                                }
+                                            }
+                                            return strHtml;
                                         }
                                     },
                                     {
