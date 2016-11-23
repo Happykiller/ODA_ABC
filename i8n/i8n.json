@@ -65,7 +65,14 @@
       "newContactLabel-placeholder": "Label",
       "newContactValue": "Coordonnée",
       "newContactValue-tips": "Coordonnée",
-      "newContactValue-placeholder": "Coordonnée"
+      "newContactValue-placeholder": "Coordonnée",
+      "newContactInter": "Nouveau contact intervenant",
+      "newContactInterLabel": "Label",
+      "newContactInterLabel-tips": "Label",
+      "newContactInterLabel-placeholder": "Label",
+      "newContactInterValue": "Coordonnée",
+      "newContactInterValue-tips": "Coordonnée",
+      "newContactInterValue-placeholder": "Coordonnée"
     }
   },{
     "groupName" : "planning"

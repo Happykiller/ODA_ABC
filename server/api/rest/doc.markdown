@@ -36,6 +36,9 @@
     * type : POST
     * mandatory params : "category", "contactLabel", "contactValue", "author_id"
     * public : false
+* `/patient/contact/:id`
+    * type : DELETE
+    * public : false
     
 ## Event
 

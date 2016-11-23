@@ -3,7 +3,7 @@
 // Library of tools for the exemple
 /**
  * @author FRO
- * @date 15/05/08
+ * @date 161122
  */
 
 (function() {
@@ -11,7 +11,7 @@
 
     var
         /* version */
-        VERSION = '0.1'
+        VERSION = '1.161122'
     ;
     
     ////////////////////////// PRIVATE METHODS ////////////////////////
@@ -101,8 +101,8 @@
             }
         },
 
-        "Controller" : {
-            "Home": {
+        Controller : {
+            Home: {
                 /**
                  * @returns {$.Oda.App.Controller.Home}
                  */
@@ -174,7 +174,7 @@
                     }
                 },
             },
-            "Patients": {
+            Patients: {
                 patientsNeedRefresh: false,
                 "currentPatient": {},
                 /**
@@ -323,8 +323,11 @@
                                     "costHour": response.data.costHour,
                                     "health": response.data.health,
                                     "notes": response.data.notes,
-                                    "btContact": $.Oda.Display.TemplateHtml.create({
+                                    "btContactFamily": $.Oda.Display.TemplateHtml.create({
                                         template : "tmBtNewContactFamily"
+                                    }),
+                                    "btContactInter": $.Oda.Display.TemplateHtml.create({
+                                        template : "tmBtNewContactInter"
                                     })
                                 }
                             });
@@ -360,6 +363,7 @@
                                     $.Oda.App.Controller.Patients.displayAddress({patientId: patientId});
                                     $.Oda.App.Controller.Patients.displayMemos();
                                     $.Oda.App.Controller.Patients.displayContactsFamily();
+                                    $.Oda.App.Controller.Patients.displayContactsInter();
                                 }
                             });
                         }});
@@ -883,7 +887,7 @@
                                         align: 'center',
                                         value: function(data, type, full, meta, row){
                                             var strHtml = '';
-                                            strHtml += ' <button type="button" class="btn btn-danger btn-xs" onclick="$.Oda.App.Controller.Patients.removeContact({id:'+row.id+'});"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>';
+                                            strHtml += ' <button type="button" class="btn btn-danger btn-xs" onclick="$.Oda.App.Controller.Patients.removeContactFamily({id:'+row.id+'});"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>';
                                             return strHtml;
                                         }
                                     }
@@ -934,7 +938,6 @@
                         return null;
                     }
                 },
-                
                 /**
                  * @returns {$.Oda.App.Controller.Patients}
                  */
@@ -984,8 +987,188 @@
                         return null;
                     }
                 },
+                /**
+                 * @param {Object} p_params
+                 * @param params.id
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                removeContactFamily : function (params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/contact/"+params.id, {type: 'DELETE', callback : function(response){
+                            $.Oda.App.Controller.Patients.displayContactsFamily();
+                        }});
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.removeContact : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                displayContactsInter : function () {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/"+$.Oda.App.Controller.Patients.currentPatient.id+"/contact/", {callback : function(response){
+                            $.Oda.Display.Table.createDataTable({
+                                target: 'divTabContactsInter',
+                                data: response.data,
+                                option: {
+                                    "aaSorting": [[0, 'desc']],
+                                },
+                                attribute: [
+                                    {
+                                        header: $.Oda.I8n.get("patients","newContactLabel"),
+                                        align: "center",
+                                        value: function(data, type, full, meta, row){
+                                            return row.label;
+                                        }
+                                    },
+                                    {
+                                        header: $.Oda.I8n.get("patients","newContactValue"),
+                                        align: "center",
+                                        value: function(data, type, full, meta, row){
+                                            var strHtml = "";
+                                            var re = /^(07|06)/g;
+                                            var patt = new RegExp(re);
+                                            var isTel = patt.test(row.value);
+                                            if(isTel){
+                                                strHtml = '<a href="tel:'+row.value+'">'+row.value+'</a>'
+                                            }else{
+                                                var patt = new RegExp($.Oda.Regexs.mail);
+                                                var isMail = patt.test(row.value);
+                                                console.log(isMail);
+                                                if(isMail){
+                                                    strHtml = '<a href="mailto:'+row.value+'">'+row.value+'</a>'
+                                                }else{
+                                                    strHtml = row.value;
+                                                }
+                                            }
+                                            return strHtml;
+                                        }
+                                    },
+                                    {
+                                        header: "Action",
+                                        size: "75px",
+                                        align: 'center',
+                                        value: function(data, type, full, meta, row){
+                                            var strHtml = '';
+                                            strHtml += ' <button type="button" class="btn btn-danger btn-xs" onclick="$.Oda.App.Controller.Patients.removeContactInter({id:'+row.id+'});"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>';
+                                            return strHtml;
+                                        }
+                                    }
+                                ]
+                            })
+                        }},{
+                            "category": "INTER"
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.displayContactsInter : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                displayContactInter : function () {
+                    try {
+                        var strHtml = $.Oda.Display.TemplateHtml.create({
+                            template : "tlpNewContactInter"
+                        });
+                        $.Oda.Display.render({
+                            "id": "divNewContactInter",
+                            "html": strHtml
+                        });
+                        $('#divNewContactInter').fadeIn();
+                        $.Oda.Scope.Gardian.add({
+                            id : "gardianNewContactInter",
+                            listElt : ["newContactInterLabel","newContactInterValue"],
+                            function : function(e){
+                                if( $("#newContactInterLabel").data("isOk") && $("#newContactInterValue").data("isOk") ){
+                                    $("#btStubmitNewContactInter").btEnable();
+                                }else{
+                                    $("#btStubmitNewContactInter").btDisable();
+                                }
+                            }
+                        });
+                        $.Oda.Display.render({
+                            "id": "divBtContactInter",
+                            "html": $.Oda.Display.TemplateHtml.create({
+                                template : "tmBtNewContactInterOpen"
+                            })
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.displayContactInter : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                cancelNewContactInter : function () {
+                    try {
+                        $('#divNewContactInter').hide();
+                        $('#newContactInterLabel').empty();
+                        $('#newContactInterValue').empty();
+                        $.Oda.Display.render({
+                            "id": "divBtContactInter",
+                            "html": $.Oda.Display.TemplateHtml.create({
+                                template : "tmBtNewContactInter"
+                            })
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.cancelNewContactInter : " + er.message);
+                        return null;
+                    }
+                },/**
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                submitNewContactInter : function () {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/"+$.Oda.App.Controller.Patients.currentPatient.id+"/new_contact/", {type: 'POST', callback : function(response){
+                            $('#divNewContactInter').hide();
+                            $('#newContactInterLabel').empty();
+                            $('#newContactInterValue').empty();
+                            $.Oda.Display.render({
+                                "id": "divBtContactInter",
+                                "html": $.Oda.Display.TemplateHtml.create({
+                                    template : "tmBtNewContactInter"
+                                })
+                            });
+                            $.Oda.App.Controller.Patients.displayContactsInter();
+                        }},{
+                            "patient_id": $.Oda.App.Controller.Patients.currentPatient.id,
+                            "category": "INTER",
+                            "contactLabel": $('#newContactInterLabel').val(),
+                            "contactValue": $('#newContactInterValue').val(),
+                            "author_id": $.Oda.Session.id
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.submitNewContactInter : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @param {Object} p_params
+                 * @param params.id
+                 * @returns {$.Oda.App.Controller.Patients}
+                 */
+                removeContactInter : function (params) {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/contact/"+params.id, {type: 'DELETE', callback : function(response){
+                            $.Oda.App.Controller.Patients.displayContactsInter();
+                        }});
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.Patients.removeContact : " + er.message);
+                        return null;
+                    }
+                }
             },
-            "Planning": {
+            Planning: {
                 "dayClicked": {},
                 "currentEvent": {},
                 "patients": [],

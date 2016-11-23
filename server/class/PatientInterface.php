@@ -387,4 +387,28 @@ class PatientInterface extends OdaRestInterface {
             $this->dieInError($ex.'');
         }
     }
+
+    /**
+     * @param $id
+     */
+    function removeContact($id) {
+        try {
+            $params = new OdaPrepareReqSql();
+            $params->sql = "DELETE FROM `tab_contacts`
+                WHERE 1=1
+                AND `id` = :id
+                ;";
+            $params->bindsValue = [
+                "id" => $id,
+            ];
+            $params->typeSQL = OdaLibBd::SQL_SCRIPT;
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $params = new stdClass();
+            $params->value = $retour->data;
+            $this->addDataStr($params);
+        } catch (Exception $ex) {
+            $this->dieInError($ex.'');
+        }
+    }
 }

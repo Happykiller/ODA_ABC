@@ -116,6 +116,14 @@ $slim->post('/patient/:id/new_contact/', function ($id) use ($slim) {
     $INTERFACE->newContactFamily($id);
 });
 
+$slim->delete('/patient/contact/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new PatientInterface($params);
+    $INTERFACE->removeContact($id);
+});
+
 //--------------------------------------------------------------------------
 // EVENT
 
