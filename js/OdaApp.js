@@ -92,6 +92,21 @@
                     "dependencies" : ["jsToPdf"]
                 });
 
+                $.Oda.Router.addRoute("shoppingList", {
+                    "path" : "partials/shoppingList.html",
+                    "title" : "shoppingList.title",
+                    "urls" : ["shoppingList"],
+                    "middleWares" : ["support","auth"]
+                });
+
+                $.Oda.Router.addRoute("shoppinReport", {
+                    "path" : "partials/shoppinReport.html",
+                    "title" : "shoppinReport.title",
+                    "urls" : ["shoppinReport"],
+                    "middleWares" : ["support","auth"],
+                    "dependencies" : ["jsToPdf"]
+                });
+
                 $.Oda.Router.startRooter();
 
                 return this;
@@ -2962,6 +2977,32 @@
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.ReportDetailMonth.getPdfReport : " + er.message);
+                        return null;
+                    }
+                }
+            },
+            ShoppingList: {
+                /**
+                 * @returns {$.Oda.App.Controller.ShoppingList}
+                 */
+                start: function () {
+                    try {
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.ShoppingList.start : " + er.message);
+                        return null;
+                    }
+                }
+            },
+            ShoppingReport: {
+                /**
+                 * @returns {$.Oda.App.Controller.ShoppingReport}
+                 */
+                start: function () {
+                    try {
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.ShoppingReport.start : " + er.message);
                         return null;
                     }
                 }

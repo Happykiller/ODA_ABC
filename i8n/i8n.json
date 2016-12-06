@@ -1,13 +1,13 @@
 [
   {
-    "groupName" : "home"
-    , "fr" : {
+    "groupName" : "home",
+    "fr" : {
       "title" : "Accueil",
       "hello" : "Gestion d'activité pour l'aide à la personne."
     }
   },{
-    "groupName" : "patients"
-    , "fr" : {
+    "groupName" : "patients",
+    "fr" : {
       "title" : "Patients",
       "firstName": "Nom",
       "firstName-tips": "Pas de chiffre",
@@ -75,8 +75,8 @@
       "newContactInterValue-placeholder": "Coordonnée"
     }
   },{
-    "groupName" : "planning"
-    , "fr" : {
+    "groupName" : "planning",
+    "fr" : {
       "title" : "Planning",
       "createEvent": "Créer un évènement",
       "editEvent": "Editer un évènement",
@@ -117,8 +117,8 @@
       "loop": "Nombre d'itération en semaine"
     }
   },{
-    "groupName": "synth_user_patient"
-    , "fr": {
+    "groupName": "synth_user_patient",
+    "fr": {
       "title": "Fiche de synthèse par client",
       "patientId": "Patient",
       "week": "Semaine",
@@ -132,6 +132,16 @@
   "fr": {
       "title": "Rapport mensuel détaillé",
       "selectMonth": "Selectioner le mois"
+    }
+  },{
+  "groupName": "shoppingList",
+  "fr": {
+      "title": "Activité Shooping"
+    }
+  },{
+  "groupName": "shoppinReport",
+  "fr": {
+      "title": "Rapport Shopping"
     }
   }
 ]
