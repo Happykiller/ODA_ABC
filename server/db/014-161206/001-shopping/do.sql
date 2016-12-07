@@ -19,5 +19,8 @@ UPDATE `@prefix@api_tab_menu_rangs_droit` a
     ON c.`id` = a.`id_rang`
        AND c.`indice` in (1,10,20,30)
 SET `id_menu` = concat(`id_menu`,b.`id`,';');
+
+
+
 -- --------------------------------------------------------
 SET FOREIGN_KEY_CHECKS=1;
