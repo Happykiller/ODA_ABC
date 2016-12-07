@@ -2987,9 +2987,66 @@
                  */
                 start: function () {
                     try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/", {callback : function(response){
+                            $.Oda.App.Controller.Planning.patients = response.data;
+                            for(var index in response.data){
+                                var elt = response.data[index];
+                                if(elt.active === '1'){
+                                    $('#patients').append('<option value="'+ elt.id +'">' + elt.name_first + ' ' + elt.name_last + ( (elt.address_id_default===null)?' (Pas d\'adresse)':'' ) + '</option>')
+                                }
+                            }
+                        }});
+
+                        $.Oda.Scope.Gardian.add({
+                            id : "gPatient",
+                            listElt : ["patients"],
+                            function : function(e){
+                                if( ($('#patients').data("isOk")) ){
+                                    $.Oda.App.Controller.ShoppingList.displayNewShooping({id:$('#patients').val()});
+                                    $.Oda.App.Controller.ShoppingList.displayRecapShooping({id:$('#patients').val()});
+                                }else{
+                                    $('#divShootingNew').html('');
+                                    $('#divShoopingRecap').html('');
+                                }
+                            }
+                        });
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.ShoppingList.start : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.ShoppingReport}
+                 */
+                displayNewShooping: function () {
+                    try {
+                        $.Oda.Display.render({
+                            "id": "divShootingNew",
+                            "html": $.Oda.Display.TemplateHtml.create({
+                                template : "tlpNewShooping"
+                            })
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.ShoppingReport.displayNewShooping : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.ShoppingReport}
+                 */
+                displayRecapShooping: function () {
+                    try {
+                        $.Oda.Display.render({
+                            "id": "divShoopingRecap",
+                            "html": $.Oda.Display.TemplateHtml.create({
+                                template : "tlpRecapShooping"
+                            })
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.ShoppingReport.displayRecapShooping : " + er.message);
                         return null;
                     }
                 }
@@ -3010,6 +3067,26 @@
         },
         
         Tooling: {
+            domElt: {},
+            /**
+             * @param {Object} params
+             * @param p_params.id
+             * @returns {dom}
+             */
+            getDomElt: function(params){
+                try {
+                    if($.Oda.App.Tooling.domElt[params.id] !== undefined){
+                        return $.Oda.App.Tooling.domElt[params.id];
+                    }else{
+                        var elt = $('#'+params.id);
+                        $.Oda.App.Tooling.domElt[params.id] = elt;
+                        return elt;
+                    }
+                } catch (er) {
+                    $.Oda.Log.error("$.Oda.App.Tooling.getDomElt : " + er.message);
+                    return null;
+                }
+            },
             /**
              * @param {Object} p_params
              * @param p_params.listTrajet

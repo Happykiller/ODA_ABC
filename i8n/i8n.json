@@ -136,12 +136,18 @@
   },{
   "groupName": "shoppingList",
   "fr": {
-      "title": "Activité Shooping"
+      "title": "Activité Shooping",
+      "hello": "Ici vos activités en rapport avec le shooping pour les patients.",
+      "movement": "Mouvement",
+      "spent": "Sortie",
+      "gain": "Entrée",
+      "entity": "Entité"
     }
   },{
   "groupName": "shoppinReport",
   "fr": {
-      "title": "Rapport Shopping"
+      "title": "Rapport Shopping",
+      "hello": "Ici votre bilan financier pour le shooping pour des patients."
     }
   }
 ]
