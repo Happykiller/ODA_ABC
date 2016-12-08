@@ -3017,7 +3017,7 @@
                     }
                 },
                 /**
-                 * @returns {$.Oda.App.Controller.ShoppingReport}
+                 * @returns {$.Oda.App.Controller.ShoppingList}
                  */
                 displayNewShooping: function () {
                     try {
@@ -3027,9 +3027,45 @@
                                 template : "tlpNewShooping"
                             })
                         });
+                        $.Oda.Scope.Gardian.add({
+                            id : "gNewShooping",
+                            listElt : ["entity", "amount", "movement", "mode", "comment"],
+                            function : function(e){
+                                if( ($('#entity').data("isOk")) && ($('#amount').data("isOk")) ){
+                                    $.Oda.App.Tooling.getDomElt({id:'btSubmitNewShooping'}).btEnable();
+                                }else{
+                                    $.Oda.App.Tooling.getDomElt({id:'btSubmitNewShooping'}).btDisable();
+                                }
+                            }
+                        });
                         return this;
                     } catch (er) {
-                        $.Oda.Log.error("$.Oda.App.Controller.ShoppingReport.displayNewShooping : " + er.message);
+                        $.Oda.Log.error("$.Oda.App.Controller.ShoppingList.displayNewShooping : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.ShoppingList}
+                 */
+                submitNewShooping: function () {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/shopping/", {type:'POST',callback : function(response){
+                            $.Oda.App.Tooling.getDomElt({id:'entity'}).val(null);
+                            $.Oda.App.Tooling.getDomElt({id:'amount'}).val(null);
+                            $.Oda.App.Tooling.getDomElt({id:'comment'}).val(null);
+                            $.Oda.Display.Notification.successI8n('shoppingList.creationSuccess');
+                        }},{
+                            "entity":$.Oda.App.Tooling.getDomElt({id:'entity'}).val(),
+                            "mode":$.Oda.App.Tooling.getDomElt({id:'mode'}).val(),
+                            "patient_id":$.Oda.App.Tooling.getDomElt({id:'patients'}).val(),
+                            "author_id":$.Oda.Session.id,
+                            "amount":$.Oda.App.Tooling.getDomElt({id:'amount'}).val(),
+                            "movement":$.Oda.App.Tooling.getDomElt({id:'movement'}).val(),
+                            "comment":$.Oda.App.Tooling.getDomElt({id:'comment'}).val()
+                        });
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.ShoppingList.submitNewShooping : " + er.message);
                         return null;
                     }
                 },

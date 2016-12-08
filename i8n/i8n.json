@@ -141,7 +141,18 @@
       "movement": "Mouvement",
       "spent": "Sortie",
       "gain": "Entrée",
-      "entity": "Entité"
+      "entity": "Entité",
+      "entity-tips": "Entité",
+      "entity-placeholder": "Entité",
+      "mode": "Mode",
+      "cb": "CB",
+      "cash": "Liquide",
+      "check": "Chèque",
+      "amount": "Montant",
+      "amount-tips": "00.00",
+      "amount-placeholder": "00.00",
+      "comment": "Commentaire",
+      "creationSuccess": "Enregistrement fait avec succès."
     }
   },{
   "groupName": "shoppinReport",

@@ -14,8 +14,9 @@
             </select>
         </div>
     </div>
-    <div class="row" id="divShootingNew"></div>
-    <div class="row" id="divShoopingRecap"></div>
+    <div id="divShootingNew"></div>
+    <br>
+    <div id="divShoopingRecap"></div>
 </div>
 
 <script>
@@ -23,18 +24,45 @@
 </script>
 
 <script id="tlpNewShooping" type="text/template">
-    <div class="col-lg-3 col-sm-6">
-        <label for="movement" oda-label="shoppingList.movement">shoppingList.patientId</label>
-        <select class="form-control" oda-input-select="movement" required>
-            <option value="SPENT" oda-label="shoppingList.spent"></option>
-            <option value="GAIN" oda-label="shoppingList.gain"></option>
-        </select>
-    </div>
-    <div class="col-lg-3 col-sm-6">
-        <div class="form-group">
-            <label for="entity" oda-label="shoppingList.entity">shoppingList.entity</label>
-            <input required type="text" class="form-control" oda-input-text="entity" oda-input-text-tips="shoppingList.entity-tips" oda-input-text-placeholder="shoppingList.entity-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+    <div class="row">
+        <div class="col-lg-3 col-sm-6">
+            <label for="movement" oda-label="shoppingList.movement">shoppingList.movement</label>
+            <select class="form-control" oda-input-select="movement">
+                <option value="SPENT" oda-label="shoppingList.spent"></option>
+                <option value="GAIN" oda-label="shoppingList.gain"></option>
+            </select>
         </div>
+        <div class="col-lg-3 col-sm-6">
+            <label for="mode" oda-label="shoppingList.mode">shoppingList.mode</label>
+            <select class="form-control" oda-input-select="mode">
+                <option value="CB" oda-label="shoppingList.cb"></option>
+                <option value="CASH" oda-label="shoppingList.cash"></option>
+                <option value="CHECK" oda-label="shoppingList.check"></option>
+            </select>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="entity" oda-label="shoppingList.entity">shoppingList.entity</label>
+                <input required type="text" class="form-control" oda-input-text="entity" oda-input-text-tips="shoppingList.entity-tips" oda-input-text-placeholder="shoppingList.entity-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="amount" oda-label="shoppingList.amount">shoppingList.amount</label>
+                <input required type="number" class="form-control" oda-input-text="amount" oda-input-text-tips="shoppingList.amount-tips" oda-input-text-placeholder="shoppingList.amount-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+    </div>
+    <div class="row">   
+        <div class="col-md-12">
+            <div class="form-group">
+                <label oda-label="shoppingList.comment">shoppingList.comment</label>
+                <textarea class="form-control" rows="2" id="comment"></textarea>
+            </div>
+        </div>
+    </div>
+    <div>
+        <button type="button" oda-submit="btSubmitNewShooping" oda-label="oda-main.bt-submit" onclick="$.Oda.App.Controller.ShoppingList.submitNewShooping();" class="btn btn-primary center-block disabled" disabled>oda-main.bt-submit</button>
     </div>
 </script>
 

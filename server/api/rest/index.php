@@ -338,5 +338,17 @@ $slim->delete('/memo/:id', function ($id) use ($slim) {
 });
 
 //--------------------------------------------------------------------------
+// SHOOPING
+
+$slim->post('/shopping/', function () use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("entity","mode","patient_id","author_id","amount","movement","comment");
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new ShoppingInterface($params);
+    $INTERFACE->create();
+});
+
+//--------------------------------------------------------------------------
 
 $slim->run();
