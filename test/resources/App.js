@@ -108,3 +108,7 @@ QUnit.test( "$.Oda.App.Controller.Planning.calcListDate", function(assert) {
     var expected = ["2016-09-19", "2016-09-20", "2016-09-21", "2016-09-22", "2016-09-23", "2016-09-24", "2016-09-25", "2016-09-26", "2016-09-27", "2016-09-28", "2016-09-29", "2016-09-30", "2016-10-01", "2016-10-02"];
     assert.deepEqual($.Oda.App.Controller.Planning.calcListDate(inputs), expected, "Test OK : Passed!" );
 });
+
+QUnit.test( "$.Oda.App.Tooling.getExtention", function(assert) {
+    assert.equal($.Oda.App.Tooling.getExtention({fileName:"truc.jpg"}), "jpg", "Test OK : Passed!" );
+});

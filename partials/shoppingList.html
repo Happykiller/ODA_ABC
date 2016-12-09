@@ -28,16 +28,16 @@
         <div class="col-lg-3 col-sm-6">
             <label for="movement" oda-label="shoppingList.movement">shoppingList.movement</label>
             <select class="form-control" oda-input-select="movement">
-                <option value="SPENT" oda-label="shoppingList.spent"></option>
-                <option value="GAIN" oda-label="shoppingList.gain"></option>
+                <option value="spent" oda-label="shoppingList.spent"></option>
+                <option value="gain" oda-label="shoppingList.gain"></option>
             </select>
         </div>
         <div class="col-lg-3 col-sm-6">
             <label for="mode" oda-label="shoppingList.mode">shoppingList.mode</label>
             <select class="form-control" oda-input-select="mode">
-                <option value="CB" oda-label="shoppingList.cb"></option>
-                <option value="CASH" oda-label="shoppingList.cash"></option>
-                <option value="CHECK" oda-label="shoppingList.check"></option>
+                <option value="cb" oda-label="shoppingList.cb"></option>
+                <option value="cash" oda-label="shoppingList.cash"></option>
+                <option value="check" oda-label="shoppingList.check"></option>
             </select>
         </div>
         <div class="col-lg-3 col-sm-6">
@@ -50,6 +50,20 @@
             <div class="form-group">
                 <label for="amount" oda-label="shoppingList.amount">shoppingList.amount</label>
                 <input required type="number" class="form-control" oda-input-text="amount" oda-input-text-tips="shoppingList.amount-tips" oda-input-text-placeholder="shoppingList.amount-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="date_action" oda-label="shoppingList.date_action">shoppingList.date_action</label>
+                <input value="{{date_action}}" required type="date" class="form-control" oda-input-text="date_action" oda-input-text-tips="shoppingList.date_action-tips" oda-input-text-placeholder="shoppingList.date_action-placeholder" oda-input-text-check="Oda.Regexs:noInjection">
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="form-group">
+                <label for="attach" oda-label="shoppingList.attach">shoppingList.attach</label>
+                <input type="file" class="form-control" id="attach">
             </div>
         </div>
     </div>

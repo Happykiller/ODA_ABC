@@ -152,7 +152,11 @@
       "amount-tips": "00.00",
       "amount-placeholder": "00.00",
       "comment": "Commentaire",
-      "creationSuccess": "Enregistrement fait avec succès."
+      "creationSuccess": "Enregistrement fait avec succès.",
+      "date_action": "Date",
+      "date_action-tips": "Date",
+      "date_action-placeholder": "DD/MM/YYYY",
+      "attach": "Pièce jointe"
     }
   },{
   "groupName": "shoppinReport",

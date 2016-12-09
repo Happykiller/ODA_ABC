@@ -340,13 +340,47 @@ $slim->delete('/memo/:id', function ($id) use ($slim) {
 //--------------------------------------------------------------------------
 // SHOOPING
 
+$slim->get('/shopping/', function () use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInputOpt = array("patient_id"=>null,"active"=>1);
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new ShoppingInterface($params);
+    $INTERFACE->getAll();
+});
+
+$slim->get('/shopping/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new ShoppingInterface($params);
+    $INTERFACE->getById($id);
+});
+
 $slim->post('/shopping/', function () use ($slim) {
     $params = new OdaPrepareInterface();
-    $params->arrayInput = array("entity","mode","patient_id","author_id","amount","movement","comment");
+    $params->arrayInput = array("entity","mode","patient_id","author_id","amount","movement","comment","date_action");
     $params->modePublic = false;
     $params->slim = $slim;
     $INTERFACE = new ShoppingInterface($params);
     $INTERFACE->create();
+});
+
+$slim->put('/shopping/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("attach_name");
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new ShoppingInterface($params);
+    $INTERFACE->update($id);
+});
+
+$slim->delete('/shopping/:id', function ($id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new ShoppingInterface($params);
+    $INTERFACE->delete($id);
 });
 
 //--------------------------------------------------------------------------
