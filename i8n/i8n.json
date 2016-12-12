@@ -161,8 +161,11 @@
   },{
   "groupName": "shoppinReport",
   "fr": {
-      "title": "Rapport Shopping",
-      "hello": "Ici votre bilan financier pour le shooping pour des patients."
+      "title": "Rapport Financier",
+      "hello": "Ici votre bilan financier pour les patients.",
+      "balanceOld": "Solde antérieur : <span style=\"color:{{color}};font-weight: bold;\">{{balanceOld}}€</span>.",
+      "balanceCurrent": "Solde courrant : <span style=\"color:{{color}};font-weight: bold;\">{{balanceCurrent}}€</span>.",
+      "balanceFinal": "Solde total : <span style=\"color:{{color}};font-weight: bold;\">{{balanceFinal}}€</span>, au {{dateNow}}."
     }
   }
 ]

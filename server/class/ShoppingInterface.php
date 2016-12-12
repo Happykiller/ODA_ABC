@@ -17,7 +17,9 @@ use \stdClass;
  */
 class ShoppingInterface extends OdaRestInterface {
     
-        function getAll() {
+    /**
+     */
+    function getAll() {
         try {
             $filter_patient = "";
             if($this->inputs["patient_id"] != null){
@@ -154,6 +156,92 @@ class ShoppingInterface extends OdaRestInterface {
             $params = new stdClass();
             $params->value = $retour->data;
             $this->addDataStr($params);
+        } catch (Exception $ex) {
+            $this->dieInError($ex.'');
+        }
+    }
+
+    /**
+     * @param $patient_idid
+     */
+    function getReport($patient_id) {
+        try {
+            $finacialReport = new stdClass();
+
+            $params = new OdaPrepareReqSql();
+            $params->sql = "SELECT SUM(IF(a.`movement`='spent', 0-a.`amount`,a.`amount`)) as 'balanceOld'
+                FROM `tab_shopping` a
+                WHERE 1=1
+                AND a.`active` = 1
+                AND a.`patient_id` = :patient_id
+                AND a.`date_action` < :begin
+            ;";
+            $params->typeSQL = OdaLibBd::SQL_GET_ONE;
+            $params->bindsValue = [
+                "patient_id" => $patient_id,
+                "begin" => $this->inputs["begin"]
+            ];
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $finacialReport->balanceOld = $retour->data->balanceOld;
+
+            $params = new OdaPrepareReqSql();
+            $params->sql = "SELECT SUM(IF(a.`movement`='spent', 0-a.`amount`,a.`amount`)) as 'balanceCurrent'
+                FROM `tab_shopping` a
+                WHERE 1=1
+                AND a.`active` = 1
+                AND a.`patient_id` = :patient_id
+                AND a.`date_action` >= :begin
+                AND a.`date_action` <= :end
+            ;";
+            $params->typeSQL = OdaLibBd::SQL_GET_ONE;
+            $params->bindsValue = [
+                "patient_id" => $patient_id,
+                "begin" => $this->inputs["begin"],
+                "end" => $this->inputs["end"]
+            ];
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $finacialReport->balanceCurrent = $retour->data->balanceCurrent;
+
+            $params = new OdaPrepareReqSql();
+            $params->sql = "SELECT a.`id`, a.`entity`, a.`mode`, a.`patient_id`, a.`date_record`, a.`author_id`, a.`amount`, a.`movement`, a.`comment`, a.`date_action`, a.`attach_name`,
+                b.`name_first` as 'patient_firstname', b.`name_last` as 'patient_lastname',
+                c.`code_user` as 'author_code', c.`nom` as 'author_firstname', c.`prenom` as 'author_lastname'
+                FROM `tab_shopping` a, `tab_patients` b, `api_tab_utilisateurs` c
+                WHERE 1=1
+                AND a.`active` = 1
+                AND a.`patient_id` = b.`id`
+                AND a.`author_id` = c.`id`
+                AND a.`patient_id` = :patient_id
+                AND a.`date_action` >= :begin
+                AND a.`date_action` <= :end
+            ;";
+            $params->typeSQL = OdaLibBd::SQL_GET_ALL;
+            $params->bindsValue = [
+                "patient_id" => $patient_id,
+                "begin" => $this->inputs["begin"],
+                "end" => $this->inputs["end"]
+            ];
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $finacialReport->listRecord = $retour->data->data;
+
+            $params = new OdaPrepareReqSql();
+            $params->sql = "SELECT a.`name_first` as 'patient_firstname', a.`name_last` as 'patient_lastname'
+                FROM `tab_patients` a
+                WHERE 1=1
+                AND a.`id` = :patient_id
+            ;";
+            $params->typeSQL = OdaLibBd::SQL_GET_ONE;
+            $params->bindsValue = [
+                "patient_id" => $patient_id
+            ];
+            $retour = $this->BD_ENGINE->reqODASQL($params);
+
+            $finacialReport->infos = $retour->data;
+
+            $this->addDataObject($finacialReport);
         } catch (Exception $ex) {
             $this->dieInError($ex.'');
         }

@@ -383,6 +383,15 @@ $slim->delete('/shopping/:id', function ($id) use ($slim) {
     $INTERFACE->delete($id);
 });
 
+$slim->get('/shopping/report/:patient_id', function ($patient_id) use ($slim) {
+    $params = new OdaPrepareInterface();
+    $params->arrayInput = array("begin","end");
+    $params->modePublic = false;
+    $params->slim = $slim;
+    $INTERFACE = new ShoppingInterface($params);
+    $INTERFACE->getReport($patient_id);
+});
+
 //--------------------------------------------------------------------------
 
 $slim->run();

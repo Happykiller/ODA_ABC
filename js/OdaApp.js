@@ -105,7 +105,7 @@
                     "title" : "shoppinReport.title",
                     "urls" : ["shoppinReport"],
                     "middleWares" : ["support","auth"],
-                    "dependencies" : ["jsToPdf"]
+                    "dependencies" : ["jsToPdf","dataTables"]
                 });
 
                 $.Oda.Router.startRooter();
@@ -3075,7 +3075,7 @@
                             $.Oda.Scope.checkInputText({elt:'#entity'});
                             $.Oda.App.Tooling.getDomElt({id:'amount'}).val(null);
                             $.Oda.Scope.checkInputText({elt:'#amount'});
-                            $.Oda.App.Tooling.getDomElt({id:'date_action'}).val(null);
+                            $.Oda.App.Tooling.getDomElt({id:'date_action'}).val($.Oda.Date.dateFormat(new Date(), 'yyyy-mm-dd'));
                             $.Oda.Scope.checkInputText({elt:'#date_action'});
                             $.Oda.App.Tooling.getDomElt({id:'attach'}).val(null);
                             $.Oda.Display.Notification.successI8n('shoppingList.creationSuccess');
@@ -3183,9 +3183,9 @@
                                             strHtml += '&nbsp;<a onclick="$.Oda.App.Controller.ShoppingList.deleteShopping({id:'+row.id+'});" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-remove"></span></a>';
                                             return strHtml;
                                         }
-                                    },
+                                    }
                                 ]
-                            })
+                            });
                         }},{
                             patient_id: $.Oda.App.Tooling.getDomElt({id:'patients'}).val()
                         });
@@ -3236,9 +3236,166 @@
                  */
                 start: function () {
                     try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/patient/", {callback : function(response){
+                            $.Oda.App.Controller.Planning.patients = response.data;
+                            for(var index in response.data){
+                                var elt = response.data[index];
+                                if(elt.active === '1'){
+                                    $.Oda.App.Tooling.getDomElt({id:'patients'}).append('<option value="'+ elt.id +'">' + elt.name_first + ' ' + elt.name_last + ( (elt.address_id_default===null)?' (Pas d\'adresse)':'' ) + '</option>')
+                                }
+                            }
+                        }});
+
+                        $.Oda.Scope.Gardian.add({
+                            id : "gPatient",
+                            listElt : ["patients", "begin", "end"],
+                            function : function(e){
+                                if( ($.Oda.App.Tooling.getDomElt({id:'patients'}).data("isOk")) 
+                                    && ($.Oda.App.Tooling.getDomElt({id:'begin'}).data("isOk")) 
+                                    && ($.Oda.App.Tooling.getDomElt({id:'end'}).data("isOk")) ){
+                                    $.Oda.App.Controller.ShoppingReport.displayReport();
+                                }else{
+                                    $.Oda.App.Tooling.getDomElt({id:'divReport'}).html('');
+                                }
+                            }
+                        });
                         return this;
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.ShoppingReport.start : " + er.message);
+                        return null;
+                    }
+                },
+                /**
+                 * @returns {$.Oda.App.Controller.ShoppingReport}
+                 */
+                displayReport: function () {
+                    try {
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/shopping/report/"+$.Oda.App.Tooling.getDomElt({id:'patients'}).val(), {callback : function(response){
+                            var colorOld = 'green';
+                            if(parseFloat(response.data.balanceOld) < 0){
+                                colorOld = 'red';
+                            }
+                            var colorCurrent = 'green';
+                            if(parseFloat(response.data.balanceCurrent) < 0){
+                                colorCurrent = 'red';
+                            }
+                            var total = parseFloat(response.data.balanceOld) + parseFloat(response.data.balanceCurrent);
+                            var colorTotal = 'green';
+                            if(total < 0){
+                                colorTotal = 'red';
+                            }
+                            
+                            $.Oda.Display.render({
+                                "id": "divReportHeader",
+                                "html": $.Oda.Display.TemplateHtml.create({
+                                    template : "tlReportHeader",
+                                    scope:{
+                                        reportTitle: $.Oda.I8n.get("shoppinReport","title") + " : " 
+                                        +  response.data.infos.patient_firstname + " " + response.data.infos.patient_lastname 
+                                        + ", " + $.Oda.Date.dateFormat($.Oda.App.Tooling.getDomElt({id:'begin'}).val(), 'dd/mm/yyyy') + " - " + $.Oda.Date.dateFormat($.Oda.App.Tooling.getDomElt({id:'end'}).val(), 'dd/mm/yyyy'),
+                                        balanceOld: $.Oda.I8n.get("shoppinReport","balanceOld",{
+                                            variables: {
+                                                balanceOld: response.data.balanceOld,
+                                                color: colorOld
+                                            }
+                                        })
+                                    }
+                                })
+                            });
+
+                            $.Oda.Display.Table.createDataTable({
+                                target: 'divReportList',
+                                data: response.data.listRecord,
+                                option: {
+                                    "aaSorting": [[0, 'desc']],
+                                },
+                                attribute: [
+                                    {
+                                        header: "Id",
+                                        size: '50px',
+                                        value: function(data, type, full, meta, row){
+                                            return row.id;
+                                        }
+                                    },
+                                    {
+                                        header: $.Oda.I8n.get('shoppingList','entity'),
+                                        size: '150px',
+                                        value: function(data, type, full, meta, row){
+                                            return row.entity;
+                                        }
+                                    },
+                                    {
+                                        header: $.Oda.I8n.get('shoppingList','mode'),
+                                        size: '100px',
+                                        value: function(data, type, full, meta, row){
+                                            return $.Oda.I8n.get('shoppingList',row.mode);
+                                        }
+                                    },
+                                    {
+                                        header: $.Oda.I8n.get('shoppingList','amount'),
+                                        size: '100px',
+                                        value: function(data, type, full, meta, row){
+                                            var color = 'green';
+                                            var sep = '';
+                                            if(row.movement === 'spent'){
+                                                color = 'red';
+                                                sep = '-';
+                                            }
+                                            var strHtml = '<span style="color:'+color+';font-weight: bold;">'+sep+row.amount+'</span>';
+                                            return strHtml;
+                                        }
+                                    },
+                                    {
+                                        header: $.Oda.I8n.get('shoppingList','date_action'),
+                                        size: '100px',
+                                        value: function(data, type, full, meta, row){
+                                            if (type === 'display') {
+                                                return $.Oda.Date.dateFormat(row.date_action, 'dd/mm/yyyy');
+                                            }else{
+                                                return row.date_action;
+                                            }
+                                        }
+                                    },
+                                    {
+                                        header: $.Oda.I8n.get('shoppingList','comment'),
+                                        value: function(data, type, full, meta, row){
+                                            if(row.comment.length > 30){
+                                                return row.comment.substring(0,30)+"...";
+                                            }else{
+                                                return row.comment;
+                                            }
+                                        }
+                                    }
+                                ]
+                            });
+
+                            $.Oda.Display.render({
+                                "id": "divReportFooter",
+                                "html": $.Oda.Display.TemplateHtml.create({
+                                    template : "tlReportFooter",
+                                    scope:{
+                                        balanceCurrent: $.Oda.I8n.get("shoppinReport","balanceCurrent",{
+                                            variables: {
+                                                balanceCurrent: response.data.balanceCurrent,
+                                                color: colorCurrent
+                                            }
+                                        }),
+                                        balanceFinal: $.Oda.I8n.get("shoppinReport","balanceFinal",{
+                                            variables: {
+                                                balanceFinal: total,
+                                                color: colorTotal,
+                                                dateNow: $.Oda.Date.dateFormat(new Date(), 'dd/mm/yyyy')
+                                            }
+                                        })
+                                    }
+                                })
+                            });
+                        }},{
+                            begin: $.Oda.App.Tooling.getDomElt({id:'begin'}).val(),
+                            end: $.Oda.App.Tooling.getDomElt({id:'end'}).val()
+                        });
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.ShoppingReport.displayReport : " + er.message);
                         return null;
                     }
                 }

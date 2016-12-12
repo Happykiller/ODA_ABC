@@ -121,18 +121,43 @@
 ## Actions
 
 * `/actions/search/event/`
-    * mandatory params : "event_id"
-    * type : GET
+    * mandatory params: "event_id"
+    * type: GET
 * `/actions/`
-    * mandatory params : "event_id","action_type_id","action_sub_type_id","comment","author_id"
-    * type : POST
-    * public : false
+    * mandatory params: "event_id","action_type_id","action_sub_type_id","comment","author_id"
+    * type: POST
+    * public: false
 * `/actions/type/`
-    * type : GET
-    * public : false
+    * type: GET
+    * public: false
 * `/actions/sub_type/`
-    * type : GET
-    * public : false
+    * type: GET
+    * public: false
 * `/actions/:id`
-    * type : DELETE
-    * public : false
+    * type: DELETE
+    * public: false
+
+## FINANCIAL
+
+* `/shopping/`
+    * optional params: "patient_id","active"
+    * type: GET
+    * public: false
+* `/shopping/:id`
+    * type: GET
+    * public: false
+* `/shopping/`
+    * type: POST
+    * mandatory params: "entity","mode","patient_id","author_id","amount","movement","comment","date_action"
+    * public: false
+* `/shopping/:id`
+    * type: PUT
+    * mandatory params: "attach_name"
+    * public: false
+* `/shopping/:id`
+    * type: DELETE
+    * public: false
+* `/shopping/report/`
+    * mandatory params: "patient_id"
+    * type: GET
+    * public: false
