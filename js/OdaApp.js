@@ -1571,7 +1571,7 @@
                         $('td .fc-day-number').each(function(){
                             var elt = $(this);
                             var day = elt.text();
-                            var date = elt.data("date");
+                            var date = elt.parent().data("date");
                             elt.html('<a id="btDay-'+date+'" href="javascript:$.Oda.App.Controller.Planning.viewDayDetails({date: \''+date+'\'});" type="button" class="btn btn-primary btn-xs">'+day+'</a>')
                         });
                         return this;
