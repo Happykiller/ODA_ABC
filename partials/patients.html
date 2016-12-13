@@ -106,33 +106,13 @@
         </div>
     </div>
 
-    <!--family-->
-    <h3 oda-label="patients.family">patients.family</h3>
-    <div class="row">
-        <div class="col-md-12" id="divTabContactsFamily"><oda-loading></oda-loading></div>
-        <div class="col-md-12" id="divNewContactFamily" style="display: none;"></div>
-        <div class="col-md-12" id="divBtContactFamily">
-            {{btContactFamily}}
-        </div>
-    </div>
-
-    <!--intervenant-->
-    <h3 oda-label="patients.intervenant">patients.intervenant</h3>
-    <div class="row">
-        <div class="col-md-12" id="divTabContactsInter"><oda-loading></oda-loading></div>
-        <div class="col-md-12" id="divNewContactInter" style="display: none;"></div>
-        <div class="col-md-12" id="divBtContactInter">
-            {{btContactInter}}
-        </div>
-    </div>
-
     <h3 oda-label="patients.notes">patients.notes</h3>
     <!--health-->
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
                 <label oda-label="patients.health">patients.health</label>
-                <textarea class="form-control" rows="2" id="health">{{health}}</textarea>
+                <textarea class="form-control" rows="2" oda-input-text="health">{{health}}</textarea>
             </div>
         </div>
     </div>
@@ -142,7 +122,7 @@
         <div class="col-md-12">
             <div class="form-group">
                 <label oda-label="patients.notes">patients.notes</label>
-                <textarea class="form-control" rows="5" id="notes">{{notes}}</textarea>
+                <textarea class="form-control" rows="5" oda-input-text="notes">{{notes}}</textarea>
             </div>
         </div>
     </div>
@@ -150,10 +130,11 @@
     <button type="button" oda-label="oda-main.bt-submit" oda-submit="submit" onclick="$.Oda.App.Controller.Patients.submitEditPatient({id:{{id}} });" class="btn btn-primary disabled center-block" disabled>Submit</button>
 
     <hr>
+    <!--color-->
+    <h3 oda-label="patients.color">patients.color</h3>
     <div class="row">
         <div class="col-lg-3 col-sm-6">
             <div class="form-group">
-                <label for="color" oda-label="patients.color">color</label>
                 <select id="color" class="selectpicker" onChange="$.Oda.App.Controller.Patients.changeColor({id:{{id}} });">
                     <option data-content="<span class='label bg-turquoise'>Turquoise</span>" value="turquoise" {{(color==='turquoise')?'selected':''}}></option>
                     <option data-content="<span class='label bg-emerald'>emerald</span>" value="emerald" {{(color==='emerald')?'selected':''}}></option>
@@ -179,10 +160,33 @@
             </div>
         </div>
     </div>
+
+    <hr>
+    <!--family-->
+    <h3 oda-label="patients.family">patients.family</h3>
+    <div class="row">
+        <div class="col-md-12" id="divTabContactsFamily"><oda-loading></oda-loading></div>
+        <div class="col-md-12" id="divNewContactFamily" style="display: none;"></div>
+        <div class="col-md-12" id="divBtContactFamily">
+            {{btContactFamily}}
+        </div>
+    </div>
+
+    <hr>
+    <!--intervenant-->
+    <h3 oda-label="patients.intervenant">patients.intervenant</h3>
+    <div class="row">
+        <div class="col-md-12" id="divTabContactsInter"><oda-loading></oda-loading></div>
+        <div class="col-md-12" id="divNewContactInter" style="display: none;"></div>
+        <div class="col-md-12" id="divBtContactInter">
+            {{btContactInter}}
+        </div>
+    </div>
+
     <hr>
     <!--memos-->
+    <h3 oda-label="patients.memos">patients.memos</h3>
     <div class="row">
-        <label oda-label="patients.memos">patients.memos</label>
         <div class="col-md-12" id="divTabMemos">
             <oda-loading></oda-loading>
         </div>
@@ -192,9 +196,11 @@
             <button type="button" oda-label="patients.newMemo" onclick="$.Oda.App.Controller.Patients.displayNewMemo();" class="btn btn-primary">newMemo</button>
         </div>
     </div>
+
     <hr>
+    <!--adresse-->
+    <h3 oda-label="patients.addresses">patients.addresses</h3>
     <div class="row">
-        <label oda-label="patients.addresses">patients.addresses</label>
         <div class="col-md-12">
             <div class="table-responsive">
                 <table class="table table-hover table-striped" id="tabAddress">

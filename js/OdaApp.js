@@ -362,7 +362,7 @@
 
                                     $.Oda.Scope.Gardian.add({
                                         id : "gEditPatient",
-                                        listElt : ["firstName", "lastName", "birthday", "secu", "telPerso", "contratStart", "nbHours", "costHour", "active"],
+                                        listElt : ["firstName", "lastName", "birthday", "secu", "telPerso", "contratStart", "nbHours", "costHour", "active", "health", "notes"],
                                         function : function(e){
                                             if( ($("#firstName").data("isOk")) && ($("#lastName").data("isOk"))
                                                 && ($("#birthday").data("isOk")) && ($("#secu").data("isOk")) && ($("#telPerso").data("isOk")) && ($("#contratStart").data("isOk"))
