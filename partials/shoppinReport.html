@@ -28,9 +28,12 @@
             </div>
         </div>
     </div>
-    <div id="divReportHeader"></div>
-    <div id="divReportList"></div>
-    <div id="divReportFooter"></div>
+    <div id="divReport">
+        <div id="divReportHeader"></div>
+        <div id="divReportHist"></div>
+        <div id="divReportFooter"></div>
+    </div>
+    <div id="btPdf"></div>
 </div>
 
 <script>
@@ -38,12 +41,48 @@
 </script>
 
 <script id="tlReportHeader" type="text/template">
-    <h2 style="text-align:center;">{{reportTitle}}</h2>
-    <span>{{balanceOld}}</span>
+    <div class="row">
+        </div><h2 style="text-align:center;">{{reportTitle}}</h2>
+    </div>
+    <div class="row">
+        <span>{{balanceOld}}</span>
+    </div>
 </script>
 
 <script id="tlReportFooter" type="text/template">
-    <span>{{balanceCurrent}}</span>
-    <br>
-    <span>{{balanceFinal}}</span>
+   <div class="row">
+        <span>{{balanceCurrent}}</span>
+    </div>
+    <div class="row">
+        <span>{{balanceFinal}}</span>
+    </div>
+</script>
+
+<script id="tlReportHisto" type="text/template">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th style="width:50px">Id</th>
+                <th style="width:150px" oda-label="shoppingList.entity">shoppingList.entity</th>
+                <th style="width:100px" oda-label="shoppingList.mode">shoppingList.mode</th>
+                <th style="width:100px" oda-label="shoppingList.amount">shoppingList.amount</th>
+                <th style="width:100px" oda-label="shoppingList.date_action">shoppingList.date_action</th>
+                <th oda-label="shoppingList.comment">shoppingList.comment</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{histoElts}}
+        </tbody>
+    </table>
+</script>
+
+<script id="tlReportHistoElt" type="text/template">
+    <tr>
+        <td>{{id}}</td>
+        <td>{{entity}}</td>
+        <td>{{mode}}</td>
+        <td>{{amount}}</td>
+        <td>{{date_action}}</td>
+        <td>{{comment}}</td>
+    </tr>
 </script>

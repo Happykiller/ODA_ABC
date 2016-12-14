@@ -3255,7 +3255,10 @@
                                     && ($.Oda.App.Tooling.getDomElt({id:'end'}).data("isOk")) ){
                                     $.Oda.App.Controller.ShoppingReport.displayReport();
                                 }else{
-                                    $.Oda.App.Tooling.getDomElt({id:'divReport'}).html('');
+                                    $.Oda.App.Tooling.getDomElt({id:'divReportHeader'}).html('');
+                                    $.Oda.App.Tooling.getDomElt({id:'divReportHist'}).html('');
+                                    $.Oda.App.Tooling.getDomElt({id:'divReportFooter'}).html('');
+                                    $.Oda.App.Tooling.getDomElt({id:'btPdf'}).html('');
                                 }
                             }
                         });
@@ -3303,70 +3306,46 @@
                                 })
                             });
 
-                            $.Oda.Display.Table.createDataTable({
-                                target: 'divReportList',
-                                data: response.data.listRecord,
-                                option: {
-                                    "aaSorting": [[0, 'desc']],
-                                },
-                                attribute: [
-                                    {
-                                        header: "Id",
-                                        size: '50px',
-                                        value: function(data, type, full, meta, row){
-                                            return row.id;
-                                        }
-                                    },
-                                    {
-                                        header: $.Oda.I8n.get('shoppingList','entity'),
-                                        size: '150px',
-                                        value: function(data, type, full, meta, row){
-                                            return row.entity;
-                                        }
-                                    },
-                                    {
-                                        header: $.Oda.I8n.get('shoppingList','mode'),
-                                        size: '100px',
-                                        value: function(data, type, full, meta, row){
-                                            return $.Oda.I8n.get('shoppingList',row.mode);
-                                        }
-                                    },
-                                    {
-                                        header: $.Oda.I8n.get('shoppingList','amount'),
-                                        size: '100px',
-                                        value: function(data, type, full, meta, row){
-                                            var color = 'green';
-                                            var sep = '';
-                                            if(row.movement === 'spent'){
-                                                color = 'red';
-                                                sep = '-';
-                                            }
-                                            var strHtml = '<span style="color:'+color+';font-weight: bold;">'+sep+row.amount+'</span>';
-                                            return strHtml;
-                                        }
-                                    },
-                                    {
-                                        header: $.Oda.I8n.get('shoppingList','date_action'),
-                                        size: '100px',
-                                        value: function(data, type, full, meta, row){
-                                            if (type === 'display') {
-                                                return $.Oda.Date.dateFormat(row.date_action, 'dd/mm/yyyy');
-                                            }else{
-                                                return row.date_action;
-                                            }
-                                        }
-                                    },
-                                    {
-                                        header: $.Oda.I8n.get('shoppingList','comment'),
-                                        value: function(data, type, full, meta, row){
-                                            if(row.comment.length > 30){
-                                                return row.comment.substring(0,30)+"...";
-                                            }else{
-                                                return row.comment;
-                                            }
-                                        }
+                            var strHtml = "";
+                            for(var index in response.data.listRecord){
+                                var elt = response.data.listRecord[index];
+
+                                var color = 'green';
+                                var sep = '';
+                                if(elt.movement === 'spent'){
+                                    color = 'red';
+                                    sep = '-';
+                                }
+                                var strHtmlAmmount = '<span style="color:'+color+';font-weight: bold;">'+sep+elt.amount+'</span>';
+                                
+                                var strHtmlComment = "";
+                                if(elt.comment.length > 30){
+                                    strHtmlComment = elt.comment.substring(0,30)+"...";
+                                }else{
+                                    strHtmlComment = elt.comment;
+                                }
+
+                                strHtml += $.Oda.Display.TemplateHtml.create({
+                                    template : "tlReportHistoElt",
+                                    scope:{
+                                        id: elt.id,
+                                        entity: elt.entity,
+                                        mode: $.Oda.I8n.get('shoppingList',elt.mode),
+                                        amount: strHtmlAmmount,
+                                        date_action: $.Oda.Date.dateFormat(elt.date_action, 'dd/mm/yyyy'),
+                                        comment: strHtmlComment
                                     }
-                                ]
+                                });
+                            }
+
+                            $.Oda.Display.render({
+                                "id": "divReportHist",
+                                "html": $.Oda.Display.TemplateHtml.create({
+                                    template : "tlReportHisto",
+                                    scope:{
+                                        histoElts: strHtml
+                                    }
+                                })
                             });
 
                             $.Oda.Display.render({
@@ -3390,6 +3369,8 @@
                                     }
                                 })
                             });
+
+                            $("#btPdf").html('<br><button type="button" onclick="$.Oda.App.Controller.ShoppingReport.getPdfReport();" class="btn btn-info">'+$.Oda.I8n.getByString('synth_user_patient.pdf')+'</button>');
                         }},{
                             begin: $.Oda.App.Tooling.getDomElt({id:'begin'}).val(),
                             end: $.Oda.App.Tooling.getDomElt({id:'end'}).val()
@@ -3398,7 +3379,52 @@
                         $.Oda.Log.error("$.Oda.App.Controller.ShoppingReport.displayReport : " + er.message);
                         return null;
                     }
-                }
+                },
+                /**
+                 * @param {object} p_params
+                 * @returns {$.Oda.App.Controller.ShoppingReport}
+                 */
+                getPdfReport: function () {
+                    try {
+                        $.Oda.Display.Notification.info($.Oda.I8n.get('synth_user_patient','waitingDl'));
+
+                        var pdf = new jsPDF('p', 'pt', 'a4');
+                        var margins = {
+                            top: 80,
+                            bottom: 60,
+                            left: 40,
+                            width: 522
+                        };
+
+                        var source = $('#divReport').html();
+
+                        var source2 = $.Oda.Tooling.replaceAll({
+                            str: source,
+                            find: "€",
+                            by: "euro"
+                        });
+
+                        pdf.fromHTML(
+                            source2,
+                            margins.left,
+                            margins.top,
+                            {
+                                width: margins.width,
+                                pagesplit: true
+                            },
+                            function (dispose) {
+                                pdf.save('financeBilan_'+ $.Oda.Session.code_user 
+                                + '_' + $.Oda.App.Tooling.getDomElt({id:'patients'}).val() 
+                                + '_' + $.Oda.Date.dateFormat(new Date(), 'yyyy-mm-dd') + '.pdf');
+                            },
+                            margins
+                        );
+                        return this;
+                    } catch (er) {
+                        $.Oda.Log.error("$.Oda.App.Controller.ShoppingReport.getPdfReport : " + er.message);
+                        return null;
+                    }
+                },
             }
         },
         
