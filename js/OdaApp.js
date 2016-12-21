@@ -3078,6 +3078,7 @@
                             $.Oda.App.Tooling.getDomElt({id:'date_action'}).val($.Oda.Date.dateFormat(new Date(), 'yyyy-mm-dd'));
                             $.Oda.Scope.checkInputText({elt:'#date_action'});
                             $.Oda.App.Tooling.getDomElt({id:'attach'}).val(null);
+                            $.Oda.App.Tooling.getDomElt({id:'comment'}).val(null);
                             $.Oda.Display.Notification.successI8n('shoppingList.creationSuccess');
                             $.Oda.App.Controller.ShoppingList.displayRecapShooping({id:$.Oda.App.Tooling.getDomElt({id:'patients'}).val()});
                         }},{
