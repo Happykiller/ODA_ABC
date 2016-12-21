@@ -3282,7 +3282,7 @@
                             if(parseFloat(response.data.balanceCurrent) < 0){
                                 colorCurrent = 'red';
                             }
-                            var total = parseFloat(response.data.balanceOld) + parseFloat(response.data.balanceCurrent);
+                            var total = $.Oda.Tooling.arrondir(parseFloat(response.data.balanceOld) + parseFloat(response.data.balanceCurrent),2);
                             var colorTotal = 'green';
                             if(total < 0){
                                 colorTotal = 'red';

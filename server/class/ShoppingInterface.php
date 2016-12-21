@@ -216,6 +216,7 @@ class ShoppingInterface extends OdaRestInterface {
                 AND a.`patient_id` = :patient_id
                 AND a.`date_action` >= :begin
                 AND a.`date_action` <= :end
+                ORDER BY a.`date_action` desc
             ;";
             $params->typeSQL = OdaLibBd::SQL_GET_ALL;
             $params->bindsValue = [
