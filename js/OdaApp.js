@@ -3,7 +3,7 @@
 // Library of tools for the exemple
 /**
  * @author FRO
- * @date 161122
+ * @date 161222
  */
 
 (function() {
@@ -11,7 +11,7 @@
 
     var
         /* version */
-        VERSION = '1.161122'
+        VERSION = '1.161222'
     ;
     
     ////////////////////////// PRIVATE METHODS ////////////////////////
@@ -3033,9 +3033,9 @@
                             listElt : ["entity", "amount", "movement", "mode", "comment", "date_action"],
                             function : function(e){
                                 if( ($('#entity').data("isOk")) && ($('#amount').data("isOk")) && ($('#date_action').data("isOk")) ){
-                                    $.Oda.App.Tooling.getDomElt({id:'btSubmitNewShooping'}).btEnable();
+                                    $('#btSubmitNewShooping').btEnable();
                                 }else{
-                                    $.Oda.App.Tooling.getDomElt({id:'btSubmitNewShooping'}).btDisable();
+                                    $('#btSubmitNewShooping').btDisable();
                                 }
                             }
                         });
@@ -3051,7 +3051,7 @@
                 submitNewShooping: function () {
                     try {
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/shopping/", {type:'POST',callback : function(response){
-                            var inputAttach = $.Oda.App.Tooling.getDomElt({id:'attach'}).val();
+                            var inputAttach = $('#attach').val();
                             var idNewShooping = response.data;
                             var fileName = idNewShooping + "_" + $.Oda.Session.code_user;
                             var ext = ".ext";
@@ -3063,7 +3063,7 @@
                                     names: [fileName],
                                     callback: function(response){
                                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/shopping/"+idNewShooping, {type: 'put', callback : function(response){
-                                            $.Oda.App.Controller.ShoppingList.displayRecapShooping({id:$.Oda.App.Tooling.getDomElt({id:'patients'}).val()});
+                                            $.Oda.App.Controller.ShoppingList.displayRecapShooping({id:$('#patients').val()});
                                         }},{
                                             attach_name: fileName + "." + ext
                                         });
@@ -3071,25 +3071,25 @@
                                 });
                             }
 
-                            $.Oda.App.Tooling.getDomElt({id:'entity'}).val(null);
+                            $('#entity').val(null);
                             $.Oda.Scope.checkInputText({elt:'#entity'});
-                            $.Oda.App.Tooling.getDomElt({id:'amount'}).val(null);
+                            $('#amount').val(null);
                             $.Oda.Scope.checkInputText({elt:'#amount'});
-                            $.Oda.App.Tooling.getDomElt({id:'date_action'}).val($.Oda.Date.dateFormat(new Date(), 'yyyy-mm-dd'));
+                            $('#date_action').val($.Oda.Date.dateFormat(new Date(), 'yyyy-mm-dd'));
                             $.Oda.Scope.checkInputText({elt:'#date_action'});
-                            $.Oda.App.Tooling.getDomElt({id:'attach'}).val(null);
-                            $.Oda.App.Tooling.getDomElt({id:'comment'}).val(null);
+                            $('#attach').val(null);
+                            $('#comment').val(null);
                             $.Oda.Display.Notification.successI8n('shoppingList.creationSuccess');
-                            $.Oda.App.Controller.ShoppingList.displayRecapShooping({id:$.Oda.App.Tooling.getDomElt({id:'patients'}).val()});
+                            $.Oda.App.Controller.ShoppingList.displayRecapShooping({id:$('#patients').val()});
                         }},{
-                            "entity":$.Oda.App.Tooling.getDomElt({id:'entity'}).val(),
-                            "mode":$.Oda.App.Tooling.getDomElt({id:'mode'}).val(),
-                            "patient_id":$.Oda.App.Tooling.getDomElt({id:'patients'}).val(),
+                            "entity":$('#entity').val(),
+                            "mode":$('#mode').val(),
+                            "patient_id":$('#patients').val(),
                             "author_id":$.Oda.Session.id,
-                            "amount":$.Oda.App.Tooling.getDomElt({id:'amount'}).val(),
-                            "movement":$.Oda.App.Tooling.getDomElt({id:'movement'}).val(),
-                            "comment":$.Oda.App.Tooling.getDomElt({id:'comment'}).val(),
-                            "date_action":$.Oda.App.Tooling.getDomElt({id:'date_action'}).val()
+                            "amount":$('#amount').val(),
+                            "movement":$('#movement').val(),
+                            "comment":$('#comment').val(),
+                            "date_action":$('#date_action').val()
                         });
                         return this;
                     } catch (er) {
@@ -3188,7 +3188,7 @@
                                 ]
                             });
                         }},{
-                            patient_id: $.Oda.App.Tooling.getDomElt({id:'patients'}).val()
+                            patient_id: $('#patients').val()
                         });
                         return this;
                     } catch (er) {
@@ -3242,7 +3242,7 @@
                             for(var index in response.data){
                                 var elt = response.data[index];
                                 if(elt.active === '1'){
-                                    $.Oda.App.Tooling.getDomElt({id:'patients'}).append('<option value="'+ elt.id +'">' + elt.name_first + ' ' + elt.name_last + ( (elt.address_id_default===null)?' (Pas d\'adresse)':'' ) + '</option>')
+                                    $('#patients').append('<option value="'+ elt.id +'">' + elt.name_first + ' ' + elt.name_last + ( (elt.address_id_default===null)?' (Pas d\'adresse)':'' ) + '</option>')
                                 }
                             }
                         }});
@@ -3251,15 +3251,15 @@
                             id : "gPatient",
                             listElt : ["patients", "begin", "end"],
                             function : function(e){
-                                if( ($.Oda.App.Tooling.getDomElt({id:'patients'}).data("isOk")) 
-                                    && ($.Oda.App.Tooling.getDomElt({id:'begin'}).data("isOk")) 
-                                    && ($.Oda.App.Tooling.getDomElt({id:'end'}).data("isOk")) ){
+                                if( ($('#patients').data("isOk")) 
+                                    && ($('#begin').data("isOk")) 
+                                    && ($('#end').data("isOk")) ){
                                     $.Oda.App.Controller.ShoppingReport.displayReport();
                                 }else{
-                                    $.Oda.App.Tooling.getDomElt({id:'divReportHeader'}).html('');
-                                    $.Oda.App.Tooling.getDomElt({id:'divReportHist'}).html('');
-                                    $.Oda.App.Tooling.getDomElt({id:'divReportFooter'}).html('');
-                                    $.Oda.App.Tooling.getDomElt({id:'btPdf'}).html('');
+                                    $('#divReportHeader').html('');
+                                    $('#divReportHist').html('');
+                                    $('#divReportFooter').html('');
+                                    $('#btPdf').html('');
                                 }
                             }
                         });
@@ -3274,7 +3274,7 @@
                  */
                 displayReport: function () {
                     try {
-                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/shopping/report/"+$.Oda.App.Tooling.getDomElt({id:'patients'}).val(), {callback : function(response){
+                        var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/shopping/report/"+$('#patients').val(), {callback : function(response){
                             var colorOld = 'green';
                             if(parseFloat(response.data.balanceOld) < 0){
                                 colorOld = 'red';
@@ -3296,7 +3296,7 @@
                                     scope:{
                                         reportTitle: $.Oda.I8n.get("shoppinReport","title") + " : " 
                                         +  response.data.infos.patient_firstname + " " + response.data.infos.patient_lastname 
-                                        + ", " + $.Oda.Date.dateFormat($.Oda.App.Tooling.getDomElt({id:'begin'}).val(), 'dd/mm/yyyy') + " - " + $.Oda.Date.dateFormat($.Oda.App.Tooling.getDomElt({id:'end'}).val(), 'dd/mm/yyyy'),
+                                        + ", " + $.Oda.Date.dateFormat($('#begin').val(), 'dd/mm/yyyy') + " - " + $.Oda.Date.dateFormat($('#end').val(), 'dd/mm/yyyy'),
                                         balanceOld: $.Oda.I8n.get("shoppinReport","balanceOld",{
                                             variables: {
                                                 balanceOld: response.data.balanceOld,
@@ -3373,8 +3373,8 @@
 
                             $("#btPdf").html('<br><button type="button" onclick="$.Oda.App.Controller.ShoppingReport.getPdfReport();" class="btn btn-info">'+$.Oda.I8n.getByString('synth_user_patient.pdf')+'</button>');
                         }},{
-                            begin: $.Oda.App.Tooling.getDomElt({id:'begin'}).val(),
-                            end: $.Oda.App.Tooling.getDomElt({id:'end'}).val()
+                            begin: $('#begin').val(),
+                            end: $('#end').val()
                         });
                     } catch (er) {
                         $.Oda.Log.error("$.Oda.App.Controller.ShoppingReport.displayReport : " + er.message);
@@ -3415,7 +3415,7 @@
                             },
                             function (dispose) {
                                 pdf.save('financeBilan_'+ $.Oda.Session.code_user 
-                                + '_' + $.Oda.App.Tooling.getDomElt({id:'patients'}).val() 
+                                + '_' + $('#patients').val() 
                                 + '_' + $.Oda.Date.dateFormat(new Date(), 'yyyy-mm-dd') + '.pdf');
                             },
                             margins
@@ -3430,26 +3430,6 @@
         },
         
         Tooling: {
-            domElt: {},
-            /**
-             * @param {Object} params
-             * @param p_params.id
-             * @returns {dom}
-             */
-            getDomElt: function(params){
-                try {
-                    if($.Oda.App.Tooling.domElt[params.id] !== undefined){
-                        return $.Oda.App.Tooling.domElt[params.id];
-                    }else{
-                        var elt = $('#'+params.id);
-                        $.Oda.App.Tooling.domElt[params.id] = elt;
-                        return elt;
-                    }
-                } catch (er) {
-                    $.Oda.Log.error("$.Oda.App.Tooling.getDomElt : " + er.message);
-                    return null;
-                }
-            },
             /**
              * @param {Object} p_params
              * @param p_params.listTrajet
