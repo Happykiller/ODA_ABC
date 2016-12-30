@@ -169,7 +169,7 @@ class ShoppingInterface extends OdaRestInterface {
             $finacialReport = new stdClass();
 
             $params = new OdaPrepareReqSql();
-            $params->sql = "SELECT SUM(IF(a.`movement`='spent', 0-a.`amount`,a.`amount`)) as 'balanceOld'
+            $params->sql = "SELECT IFNULL(SUM(IF(a.`movement`='spent', 0-a.`amount`,a.`amount`)),0) as 'balanceOld'
                 FROM `tab_shopping` a
                 WHERE 1=1
                 AND a.`active` = 1
@@ -186,7 +186,7 @@ class ShoppingInterface extends OdaRestInterface {
             $finacialReport->balanceOld = $retour->data->balanceOld;
 
             $params = new OdaPrepareReqSql();
-            $params->sql = "SELECT SUM(IF(a.`movement`='spent', 0-a.`amount`,a.`amount`)) as 'balanceCurrent'
+            $params->sql = "SELECT IFNULL(SUM(IF(a.`movement`='spent', 0-a.`amount`,a.`amount`)),0) as 'balanceCurrent'
                 FROM `tab_shopping` a
                 WHERE 1=1
                 AND a.`active` = 1
