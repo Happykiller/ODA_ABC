@@ -1550,10 +1550,16 @@
                  */
                 renderWeekBt: function (params) {
                     try {
+                        var oneMore = 0;
                         $('td[class="fc-week-number"]').each(function(){
                             var elt = $(this);
                             var week = elt.text();
-                            elt.html('<a href="javascript:$.Oda.App.Controller.Planning.viewWeekDetails({year: '+params.start.format('YYYY')+', week: '+week+'});" class="btn btn-primary btn-xs">'+week+'</a>')
+                            var year = params.start.format('YYYY');
+                            year = parseInt(year) + oneMore;
+                            if(week === "52"){
+                                oneMore++;
+                            }
+                            elt.html('<a href="javascript:$.Oda.App.Controller.Planning.viewWeekDetails({year: '+year+', week: '+week+'});" class="btn btn-primary btn-xs">'+week+'</a>')
                         });
                         return this;
                     } catch (er) {
