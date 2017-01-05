@@ -1649,8 +1649,8 @@
                  */
                 viewWeekDetails : function (p_params) {
                     try {
-                        var start = moment().day("Monday").year(p_params.year).week(p_params.week).subtract(6, 'days').format('YYYY-MM-DD');
-                        var end = moment().day("Monday").year(p_params.year).week(p_params.week).format('YYYY-MM-DD');
+                        var start = moment().year(p_params.year).week(p_params.week).day("Monday").add(1, 'days').format('YYYY-MM-DD');
+                        var end = moment().year(p_params.year).week(p_params.week).day("Monday").add(7, 'days').format('YYYY-MM-DD');
                         if($.Oda.Google.Map.service !== undefined) {
                             var call = $.Oda.Interface.callRest($.Oda.Context.rest + "api/rest/report/trajet/" + $.Oda.Session.id, {callback: function (response) {
                                 var report = $.Oda.App.Tooling.calcReportTrajet({listTrajet:response.data});
