@@ -14,3 +14,4 @@ config/config.js
 server/config/config.php
 *.lock
 server/resources/*
+.vscode/*
