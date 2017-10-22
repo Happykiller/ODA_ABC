@@ -11,7 +11,7 @@
 
     var
         /* version */
-        VERSION = '1.161222'
+        VERSION = '1.171022.01'
     ;
     
     ////////////////////////// PRIVATE METHODS ////////////////////////
@@ -3238,6 +3238,7 @@
                 }
             },
             ShoppingReport: {
+                datas: null,
                 /**
                  * @returns {$.Oda.App.Controller.ShoppingReport}
                  */
@@ -3281,6 +3282,7 @@
                 displayReport: function () {
                     try {
                         var call = $.Oda.Interface.callRest($.Oda.Context.rest+"api/rest/shopping/report/"+$('#patients').val(), {callback : function(response){
+                            $.Oda.App.Controller.ShoppingReport.datas = response.data;
                             var colorOld = 'green';
                             if(parseFloat(response.data.balanceOld) < 0){
                                 colorOld = 'red';
@@ -3410,6 +3412,19 @@
                             find: "€",
                             by: "euro"
                         });
+
+                        source2 += '<br><br><br><br><h3>Justificatifs :</h3>';
+                        
+                        for(var index in $.Oda.App.Controller.ShoppingReport.datas.listRecord){
+                            var attachFile = $.Oda.App.Controller.ShoppingReport.datas.listRecord[index].attach_name;
+                            source2 += $.Oda.Display.TemplateHtml.create({
+                                template : "tpl-image",
+                                scope:{
+                                    path: $.Oda.Context.resources + "shoppingAttach/",
+                                    attachFile: attachFile
+                                }
+                            }); 
+                        }
 
                         pdf.fromHTML(
                             source2,
